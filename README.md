@@ -3,7 +3,7 @@ EcolePasDirecte Project
 
 
 This project is an EcoleDirect be like, but in a funny way.
-This README.md will be used to make a historic of the progress of the project.
+This README.md will be used to make a historic of the progress of the project in french.
 
 Il faut savoir que le projet avait été commencé (site web) lors de la seconde et que ce cahier des charges contient les progrès réalisés lors de la 1ere ainsi que de la terminale.
 
