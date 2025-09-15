@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vote Délégué</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f0f4f8;
+      padding: 40px;
+    }
+    form {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    }
+    button {
+      background-color: #005fa3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    #vote-result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Vote pour le délégué de classe</h2>
+  <form id="vote-form">
+    <p>Choisissez votre candidat :</p>
+    <label><input type="radio" name="candidat" value="Alex"> Alex</label><br />
+    <label><input type="radio" name="candidat" value="Johan"> Johan</label><br />
+    <label><input type="radio" name="candidat" value="Aucun"> Aucun des deux</label><br /><br />
+    <button type="submit">Voter</button>
+  </form>
+  <p id="vote-result"></p>
+
+  <script>
+    document.getElementById("vote-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const choix = document.querySelector('input[name="candidat"]:checked');
+      const result = document.getElementById("vote-result");
+
+      if (!choix) {
+        result.textContent = "Veuillez sélectionner un candidat avant de voter.";
+        return;
+      }
+
+      result.textContent = "Merci pour votre vote ! Vous avez choisi : " + choix.value + ".";
+    });
+  </script>
+</body>
+</html>
