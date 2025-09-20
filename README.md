@@ -17,9 +17,13 @@ Johan : Avancement du site Web ; Alexandre : Réalisation et développement de l
 Alexandre : Démarrage du developpement de l'application mobile ; renseignement ainsi que analyse du procédé, début du développement
 
 
+
+
 18/09/25
 
 Alexandre : Avancement de la page de connexion.
+
+
 
 
 20/09/25
