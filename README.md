@@ -36,4 +36,4 @@ Alexandre : Développement du menu d'Accueil.
 Alexandre : Début du développement du système back-end de connexion par identifiant et mot de passe.
 22/09/2025 
 
-Johan : supression d'une érreur dans le code de l'index.html et verification du validProfiles.
+Johan : Supression d'une érreur dans le code de l'index.html et verification du validProfiles.
