@@ -29,3 +29,7 @@ Alexandre : Avancement de la page de connexion.
 20/09/25
 
 Alexandre : Développement du menu d'Accueil.
+
+
+22/09/25
+Alexandre : Début du développement du système back-end de connexion par identifiant et mot de passe.
