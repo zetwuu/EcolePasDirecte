@@ -34,3 +34,6 @@ Alexandre : Développement du menu d'Accueil.
 22/09/25
 
 Alexandre : Début du développement du système back-end de connexion par identifiant et mot de passe.
+22/09/2025 
+
+Johan : suprétion d'un éreur dans le code de l'index.html et verification du validProfies.
