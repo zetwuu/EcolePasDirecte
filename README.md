@@ -1,6 +1,8 @@
 # EcolePasDirecte
 EcolePasDirecte Project
 
+Ecole Pas Directe est un outil pédagogique qui permet aux enseignants de saisir leurs mauvaise notes & incompétences et dépression à leur rythme. C'est aussi un cahier de textes numériques puissant avec la possibilité de demander des rendus de devoir en ligne aux élèves, de lier des manuels numériques, de personnaliser les corrections par élèves... Mais c'est surtout un ENT complètement vide avec des espaces jeux vidéo, des espaces partagés et individuels. Sans oublier le suivi psychologique des familles au quotidien avec des consultations. Des données de leur(s) enfant(s) en temps réel via l'application mobile (emploi du temps, notes, travail à faire, absences, sanctions...).
+
 
 This project is an EcoleDirect be like, but in a funny way.
 This README.md will be used to make a historic of the progress of the project in french.
