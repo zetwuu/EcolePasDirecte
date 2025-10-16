@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>École Pas Directe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      height: 60px;
+      background: #005fa3;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 10;
+    }
+
+    #user-box button {
+      background: #ffffff;
+      color: #005fa3;
+      font-weight: 600;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    nav {
+      margin-top: 60px;
+      width: 70px; 
+      background: #005fa3;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+      padding-top: 20px;
+      height: calc(100vh - 60px);
+      position: fixed;
+      overflow: hidden;
+      transition: width 0.3s ease;
+    }
+
+    nav:hover {
+      width: 220px;
+    }
+
+    nav button {
+      width: 100%;
+      padding: 15px 20px;
+      border: none;
+      background: none;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    nav button span {
+      white-space: nowrap;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    nav:hover button span {
+      opacity: 1;
+    }
+
+    nav button.active,
+    nav button:hover {
+      background: #00497d; 
+      color: white;
+    }
+
+    .container {
+      margin-left: 70px; 
+      margin-top: 60px;
+      padding: 30px;
+      flex-grow: 1;
+      transition: margin-left 0.3s ease;
+    }
+
+    nav:hover ~ .container {
+      margin-left: 220px;
+    }
+
+    .tab-content {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+      max-width: 800px;
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    h2 {
+      color: #003d66;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+
+    p {
+      font-size: 1.25rem;
+      line-height: 1.8;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    ul li {
+      padding: 20px 0;
+      border-bottom: 1px solid #dee2e6;
+      font-size: 1.5rem;
+      line-height: 2;
+    }
+
+    ul li strong {
+      color: #005fa3;
+    }
+
+    #brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: white;
+    }
+
+    #brand img {
+      height: 40px;
+      width: 40px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    #profile-menu {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #profile-icon {
+      font-size: 24px;
+      color: white;
+      cursor: pointer;
+    }
+
+    #dropdown-menu {
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background-color: white;
+      border-radius: 6px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 10px;
+      display: none;
+      z-index: 100;
+    }
+
+    #dropdown-menu button {
+      background: none;
+      color: #005fa3;
+      border: none;
+      padding: 8px 12px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+    }
+
+    #dropdown-menu button:hover {
+      background-color: #f0f4f8;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div id="brand">
+    <img src="1747986702534.jpeg" alt="Logo" />
+    <span>École Pas Directe</span>
+  </div>
+  <div id="user-box">
+    <div id="profile-menu">
+      <span id="username-display">Bienvenue !</span>
+      <div id="profile-icon" onclick="toggleMenu()">
+        <i class="fa-solid fa-user-circle"></i>
+      </div>
+      <div id="dropdown-menu">
+        <button onclick="showAccountInfo()">Informations du compte</button>
+        <button onclick="logout()">Déconnexion</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <button data-target="accueil"><i class="fa-solid fa-house"></i><span> Accueil</span></button>
+  <button class="active" data-target="notes"><i class="fa-solid fa-book"></i><span> Notes</span></button>
+  <button data-target="devoirs"><i class="fa-solid fa-list-check"></i><span> Devoirs</span></button>
+  <button data-target="messages"><i class="fa-solid fa-envelope"></i><span> Messages</span></button>
+  <button data-target="carnet"><i class="fa-solid fa-clipboard"></i><span> Carnet</span></button>
+  <button data-target="emploi"><i class="fa-solid fa-calendar-days"></i><span> Emplois du temps</span></button>
+  <button data-target="vie-scolaire"><i class="fa-solid fa-user-graduate"></i><span>Liens utiles</span></button>
+  <button data-target="bulletin"><i class="fa-solid fa-file-lines"></i><span> Bulletin</span></button>
+  <button data-target="document"><i class="fa-solid fa-file"></i><span> Document</span></button>
+  <button data-target="vie-classe"><i class="fa-solid fa-people-group"></i><span> Vie de classe</span></button>
+</nav>
+
+
+<div class="container">
+ <section id="vie-classe" class="tab-content">
+  <h2>Vote pour le délégué de classe</h2>
+  <p>Pour voter, cliquez ici :</p>
+  <a href="vote.html" style="font-weight:bold; color:#005fa3;">Accéder au formulaire de vote</a>
+</section>
+
+<section id="accueil" class="tab-content active">
+  <h2>Bienvenue sur École Pas Directe</h2>
+  <p>Accède à toutes les informations scolaires ici.</p>
+
+  <div class="image-container">
+
+    <img src="telechargement.png" alt="Bienvenue à l'école" />
+  </div>
+
+  <ul>
+    <li><strong>Dernière mise à jour :</strong> 4 juin 2025</li>
+    <li><strong>Événement à venir :</strong> Conseil de classe – 12 juin</li>
+    <li><strong>Rappel :</strong> Apporte ton matériel de sport jeudi</li>
+  </ul>
+
+
+
+</section>
+
+ <section id="vie-scolaire" class="tab-content">
+  <h2>Liens utiles</h2>
+  <p>Ici s’afficheront les liens utiles</p>
+  
+  <div class="image-container">
+    <img src="telechargement.png" alt="Vie scolaire" />
+  </div>
+  <div id="sidebar-right">
+  <h3>🔗 Liens utiles</h3>
+  <ul>
+    <li><a href="https://www.chunkbase.com/" target="_blank">lagrandelbrairie</a></li>
+    <li><a href="https://tompousse.fr/livre/nul-en-maths-pourquoi-moi/" target="_blank">maths c'est facile</a></li>
+  </ul>
+</div>
+
+</section>
+
+<section id="bulletin" class="tab-content">
+  <h2>Bulletin</h2>
+  <p>Voici ton bulletin trimestriel :</p>
+  <ul id="bulletin-list">
+    <li><a href="Note_A001_page-0001.jpg" target="_blank">Bulletin Trimestre 1</a></li>
+    <li><strong>Conseil du 2eme trimestre :</strong> En attente</li>
+    <li><strong>Conseil du 3eme trimestre :</strong> En attente</li>
+  </ul>
+</section>
+
+  <section id="notes" class="tab-content">
+    <h2>Mes notes</h2>
+    <div id="sidebar-right">
+  <h3>📊 Progression</h3>
+  <p>Moyenne générale</p>
+  <div style="background: #eee; border-radius: 6px; overflow: hidden;">
+    <div style="width: 55%; background: #005fa3; color: white; text-align: center; padding: 5px 0;">
+      12,75/20
+    </div>
+  </div>
+</div>
+
+    <ul id="notes-list"></ul>
+  </section>
+  <section id="devoirs" class="tab-content">
+    <h2>Mes devoirs</h2>
+    <ul id="devoirs-list"></ul>
+  </section>
+ <section id="messages" class="tab-content">
+  <h2>Messagerie</h2>
+
+  <div id="messages-container">
+    <ul id="messages-list"></ul>
+  </div>
+
+  <form id="message-form" style="margin-top: 20px;">
+    <textarea id="new-message" rows="3" placeholder="Écris ton message ici..." required></textarea><br />
+    <button type="submit">Envoyer</button>
+  </form>
+</section>
+
+  <section id="carnet" class="tab-content">
+    <h2>Carnet de correspondance</h2>
+    <ul id="carnet-list"></ul>
+  </section>
+ 
+
+ <section id="emploi" class="tab-content">
+  <h2>Mon emploi du temps</h2>
+  <p>Utilise les boutons pour naviguer entre les semaines :</p>
+
+  <div style="text-align: center; margin-bottom: 20px;">
+    <button id="btn-prev">⬅️ Semaine précédente</button>
+    <span id="semaine-label" style="margin: 0 20px; font-weight: bold;">Semaine 1</span>
+    <button id="btn-next">Semaine suivante ➡️</button>
+  </div>
+
+  <div class="image-container">
+    <img id="img-emploi" src="emploidutemps_page-0001.jpg" alt="Emploi du temps semaine 1" />
+  </div>
+
+</section>
+
+  
+<section id="document" class="tab-content">
+  <h2>Déposer un document</h2>
+  <p>Choisis un fichier à envoyer :</p>
+  
+  <form id="upload-form">
+    <input type="file" id="fileInput" />
+    <button type="submit">Envoyer</button>
+  </form>
+  <p id="upload-status"></p>
+  <ul id="uploaded-files-list"></ul>
+
+
+  
+</section>
+
+</div>
+
+<script>
+  const profilesData = {
+    Alex: {
+      notes: [
+        { matiere: "Moyenne generale", note: "12,75/20" },
+        { matiere: "Maths", note: "5/20" },
+        { matiere: "Histoire", note: "1/20" },
+        { matiere: "SVT", note: "14,5/20" },
+        { matiere: "Anglais", note: "18/20" },
+        { matiere: "Physique", note: "13/20" },
+        { matiere: "Technologie", note: "16/20" },
+        { matiere: "EPS", note: "19/20" },
+        { matiere: "Français", note: "15,5/20" }
+      ],
+      devoirs: [
+        { matiere: "Français", description: "Finir le manuel en entier pour demain." },
+        { matiere: "Physique", description: "Vous savez déja ce qui vous attend..." },
+        { matiere: "Maths", description: "Révision pour le contrôle + exercices en ligne" },
+        { matiere: "Histoire", description: "Fiche sur la révolution française" },
+        { matiere: "Anglais", description: "Rédiger un mail formel - pour le 7 juin" }
+      ],
+      messages: [
+        { from: "Prof. SVT", content: "Le TP est en ligne sur Moodle." },
+        { from: "Prof. Maths", content: "N'oubliez pas la révision du chapitre 3." },
+        { from: "Prof. EPS", content: "Apportez vos baskets jeudi." },
+        { from: "Prof. Français", content: "Contrôle de lecture vendredi." }
+      ],
+      carnet: [
+        { date: "15/05/2025", type: "Observation", description: "Se met un doigt dans l'arrière-train et dit je cite (Sent c'est d'la bonne)." },
+        { date: "22/05/2025", type: "Remarque positive", description: "Participation active en SVT." },
+        { date: "27/05/2025", type: "Observation", description: "Travail non rendu en physique." }
+    ]
+      
+      
+    },
+    Johan: {
+      notes: [
+        { matiere: "moyenne generale", note: "5/20" },
+        { matiere: "Maths", note: "3/20" },
+        { matiere: "Histoire", note: "1/20" },
+        { matiere: "SVT", note: "1/20" },
+        { matiere: "Anglais", note: "1/20" },
+        { matiere: "Physique", note: "1/20" },
+        { matiere: "Français", note: "1/20" },
+        { matiere: "Technologie", note: "1/20" },
+        { matiere: "EPS", note: "1/20" }
+      ],
+      devoirs: [
+        { matiere: "Français", description: "Résumé chapitre 4 + questions 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24 et 25 - pour le 10 juin" },
+        { matiere: "Physique", description: "Exercices page 92 n° 1 à 4 - pour le 7 juin" },
+        { matiere: "Maths", description: "Révision + fiche méthode - pour le 8 juin" },
+        { matiere: "SVT", description: "Préparer exposé sur les écosystèmes" }
+      ],
+      messages: [
+        { from: "Prof. SVT", content: "Le laboratoire sera fermé vendredi." },
+        { from: "Prof. Maths", content: "Correction du dernier contrôle en ligne." },
+        { from: "Prof. Anglais", content: "Travail oral à rendre sur Teams." }
+      ],
+      carnet: [
+        { date: "9/05/2025", type: "Retenue", description: "Montre son postérieur en cours de mathématiques, ceci n'est pas un comportement acceptable." },
+        { date: "10/05/2025", type: "Remarque positive", description: "Comportement exemplaire en classe." },
+        { date: "20/05/2025", type: "Note", description: "Nécessite de travailler les conjugaisons." },
+        { date: "28/05/2025", type: "Remarque négative", description: "Participation trop faible en anglais." }
+      ]
+    }
+  };
+  
+
+
+  if (sessionStorage.getItem("isLoggedIn") !== "true") {
+    window.location.href = "index.html";
+  }
+
+  const currentUser = sessionStorage.getItem("currentUser");
+  if (!currentUser || !profilesData[currentUser]) {
+    sessionStorage.clear();
+    window.location.href = "index.html";
+  }
+
+ 
+  document.getElementById("username-display").textContent = "Bienvenue, " + currentUser + " !";
+
+
+  function populateList(id, items, formatter) {
+    const ul = document.getElementById(id);
+    ul.innerHTML = "";
+    items.forEach(item => {
+      const li = document.createElement("li");
+      li.innerHTML = formatter(item);
+      ul.appendChild(li);
+    });
+  }
+
+ 
+  populateList("notes-list", profilesData[currentUser].notes, i => `<strong>${i.matiere}</strong> : ${i.note}`);
+  populateList("devoirs-list", profilesData[currentUser].devoirs, i => `<strong>${i.matiere}</strong> : ${i.description}`);
+  populateList("messages-list", profilesData[currentUser].messages, i => `<strong>${i.from}</strong> : ${i.content}`);
+  populateList("carnet-list", profilesData[currentUser].carnet, i => `<strong>${i.date} - ${i.type}</strong> : ${i.description}`);
+
+
+  const buttons = document.querySelectorAll("nav button");
+  const sections = document.querySelectorAll(".tab-content");
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.getAttribute("data-target");
+      buttons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      sections.forEach(sec => {
+        sec.classList.remove("active");
+        if (sec.id === targetId) sec.classList.add("active");
+      });
+    });
+  });
+function showAccountInfo() {
+  alert("Nom d'utilisateur : " + currentUser + "\nAdresse e-mail : exemple@email.com\nStatut : Élève");
+}
+
+
+  function logout() {
+    sessionStorage.clear();
+    window.location.href = "index.html";
+  }
+  function toggleMenu() {
+  const menu = document.getElementById("dropdown-menu");
+  menu.style.display = (menu.style.display === "block") ? "none" : "block";
+}
+
+
+document.addEventListener("click", function (e) {
+  const profile = document.getElementById("profile-menu");
+  if (!profile.contains(e.target)) {
+    document.getElementById("dropdown-menu").style.display = "none";
+  }
+});
+
+
+ 
+document.getElementById("upload-form").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const fileInput = document.getElementById("fileInput");
+  const status = document.getElementById("upload-status");
+  const list = document.getElementById("uploaded-files-list");
+
+  if (fileInput.files.length === 0) {
+    status.textContent = "Aucun fichier sélectionné.";
+    return;
+  }
+
+  const file = fileInput.files[0];
+  const li = document.createElement("li");
+  li.textContent = file.name + "";
+  list.appendChild(li);
+
+  status.textContent = "Fichier sélectionné : " + file.name;
+  fileInput.value = ""; 
+});
+
+
+window.addEventListener("load", () => {
+  const nav = document.querySelector("nav");
+  setTimeout(() => {
+    nav.classList.add("show");
+  }, 100); 
+});
+
+window.addEventListener("load", () => {
+  const nav = document.querySelector("nav");
+  setTimeout(() => {
+    nav.classList.add("show");
+  }, 100);
+});
+document.getElementById("vote-form").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const choix = document.querySelector('input[name="candidat"]:checked');
+  const result = document.getElementById("vote-result");
+
+  if (!choix) {
+    result.textContent = "Veuillez sélectionner un candidat avant de voter.";
+    return;
+  }
+
+  
+  result.textContent = "Merci pour votre vote ! Vous avez choisi : " + choix.value + ".";
+});
+document.getElementById("message-form").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const textarea = document.getElementById("new-message");
+  const message = textarea.value.trim();
+  if (message === "") return;
+
+  const li = document.createElement("li");
+  li.textContent = "Moi : " + message;
+  document.getElementById("messages-list").appendChild(li);
+  textarea.value = "";
+});
+
+
+let semaineActuelle = 1;
+const maxSemaines = 6; 
+
+function mettreAJourEmploiDuTemps() {
+  const img = document.getElementById("img-emploi");
+  const label = document.getElementById("semaine-label");
+
+  img.src = `emplois/semaine${semaineActuelle}.jpg`;
+  img.alt = `Emploi du temps semaine ${semaineActuelle}`;
+  label.textContent = `Semaine ${semaineActuelle}`;
+}
+
+document.getElementById("btn-prev").addEventListener("click", () => {
+  if (semaineActuelle > 1) {
+    semaineActuelle--;
+    mettreAJourEmploiDuTemps();
+  }
+});
+
+document.getElementById("btn-next").addEventListener("click", () => {
+  if (semaineActuelle < maxSemaines) {
+    semaineActuelle++;
+    mettreAJourEmploiDuTemps();
+  }
+});
+
+</script>
+
+</body>
+</html>
