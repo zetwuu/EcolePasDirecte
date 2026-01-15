@@ -338,7 +338,7 @@
     window.location.href = "index.html";
   }
 
-  // Initialiser le localStorage
+  // Initialiser le localStorage avec les messages par défaut
   function initializeMessages() {
     if (!localStorage.getItem("schoolMessages")) {
       const defaultMessages = {
@@ -521,35 +521,47 @@
   }
 
   // Afficher les messages
-  function displayMessages() {
+  async function displayMessages() {
     if (!currentConversation) return;
 
     const conv = conversationsConfig[currentConversation];
-    const messagesData = JSON.parse(localStorage.getItem("schoolMessages") || "{}");
-    const msgs = messagesData[conv.key] || [];
     const chatArea = document.getElementById("chat-messages");
 
     chatArea.innerHTML = "";
 
-    msgs.forEach(msg => {
-      const div = document.createElement("div");
-      const isOwn = msg.sender === currentUser;
-      div.className = `message ${isOwn ? "sent" : "received"}`;
-      div.innerHTML = `
-        <div class="message-sender">${msg.sender}</div>
-        <div class="message-content">${msg.content}</div>
-        <div class="message-time">${msg.timestamp}</div>
-      `;
-      chatArea.appendChild(div);
-    });
+    try {
+      // Charger depuis localStorage d'abord (plus rapide)
+      const messagesData = JSON.parse(localStorage.getItem("schoolMessages") || "{}");
+      const msgs = messagesData[conv.key] || [];
 
-    setTimeout(() => {
-      chatArea.scrollTop = chatArea.scrollHeight;
-    }, 50);
+      if (!msgs || msgs.length === 0) {
+        chatArea.innerHTML = '<div class="empty-chat">Aucun message pour l\'instant</div>';
+        return;
+      }
+
+      msgs.forEach(msg => {
+        const div = document.createElement("div");
+        const isOwn = msg.sender === currentUser;
+        div.className = `message ${isOwn ? "sent" : "received"}`;
+        div.innerHTML = `
+          <div class="message-sender">${msg.sender}</div>
+          <div class="message-content">${msg.content}</div>
+          <div class="message-time">${msg.timestamp}</div>
+        `;
+        chatArea.appendChild(div);
+      });
+
+      setTimeout(() => {
+        chatArea.scrollTop = chatArea.scrollHeight;
+      }, 50);
+    } catch(err) {
+      console.error("Erreur chargement messages:", err);
+      chatArea.innerHTML = '<div class="empty-chat">Erreur de chargement</div>';
+    }
   }
 
   // Envoyer un message
-  document.getElementById("chat-form").addEventListener("submit", function(e) {
+  document.getElementById("chat-form").addEventListener("submit", async function(e) {
     e.preventDefault();
 
     if (!currentConversation) {
