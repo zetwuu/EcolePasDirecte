@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Messagerie - École Pas Directe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      height: 60px;
+      background: #005fa3;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 10;
+    }
+
+    #brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: white;
+    }
+
+    #brand img {
+      height: 40px;
+      width: 40px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      margin-top: 60px;
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      height: calc(100vh - 60px);
+    }
+
+    .messaging-container {
+      display: flex;
+      width: 100%;
+      gap: 15px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+
+    .conversations-panel {
+      flex: 0 0 25%;
+      border-right: 1px solid #dee2e6;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
+
+    .conversations-header {
+      padding: 15px;
+      border-bottom: 2px solid #005fa3;
+      background: white;
+      position: sticky;
+      top: 0;
+    }
+
+    .conversations-header h3 {
+      margin: 0;
+      color: #005fa3;
+      font-size: 1.1rem;
+    }
+
+    .conversations-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .conversation-item {
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 4px solid transparent;
+    }
+
+    .conversation-item:hover {
+      background-color: #e8f1f8;
+    }
+
+    .conversation-item.active {
+      background-color: #e3f2fd;
+      border-left-color: #005fa3;
+      font-weight: 600;
+    }
+
+    .conversation-name {
+      font-weight: 600;
+      color: #005fa3;
+      margin-bottom: 3px;
+    }
+
+    .conversation-preview {
+      font-size: 0.9rem;
+      color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: white;
+    }
+
+    .chat-header {
+      padding: 15px;
+      border-bottom: 2px solid #005fa3;
+      background: #f9f9f9;
+    }
+
+    .chat-title {
+      margin: 0;
+      color: #005fa3;
+      font-size: 1.1rem;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 70%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      word-wrap: break-word;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.sent {
+      align-self: flex-end;
+      background-color: #005fa3;
+      color: white;
+    }
+
+    .message.received {
+      align-self: flex-start;
+      background-color: #f0f4f8;
+      color: #333;
+    }
+
+    .message-sender {
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+
+    .message-content {
+      margin-bottom: 4px;
+    }
+
+    .message-time {
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+
+    .chat-input-area {
+      padding: 15px;
+      border-top: 1px solid #dee2e6;
+      background: #f9f9f9;
+    }
+
+    .chat-form {
+      display: flex;
+      gap: 10px;
+    }
+
+    #message-input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      resize: vertical;
+      max-height: 80px;
+    }
+
+    .send-btn {
+      background-color: #005fa3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: background-color 0.3s;
+    }
+
+    .send-btn:hover {
+      background-color: #00497d;
+    }
+
+    .empty-chat {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-size: 1.1rem;
+    }
+
+    .delete-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background-color 0.3s;
+    }
+
+    .delete-btn:hover {
+      background-color: #c82333;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div id="brand">
+    <img src="1747986702534.jpeg" alt="Logo" />
+    <span>Messagerie</span>
+  </div>
+  <a href="home.html" class="back-link">← Retour à l'accueil</a>
+</header>
+
+<div class="container">
+  <div class="messaging-container">
+    <!-- Panel de conversations -->
+    <div class="conversations-panel">
+      <div class="conversations-header">
+        <h3>💬 Conversations</h3>
+      </div>
+      <ul class="conversations-list" id="conversations-list">
+        <!-- Les conversations vont apparaître ici -->
+      </ul>
+    </div>
+
+    <!-- Panel de chat -->
+    <div class="chat-panel">
+      <div class="chat-header">
+        <h3 class="chat-title" id="chat-title">Sélectionne une conversation</h3>
+        <button class="delete-btn" id="delete-btn" style="display: none;">🗑️ Effacer la conversation</button>
+      </div>
+
+      <div class="chat-messages" id="chat-messages">
+        <div class="empty-chat">Sélectionne une conversation pour commencer</div>
+      </div>
+
+      <div class="chat-input-area" id="input-area" style="display: none;">
+        <form class="chat-form" id="chat-form">
+          <input 
+            type="text" 
+            id="message-input" 
+            placeholder="Écris ton message..." 
+            autocomplete="off"
+          />
+          <button type="submit" class="send-btn">Envoyer ✉️</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Vérifier l'authentification
+  if (sessionStorage.getItem("isLoggedIn") !== "true") {
+    window.location.href = "index.html";
+  }
+
+  const currentUser = sessionStorage.getItem("currentUser");
+  if (!currentUser) {
+    sessionStorage.clear();
+    window.location.href = "index.html";
+  }
+
+  // Initialiser le localStorage
+  function initializeMessages() {
+    if (!localStorage.getItem("schoolMessages")) {
+      const defaultMessages = {
+        "Alex-Johan": [
+          { sender: "Alex", content: "Salut Johan! Ça va?", timestamp: "10:30" },
+          { sender: "Johan", content: "Ouais ça va! Et toi?", timestamp: "10:35" },
+          { sender: "Alex", content: "Bien bien, tu as fais tes devoirs?", timestamp: "10:40" }
+        ],
+        "Prof. SVT": [
+          { sender: "Prof. SVT", content: "Le TP est en ligne sur Moodle.", timestamp: "14:30" }
+        ],
+        "Prof. Maths": [
+          { sender: "Prof. Maths", content: "N'oubliez pas la révision du chapitre 3.", timestamp: "10:15" }
+        ],
+        "Prof. EPS": [
+          { sender: "Prof. EPS", content: "Apportez vos baskets jeudi.", timestamp: "09:00" }
+        ],
+        "Prof. Français": [
+          { sender: "Prof. Français", content: "Contrôle de lecture vendredi.", timestamp: "11:20" }
+        ],
+        "Prof. Physique": [
+          { sender: "Prof. Physique", content: "Les exercices sont à faire pour demain.", timestamp: "15:00" }
+        ]
+      };
+      localStorage.setItem("schoolMessages", JSON.stringify(defaultMessages));
+    }
+  }
+
+  const conversationsConfig = {
+    "Alex": { name: "Alex", icon: "👨", key: "Alex-Johan" },
+    "Johan": { name: "Johan", icon: "👨", key: "Alex-Johan" },
+    "Prof. SVT": { name: "Prof. SVT", icon: "👨‍🏫", key: "Prof. SVT" },
+    "Prof. Maths": { name: "Prof. Maths", icon: "📐", key: "Prof. Maths" },
+    "Prof. EPS": { name: "Prof. EPS", icon: "⚽", key: "Prof. EPS" },
+    "Prof. Français": { name: "Prof. Français", icon: "📚", key: "Prof. Français" },
+    "Prof. Physique": { name: "Prof. Physique", icon: "⚛️", key: "Prof. Physique" }
+  };
+
+  let currentConversation = null;
+
+  // Fonction IA simulée qui analyse le message et répond intelligemment
+  function generateAIResponse(userMessage) {
+    const msg = userMessage.toLowerCase();
+
+    // Déterminer le contexte du message
+    if (msg.includes("devoir") || msg.includes("homework") || msg.includes("exercice")) {
+      return [
+        "As-tu bien compris le chapitre 3? N'hésite pas si tu as des questions spécifiques sur le devoir! Relire les exemples du cours devrait t'aider. 📝",
+        "Je t'ai envoyé les corrections détaillées. Regarde-les attentivement et compare avec ta réponse. Si quelque chose n'est pas clair, dis-moi! ✅",
+        "Quand comptes-tu remettre ton devoir? Dis-moi si tu as besoin d'aide pour une question spécifique. Je peux aussi te donner des indices si tu bloques! 👨‍🏫",
+        "Le devoir est assez complet, n'oublie pas de justifier tes réponses! As-tu réfléchi à la partie 2? C'est la plus importante. 💡"
+      ];
+    }
+    if (msg.includes("note") || msg.includes("points") || msg.includes("résultat") || msg.includes("score")) {
+      return [
+        "Tu progresses vraiment bien! Continue tes efforts comme ça et tu auras d'excellentes notes au prochain contrôle. 📈",
+        "Excellent travail! Tu as bien compris le cours et ça se voit dans ta copie. Bravo pour ta participation en classe! 🎉",
+        "Je vais noter ça. Ton implication et ta rigueur sont remarquables! Garde ce niveau jusqu'à la fin de l'année. ⭐",
+        "Tes résultats s'améliorent de semaine en semaine. C'est vraiment encourageant! Maintiens cet effort! 🏆"
+      ];
+    }
+    if (msg.includes("examen") || msg.includes("contrôle") || msg.includes("test") || msg.includes("évaluation")) {
+      return [
+        "L'examen aura lieu le 20 janvier. Revise bien les chapitres 1-3, c'est sur ça qu'on va t'interroger. Je peux te proposer des sujets d'entraînement si tu veux! 📚",
+        "Bonne chance pour ton examen! Tu es bien préparé(e) d'après ce que j'ai vu en cours. N'oublie pas: arrive 5 minutes avant et amène ton matériel! 💪",
+        "Pour bien préparer ton contrôle, je te conseille de refaire les exercices du chapitre 2 et 3. Les sujets seront similaires à ce qu'on a fait ensemble. ✏️",
+        "C'est un test important! As-tu besoin d'une feuille de révision? Je peux t'en envoyer une. Et n'oublie pas: pas de téléphone pendant l'examen! ⏰"
+      ];
+    }
+    if (msg.includes("absent") || msg.includes("malade") || msg.includes("justif") || msg.includes("absence")) {
+      return [
+        "Apporte-moi un justificatif demain, s'il te plaît! Et rattrape les cours que tu as manqués. Je vais t'envoyer mes notes. 📄",
+        "Repose-toi bien! Je te donnerai les cours que tu as manqués et un résumé de ce qu'on a vu. Tu n'auras pas de retard! 🏥",
+        "Pas de souci, on rattrapera! Envoie-moi un message dès que tu es remis(e) et on verra comment te mettre à jour. ✨",
+        "J'espère que tu vas mieux! Quand tu reviens, passe-moi voir pour qu'on vérifies que tu as bien compris le chapitre qu'on a étudié. 💚"
+      ];
+    }
+    if (msg.includes("aide") || msg.includes("comprendre") || msg.includes("expliquer") || msg.includes("comment")) {
+      return [
+        "Bien sûr! C'est une excellente question et je suis content(e) que tu demandes de l'aide. Réfléchis d'abord à comment tu l'aborderais, puis on en parlera! 🤔",
+        "Je vais t'expliquer ça plus simplement. Le concept est important pour la suite du cours. On en parlera demain en détail, d'accord? 👨‍🎓",
+        "Très bonne observation! Essaie de relire le paragraphe 2 du cours, tu vas voir que la réponse y est. Si tu as encore du mal, dis-moi! 📖",
+        "C'est normal de pas comprendre du premier coup! Ce sujet est un peu complexe. Laisse-moi te donner un exemple plus simple qui va t'éclairer. 💭"
+      ];
+    }
+    if (msg.includes("merci") || msg.includes("merci beaucoup") || msg.includes("grâce")) {
+      return [
+        "Avec plaisir! C'est mon travail d'aider mes élèves à progresser. Continue comme ça! 😊",
+        "C'est normal! C'est pour ça que je suis là. N'hésite pas si tu as d'autres questions! ✨",
+        "Bon courage pour la suite! Vous êtes une classe formidable et j'aime vous enseigner. 👍",
+        "De rien! Ton implication me fait plaisir. C'est des élèves comme toi qui rendent mon métier sympa! 💪"
+      ];
+    }
+    if (msg.includes("bonjour") || msg.includes("salut") || msg.includes("coucou") || msg.includes("hello")) {
+      return [
+        "Bonjour! Comment ça va? Y a-t-il quelque chose que je peux t'aider avec le cours? 👋",
+        "Salut! Besoin d'aide avec quelque chose ou tu viens juste discuter? Je suis dispo! 😊",
+        "Coucou! Quoi de neuf? Des questions sur les devoirs ou le cours? 📚",
+        "Hello! Comment se passent tes révisions? Il y a quelque chose qui te bloque? 🤓"
+      ];
+    }
+    if (msg.includes("problème") || msg.includes("probleme") || msg.includes("erreur") || msg.includes("bug")) {
+      return [
+        "Décris-moi ton problème plus précisément. Quel est exactement la difficulté? Je vais t'aider à trouver la solution! 🔍",
+        "Ça arrive à tout le monde! On va trouver la solution ensemble. Explique-moi étape par étape ce que tu fais. 💪",
+        "Explique-moi exactement ce qui se passe. Je dois comprendre où tu bloques pour pouvoir bien t'aider. 🤝",
+        "C'est normal de se tromper! C'est comme ça qu'on apprend. Refais-le ensemble, je vais te montrer où est l'erreur. ✍️"
+      ];
+    }
+    if (msg.includes("leçon") || msg.includes("chapitre") || msg.includes("cours") || msg.includes("matière")) {
+      return [
+        "Oui, le dernier chapitre est important pour comprendre la suite! Fais bien attention à la définition principale. Des questions? 📖",
+        "Bonne question sur ce chapitre! Les points clés sont: la révolution, l'impact économique, et les conséquences sociales. Lis bien ces parties! 🎯",
+        "Ce cours est la base de tout ce qu'on va apprendre cette année. Je te conseille de bien le maîtriser avant de continuer. ⭐",
+        "As-tu lu le chapitre en entier? Parfois les détails au milieu sont importants. Je peux te faire un résumé si tu veux! 📝"
+      ];
+    }
+    if (msg.includes("participat") || msg.includes("intervenir") || msg.includes("parler en classe")) {
+      return [
+        "J'aime vraiment quand tu participes en classe! Tes questions sont pertinentes et ça aide tout le monde à mieux comprendre. Continue! 🙌",
+        "Tu n'as pas besoin d'être parfait(e) pour participer! Même une petite idée est importante. La classe, c'est un échange. 💬",
+        "Je suis content(e) que tu poses des questions. C'est le meilleur moyen d'apprendre! Les autres élèves aussi apprennent de tes remarques. 👏",
+        "N'hésites pas à lever la main! Je vois que tu as des choses à dire et c'est super. C'est comme ça qu'on progresse ensemble! ✨"
+      ];
+    }
+    // Réponse par défaut plus fournie
+    return [
+      "C'est une excellente question! Je vois que tu réfléchis profondément au sujet. Dis-moi tes pensées et on en parlera! 🤔",
+      "Je vois ce que tu veux dire! C'est intéressant comme approche. As-tu pensé à consulter le chapitre sur ce sujet? 💭",
+      "Interesting observation! Tu as raison sur ce point. C'est important de bien différencier les cas. Bravo pour cette analyse! 📝",
+      "Bonne remarque! Continue comme ça, tu montres une vraie capacité d'analyse. Je suis impressionné(e) par ton engagement! 👍",
+      "Je prendrais note de ça! C'est exactement le type de réflexion que j'aime voir chez mes élèves. Très intéressant! ✍️",
+      "C'est une question que se posent beaucoup de gens! C'est un bon point de départ pour comprendre le sujet en profondeur. Bravo! 🌟"
+    ];
+  }
+
+  // Initialiser les conversations
+  function loadConversations() {
+    initializeMessages();
+    const list = document.getElementById("conversations-list");
+    const messagesData = JSON.parse(localStorage.getItem("schoolMessages") || "{}");
+
+    list.innerHTML = "";
+
+    Object.keys(conversationsConfig).forEach(key => {
+      const conv = conversationsConfig[key];
+      if (conv.name === currentUser) return;
+
+      const li = document.createElement("li");
+      li.className = "conversation-item";
+      li.setAttribute("data-key", key);
+      li.onclick = () => openConversation(key);
+
+      const msgs = messagesData[conv.key] || [];
+      const lastMsg = msgs.length > 0 ? msgs[msgs.length - 1] : { content: "Pas de messages" };
+
+      li.innerHTML = `
+        <div class="conversation-name">${conv.icon} ${conv.name}</div>
+        <div class="conversation-preview">${lastMsg.content}</div>
+      `;
+      list.appendChild(li);
+    });
+  }
+
+  // Ouvrir une conversation
+  function openConversation(key) {
+    currentConversation = key;
+    const conv = conversationsConfig[key];
+
+    document.querySelectorAll(".conversation-item").forEach(el => {
+      el.classList.remove("active");
+    });
+
+    document.querySelector(`[data-key="${key}"]`)?.classList.add("active");
+    document.getElementById("chat-title").textContent = `${conv.icon} ${conv.name}`;
+    document.getElementById("delete-btn").style.display = "block";
+    displayMessages();
+    document.getElementById("input-area").style.display = "block";
+    document.getElementById("message-input").focus();
+  }
+
+  // Afficher les messages
+  function displayMessages() {
+    if (!currentConversation) return;
+
+    const conv = conversationsConfig[currentConversation];
+    const messagesData = JSON.parse(localStorage.getItem("schoolMessages") || "{}");
+    const msgs = messagesData[conv.key] || [];
+    const chatArea = document.getElementById("chat-messages");
+
+    chatArea.innerHTML = "";
+
+    msgs.forEach(msg => {
+      const div = document.createElement("div");
+      const isOwn = msg.sender === currentUser;
+      div.className = `message ${isOwn ? "sent" : "received"}`;
+      div.innerHTML = `
+        <div class="message-sender">${msg.sender}</div>
+        <div class="message-content">${msg.content}</div>
+        <div class="message-time">${msg.timestamp}</div>
+      `;
+      chatArea.appendChild(div);
+    });
+
+    setTimeout(() => {
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }, 50);
+  }
+
+  // Envoyer un message
+  document.getElementById("chat-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    if (!currentConversation) {
+      alert("Sélectionne une conversation");
+      return;
+    }
+
+    const input = document.getElementById("message-input");
+    const message = input.value.trim();
+
+    if (message === "") return;
+
+    const conv = conversationsConfig[currentConversation];
+    const messagesData = JSON.parse(localStorage.getItem("schoolMessages") || "{}");
+    const msgs = messagesData[conv.key] || [];
+
+    const now = new Date();
+    const time = now.toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' });
+
+    msgs.push({
+      sender: currentUser,
+      content: message,
+      timestamp: time
+    });
+
+    messagesData[conv.key] = msgs;
+    localStorage.setItem("schoolMessages", JSON.stringify(messagesData));
+
+    displayMessages();
+    input.value = "";
+    input.focus();
+
+    // Réponse automatique pour les profs (avec IA simulée)
+    if (conv.key !== "Alex-Johan") {
+      setTimeout(() => {
+        const responses = generateAIResponse(message);
+        const response = responses[Math.floor(Math.random() * responses.length)];
+
+        const respTime = new Date();
+        respTime.setSeconds(respTime.getSeconds() + 1);
+        const respTimeStr = respTime.toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' });
+
+        msgs.push({
+          sender: conv.name,
+          content: response,
+          timestamp: respTimeStr
+        });
+
+        messagesData[conv.key] = msgs;
+        localStorage.setItem("schoolMessages", JSON.stringify(messagesData));
+        displayMessages();
+      }, 1000);
+    }
+  });
+
+  // Charger les conversations au démarrage
+  loadConversations();
+
+  // Bouton pour effacer la conversation
+  document.getElementById("delete-btn").addEventListener("click", function() {
+    if (!currentConversation) return;
+
+    const confirmed = confirm("Es-tu sûr(e) de vouloir effacer tous les messages de cette conversation? Cette action est irréversible!");
+    if (!confirmed) return;
+
+    const conv = conversationsConfig[currentConversation];
+    const messagesData = JSON.parse(localStorage.getItem("schoolMessages") || "{}");
+
+    // Supprimer la conversation
+    messagesData[conv.key] = [];
+    localStorage.setItem("schoolMessages", JSON.stringify(messagesData));
+
+    // Réinitialiser l'affichage
+    document.getElementById("chat-messages").innerHTML = '<div class="empty-chat">Conversation effacée. Les messages ont été supprimés.</div>';
+    document.getElementById("message-input").value = "";
+    
+    // Recharger la liste
+    loadConversations();
+  });
+</script>
+
+</body>
+</html>

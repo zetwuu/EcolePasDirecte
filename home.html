@@ -115,6 +115,18 @@
       box-shadow: 0 6px 16px rgba(0,0,0,0.05);
       max-width: 800px;
       display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .tab-content.active {
@@ -125,6 +137,8 @@
       color: #003d66;
       margin-bottom: 20px;
       font-size: 2rem;
+      border-bottom: 3px solid #005fa3;
+      padding-bottom: 10px;
     }
 
     p {
@@ -146,6 +160,120 @@
 
     ul li strong {
       color: #005fa3;
+    }
+
+    #messages-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    #messages-list li {
+      background: #f9f9f9;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-left: 4px solid #005fa3;
+      border-radius: 4px;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    #message-form textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      resize: vertical;
+    }
+
+    #message-form button {
+      background-color: #005fa3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+      width: 100%;
+    }
+
+    #message-form button:hover {
+      background-color: #00497d;
+    }
+
+    /* Styles pour la messagerie */
+    .conversation-item {
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      border-left: 4px solid transparent;
+    }
+
+    .conversation-item:hover {
+      background-color: #e8f1f8;
+    }
+
+    .conversation-item.active {
+      background-color: #e3f2fd;
+      border-left-color: #005fa3;
+      font-weight: 600;
+    }
+
+    .conversation-item-name {
+      font-weight: 600;
+      color: #005fa3;
+      margin-bottom: 3px;
+    }
+
+    .conversation-item-preview {
+      font-size: 0.9rem;
+      color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-message {
+      padding: 10px 15px;
+      border-radius: 8px;
+      max-width: 70%;
+      word-wrap: break-word;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .chat-message.sent {
+      background-color: #005fa3;
+      color: white;
+      align-self: flex-end;
+      margin-left: auto;
+    }
+
+    .chat-message.received {
+      background-color: #f0f4f8;
+      color: #333;
+      align-self: flex-start;
+      margin-right: auto;
+    }
+
+    .message-time {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 4px;
     }
 
     #brand {
@@ -203,6 +331,155 @@
     #dropdown-menu button:hover {
       background-color: #f0f4f8;
     }
+
+    /* Styles améliorés pour les sections */
+    #carnet-list li,
+    #notes-list li,
+    #devoirs-list li {
+      background: #f9f9f9;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-left: 4px solid #005fa3;
+      border-radius: 4px;
+      border-bottom: none;
+      font-size: 1rem;
+    }
+
+    /* Styles pour les images */
+    .image-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .image-container img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Sidebar styling */
+    #sidebar-right {
+      background: #f0f4f8;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    #sidebar-right h3 {
+      color: #005fa3;
+      margin-bottom: 15px;
+      margin-top: 0;
+    }
+
+    #sidebar-right ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    #sidebar-right ul li {
+      padding: 10px 0;
+      border-bottom: 1px solid #dee2e6;
+      font-size: 1rem;
+    }
+
+    #sidebar-right ul li:last-child {
+      border-bottom: none;
+    }
+
+    #sidebar-right a {
+      color: #005fa3;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    #sidebar-right a:hover {
+      text-decoration: underline;
+    }
+
+    /* Styling des formulaires */
+    form input[type="file"] {
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 100%;
+    }
+
+    form button {
+      background-color: #005fa3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+
+    form button:hover {
+      background-color: #00497d;
+    }
+
+    /* Styling pour les boutons de navigation emploi du temps */
+    #btn-prev, #btn-next {
+      background-color: #005fa3;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 0 5px;
+      transition: background-color 0.3s;
+    }
+
+    #btn-prev:hover, #btn-next:hover {
+      background-color: #00497d;
+    }
+
+    /* Bulletins */
+    #bulletin-list li a {
+      color: #005fa3;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    #bulletin-list li a:hover {
+      text-decoration: underline;
+    }
+
+    /* Messages container */
+    #messages-container {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #dee2e6;
+    }
+
+    /* Progress bar styling */
+    .progress-bar {
+      background: #eee;
+      border-radius: 6px;
+      overflow: hidden;
+      height: 30px;
+      margin: 10px 0;
+    }
+
+    .progress-bar div {
+      background: #005fa3;
+      color: white;
+      text-align: center;
+      padding: 5px 0;
+      font-weight: 600;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   </style>
 </head>
 <body>
@@ -241,15 +518,15 @@
 
 
 <div class="container">
- <section id="vie-classe" class="tab-content">
+<section id="vie-classe" class="tab-content">
   <h2>Vote pour le délégué de classe</h2>
   <p>Pour voter, cliquez ici :</p>
-  <a href="vote.html" style="font-weight:bold; color:#005fa3;">Accéder au formulaire de vote</a>
+  <a href="vote.html" style="display: inline-block; font-weight:bold; color:white; background-color:#005fa3; padding:12px 24px; border-radius:6px; text-decoration:none; margin-top:10px; transition:background-color 0.3s;">📋 Accéder au formulaire de vote</a>
 </section>
 
 <section id="accueil" class="tab-content active">
   <h2>Bienvenue sur École Pas Directe</h2>
-  <p>Accède à toutes les informations scolaires ici.</p>
+  <p>Accède à toutes les informations scolaires ici. Retrouve ton emploi du temps, tes notes, tes devoirs et bien plus encore ! 📚</p>
 
   <div class="image-container">
 
@@ -257,9 +534,9 @@
   </div>
 
   <ul>
-    <li><strong>Dernière mise à jour :</strong> 4 juin 2025</li>
-    <li><strong>Événement à venir :</strong> Conseil de classe – 12 juin</li>
-    <li><strong>Rappel :</strong> Apporte ton matériel de sport jeudi</li>
+    <li><strong>📅 Dernière mise à jour :</strong> 4 juin 2025</li>
+    <li><strong>📢 Événement à venir :</strong> Conseil de classe – 12 juin</li>
+    <li><strong>🎽 Rappel :</strong> Apporte ton matériel de sport jeudi</li>
   </ul>
 
 
@@ -268,16 +545,16 @@
 
  <section id="vie-scolaire" class="tab-content">
   <h2>Liens utiles</h2>
-  <p>Ici s’afficheront les liens utiles</p>
+  <p>Accède rapidement à des ressources pour t'aider dans tes études. 🔗</p>
   
   <div class="image-container">
     <img src="telechargement.png" alt="Vie scolaire" />
   </div>
   <div id="sidebar-right">
-  <h3>🔗 Liens utiles</h3>
+  <h3>🔗 Ressources pédagogiques</h3>
   <ul>
-    <li><a href="https://www.chunkbase.com/" target="_blank">lagrandelbrairie</a></li>
-    <li><a href="https://tompousse.fr/livre/nul-en-maths-pourquoi-moi/" target="_blank">maths c'est facile</a></li>
+    <li><a href="https://www.chunkbase.com/" target="_blank">lagrandelbrairie - Ressources littéraires</a></li>
+    <li><a href="https://tompousse.fr/livre/nul-en-maths-pourquoi-moi/" target="_blank">maths c'est facile - Tutoriels mathématiques</a></li>
   </ul>
 </div>
 
@@ -285,11 +562,11 @@
 
 <section id="bulletin" class="tab-content">
   <h2>Bulletin</h2>
-  <p>Voici ton bulletin trimestriel :</p>
+  <p>Voici ton bulletin trimestriel. Consulte-le pour voir ta progression ! 📋</p>
   <ul id="bulletin-list">
-    <li><a href="Note_A001_page-0001.jpg" target="_blank">Bulletin Trimestre 1</a></li>
-    <li><strong>Conseil du 2eme trimestre :</strong> En attente</li>
-    <li><strong>Conseil du 3eme trimestre :</strong> En attente</li>
+    <li><a href="Note_A001_page-0001.jpg" target="_blank">📄 Bulletin Trimestre 1</a></li>
+    <li><strong>📊 Conseil du 2eme trimestre :</strong> En attente</li>
+    <li><strong>📊 Conseil du 3eme trimestre :</strong> En attente</li>
   </ul>
 </section>
 
@@ -298,8 +575,8 @@
     <div id="sidebar-right">
   <h3>📊 Progression</h3>
   <p>Moyenne générale</p>
-  <div style="background: #eee; border-radius: 6px; overflow: hidden;">
-    <div style="width: 55%; background: #005fa3; color: white; text-align: center; padding: 5px 0;">
+  <div class="progress-bar">
+    <div style="width: 55%;">
       12,75/20
     </div>
   </div>
@@ -309,34 +586,29 @@
   </section>
   <section id="devoirs" class="tab-content">
     <h2>Mes devoirs</h2>
+    <p>Voici les devoirs qui t'attendent. N'oublie pas de les faire! 📝</p>
     <ul id="devoirs-list"></ul>
   </section>
  <section id="messages" class="tab-content">
   <h2>Messagerie</h2>
-
-  <div id="messages-container">
-    <ul id="messages-list"></ul>
-  </div>
-
-  <form id="message-form" style="margin-top: 20px;">
-    <textarea id="new-message" rows="3" placeholder="Écris ton message ici..." required></textarea><br />
-    <button type="submit">Envoyer</button>
-  </form>
+  <p>Accédez à votre messagerie complète:</p>
+  <a href="messages.html" style="display: inline-block; font-weight:bold; color:white; background-color:#005fa3; padding:12px 24px; border-radius:6px; text-decoration:none; margin-top:10px; transition:background-color 0.3s;">📧 Ouvrir la messagerie</a>
 </section>
 
   <section id="carnet" class="tab-content">
     <h2>Carnet de correspondance</h2>
+    <p>Retrouve les observations et remarques de tes professeurs. 📖</p>
     <ul id="carnet-list"></ul>
   </section>
  
 
  <section id="emploi" class="tab-content">
   <h2>Mon emploi du temps</h2>
-  <p>Utilise les boutons pour naviguer entre les semaines :</p>
+  <p>Utilise les boutons pour naviguer entre les semaines de l'année scolaire. 📅</p>
 
   <div style="text-align: center; margin-bottom: 20px;">
     <button id="btn-prev">⬅️ Semaine précédente</button>
-    <span id="semaine-label" style="margin: 0 20px; font-weight: bold;">Semaine 1</span>
+    <span id="semaine-label" style="margin: 0 20px; font-weight: bold; font-size: 1.2rem;">Semaine 1</span>
     <button id="btn-next">Semaine suivante ➡️</button>
   </div>
 
@@ -347,16 +619,16 @@
 </section>
 
   
-<section id="document" class="tab-content">
+ <section id="document" class="tab-content">
   <h2>Déposer un document</h2>
   <p>Choisis un fichier à envoyer :</p>
   
   <form id="upload-form">
     <input type="file" id="fileInput" />
-    <button type="submit">Envoyer</button>
+    <button type="submit">📤 Envoyer le document</button>
   </form>
-  <p id="upload-status"></p>
-  <ul id="uploaded-files-list"></ul>
+  <p id="upload-status" style="color: #005fa3; font-weight: 600;"></p>
+  <ul id="uploaded-files-list" style="margin-top: 20px;"></ul>
 
 
   
@@ -442,10 +714,8 @@
     sessionStorage.clear();
     window.location.href = "index.html";
   }
-
- 
+  
   document.getElementById("username-display").textContent = "Bienvenue, " + currentUser + " !";
-
 
   function populateList(id, items, formatter) {
     const ul = document.getElementById(id);
@@ -457,12 +727,9 @@
     });
   }
 
- 
   populateList("notes-list", profilesData[currentUser].notes, i => `<strong>${i.matiere}</strong> : ${i.note}`);
   populateList("devoirs-list", profilesData[currentUser].devoirs, i => `<strong>${i.matiere}</strong> : ${i.description}`);
-  populateList("messages-list", profilesData[currentUser].messages, i => `<strong>${i.from}</strong> : ${i.content}`);
   populateList("carnet-list", profilesData[currentUser].carnet, i => `<strong>${i.date} - ${i.type}</strong> : ${i.description}`);
-
 
   const buttons = document.querySelectorAll("nav button");
   const sections = document.querySelectorAll(".tab-content");
@@ -478,65 +745,63 @@
       });
     });
   });
-function showAccountInfo() {
-  alert("Nom d'utilisateur : " + currentUser + "\nAdresse e-mail : exemple@email.com\nStatut : Élève");
-}
 
+  // Initialiser la messagerie
+  setTimeout(() => {
+    if (document.getElementById("conversations")) {
+      initializeMessaging();
+    }
+  }, 100);
+
+  function showAccountInfo() {
+    alert("Nom d'utilisateur : " + currentUser + "\nAdresse e-mail : exemple@email.com\nStatut : Élève");
+  }
 
   function logout() {
     sessionStorage.clear();
     window.location.href = "index.html";
   }
+
   function toggleMenu() {
-  const menu = document.getElementById("dropdown-menu");
-  menu.style.display = (menu.style.display === "block") ? "none" : "block";
-}
-
-
-document.addEventListener("click", function (e) {
-  const profile = document.getElementById("profile-menu");
-  if (!profile.contains(e.target)) {
-    document.getElementById("dropdown-menu").style.display = "none";
-  }
-});
-
-
- 
-document.getElementById("upload-form").addEventListener("submit", function(e) {
-  e.preventDefault();
-  const fileInput = document.getElementById("fileInput");
-  const status = document.getElementById("upload-status");
-  const list = document.getElementById("uploaded-files-list");
-
-  if (fileInput.files.length === 0) {
-    status.textContent = "Aucun fichier sélectionné.";
-    return;
+    const menu = document.getElementById("dropdown-menu");
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
   }
 
-  const file = fileInput.files[0];
-  const li = document.createElement("li");
-  li.textContent = file.name + "";
-  list.appendChild(li);
+  document.addEventListener("click", function (e) {
+    const profile = document.getElementById("profile-menu");
+    if (!profile.contains(e.target)) {
+      document.getElementById("dropdown-menu").style.display = "none";
+    }
+  });
 
-  status.textContent = "Fichier sélectionné : " + file.name;
-  fileInput.value = ""; 
-});
+  document.getElementById("upload-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const fileInput = document.getElementById("fileInput");
+    const status = document.getElementById("upload-status");
+    const list = document.getElementById("uploaded-files-list");
 
+    if (fileInput.files.length === 0) {
+      status.textContent = "Aucun fichier sélectionné.";
+      return;
+    }
 
-window.addEventListener("load", () => {
-  const nav = document.querySelector("nav");
-  setTimeout(() => {
-    nav.classList.add("show");
-  }, 100); 
-});
+    const file = fileInput.files[0];
+    const li = document.createElement("li");
+    li.textContent = file.name + "";
+    list.appendChild(li);
 
-window.addEventListener("load", () => {
-  const nav = document.querySelector("nav");
-  setTimeout(() => {
-    nav.classList.add("show");
-  }, 100);
-});
-document.getElementById("vote-form").addEventListener("submit", function(e) {
+    status.textContent = "Fichier sélectionné : " + file.name;
+    fileInput.value = ""; 
+  });
+
+  window.addEventListener("load", () => {
+    const nav = document.querySelector("nav");
+    setTimeout(() => {
+      nav.classList.add("show");
+    }, 100); 
+  });
+
+  document.getElementById("vote-form").addEventListener("submit", function(e) {
   e.preventDefault();
   const choix = document.querySelector('input[name="candidat"]:checked');
   const result = document.getElementById("vote-result");
@@ -549,19 +814,399 @@ document.getElementById("vote-form").addEventListener("submit", function(e) {
   
   result.textContent = "Merci pour votre vote ! Vous avez choisi : " + choix.value + ".";
 });
-document.getElementById("message-form").addEventListener("submit", function(e) {
-  e.preventDefault();
-  const textarea = document.getElementById("new-message");
-  const message = textarea.value.trim();
-  if (message === "") return;
 
-  const li = document.createElement("li");
-  li.textContent = "Moi : " + message;
-  document.getElementById("messages-list").appendChild(li);
-  textarea.value = "";
-});
+// Le code de messagerie a été déplacé dans messages.html
+// ANCIEN CODE DE MESSAGERIE SUPPRIMÉ (voir messages.html)
+/* CODE SUPPRIMÉ
+  if (!sessionStorage.getItem("messages")) {
+    const defaultMessages = {
+      "Alex-Johan": [
+        { sender: "Alex", content: "Salut Johan! Ça va?", timestamp: "10:30" },
+        { sender: "Johan", content: "Ouais ça va! Et toi?", timestamp: "10:35" },
+        { sender: "Alex", content: "Bien bien, tu as fais tes devoirs?", timestamp: "10:40" }
+      ],
+      "Prof. SVT": [
+        { sender: "Prof. SVT", content: "Le TP est en ligne sur Moodle.", timestamp: "14:30" }
+      ],
+      "Prof. Maths": [
+        { sender: "Prof. Maths", content: "N'oubliez pas la révision du chapitre 3.", timestamp: "10:15" }
+      ],
+      "Prof. EPS": [
+        { sender: "Prof. EPS", content: "Apportez vos baskets jeudi.", timestamp: "09:00" }
+      ],
+      "Prof. Français": [
+        { sender: "Prof. Français", content: "Contrôle de lecture vendredi.", timestamp: "11:20" }
+      ],
+      "Prof. Physique": [
+        { sender: "Prof. Physique", content: "Les exercices sont à faire pour demain.", timestamp: "15:00" }
+      ]
+    };
+    sessionStorage.setItem("messages", JSON.stringify(defaultMessages));
+  }
+}
 
+const conversationsData = {
+  "Alex": {
+    name: "Alex",
+    icon: "👨",
+    key: "Alex-Johan"
+  },
+  "Johan": {
+    name: "Johan",
+    icon: "👨",
+    key: "Alex-Johan"
+  },
+  "Prof. SVT": {
+    name: "Prof. SVT",
+    icon: "👨‍🏫",
+    key: "Prof. SVT"
+  },
+  "Prof. Maths": {
+    name: "Prof. Maths",
+    icon: "📐",
+    key: "Prof. Maths"
+  },
+  "Prof. EPS": {
+    name: "Prof. EPS",
+    icon: "⚽",
+    key: "Prof. EPS"
+  },
+  "Prof. Français": {
+    name: "Prof. Français",
+    icon: "📚",
+    key: "Prof. Français"
+  },
+  "Prof. Physique": {
+    name: "Prof. Physique",
+    icon: "⚛️",
+    key: "Prof. Physique"
+  }
+};
 
+let currentConversation = null;
+
+// Initialiser les conversations
+function initializeMessaging() {
+  try {
+    initializeMessages(); // Initialiser les messages stockés
+    
+    const conversationsList = document.getElementById("conversations");
+    if (!conversationsList) {
+      console.error("conversations list not found");
+      return;
+    }
+    
+    conversationsList.innerHTML = "";
+
+    const messagesData = JSON.parse(sessionStorage.getItem("messages") || "{}");
+    const currentUser = sessionStorage.getItem("currentUser");
+
+    Object.keys(conversationsData).forEach(key => {
+      const conv = conversationsData[key];
+      
+      // Ne pas afficher la conversation avec soi-même
+      if (conv.name === currentUser) return;
+      
+      const li = document.createElement("li");
+      li.className = "conversation-item";
+      li.setAttribute("data-key", key);
+      li.style.cursor = "pointer";
+      li.onclick = () => openConversation(key);
+      
+      const messageKey = conv.key;
+      const msgs = messagesData[messageKey] || [];
+      const lastMsg = msgs.length > 0 ? msgs[msgs.length - 1] : { content: "Pas de messages" };
+      
+      li.innerHTML = `
+        <div class="conversation-item-name">${conv.icon} ${conv.name}</div>
+        <div class="conversation-item-preview">${lastMsg.content}</div>
+      `;
+      conversationsList.appendChild(li);
+    });
+    
+    console.log("Messagerie initialisée");
+    
+    // Attacher l'écouteur du formulaire
+    attachMessageFormListener();
+  } catch(e) {
+    console.error("Erreur init messagerie:", e);
+  }
+}
+
+// Ouvrir une conversation
+function openConversation(key) {
+  currentConversation = key;
+  const conv = conversationsData[key];
+  
+  if (!conv) {
+    console.error("Conversation not found:", key);
+    return;
+  }
+  
+  // Marquer comme active
+  document.querySelectorAll(".conversation-item").forEach(el => {
+    el.classList.remove("active");
+  });
+  
+  const activeItem = document.querySelector(`[data-key="${key}"]`);
+  if (activeItem) {
+    activeItem.classList.add("active");
+  }
+
+  // Mettre à jour l'en-tête
+  const chatTitle = document.getElementById("chat-title");
+  if (chatTitle) {
+    chatTitle.textContent = `${conv.icon} ${conv.name}`;
+  }
+  
+  // Afficher les messages
+  displayMessages(key);
+  
+  // Afficher le formulaire d'entrée
+  const inputArea = document.getElementById("message-input-area");
+  if (inputArea) {
+    inputArea.style.display = "block";
+  }
+  
+  // Focus sur le textarea
+  setTimeout(() => {
+    const textarea = document.getElementById("new-message");
+    if (textarea) textarea.focus();
+  }, 100);
+}
+
+// Afficher les messages d'une conversation
+function displayMessages(key) {
+  const conv = conversationsData[key];
+  if (!conv) return;
+  
+  const messagesData = JSON.parse(sessionStorage.getItem("messages") || "{}");
+  const msgs = messagesData[conv.key] || [];
+  const chatMessages = document.getElementById("chat-messages");
+  
+  if (!chatMessages) return;
+  
+  chatMessages.innerHTML = "";
+
+  if (msgs.length === 0) {
+    chatMessages.innerHTML = `<p style="color: #999; text-align: center; padding: 20px;">Aucun message pour l'instant</p>`;
+    return;
+  }
+
+  msgs.forEach(msg => {
+    const msgDiv = document.createElement("div");
+    const currentUser = sessionStorage.getItem("currentUser");
+    const isOwn = msg.sender === currentUser;
+    
+    msgDiv.className = `chat-message ${isOwn ? "sent" : "received"}`;
+    msgDiv.style.wordWrap = "break-word";
+    msgDiv.innerHTML = `
+      <strong>${msg.sender}</strong><br/>
+      ${msg.content}
+      <div class="message-time">${msg.timestamp}</div>
+    `;
+    chatMessages.appendChild(msgDiv);
+  });
+
+  // Auto-scroll vers le bas
+  setTimeout(() => {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 50);
+}
+
+// Envoyer un message
+function attachMessageFormListener() {
+  const messageForm = document.getElementById("message-form");
+  if (messageForm && !messageForm.dataset.listenerAttached) {
+    messageForm.dataset.listenerAttached = "true";
+    
+    messageForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      console.log("Message form submitted");
+      
+      if (!currentConversation) {
+        alert("Sélectionne d'abord une conversation");
+        return;
+      }
+
+      const textarea = document.getElementById("new-message");
+      if (!textarea) {
+        console.error("Textarea not found");
+        return;
+      }
+      
+      const message = textarea.value.trim();
+      console.log("Message:", message);
+      
+      if (message === "") {
+        console.log("Message vide");
+        return;
+      }
+
+      const currentUser = sessionStorage.getItem("currentUser");
+      const conv = conversationsData[currentConversation];
+      
+      if (!conv) {
+        console.error("Conversation not found");
+        return;
+      }
+      
+      // Obtenir l'heure actuelle
+      const now = new Date();
+      const time = now.toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' });
+
+      // Charger les messages
+      const messagesData = JSON.parse(sessionStorage.getItem("messages") || "{}");
+      const msgs = messagesData[conv.key] || [];
+
+      // Ajouter le message de l'utilisateur courant
+      msgs.push({
+        sender: currentUser,
+        content: message,
+        timestamp: time
+      });
+
+      // Sauvegarder
+      messagesData[conv.key] = msgs;
+      sessionStorage.setItem("messages", JSON.stringify(messagesData));
+
+      // Afficher les messages mis à jour
+      displayMessages(currentConversation);
+      
+      // Si c'est une conversation entre deux élèves, simuler une réponse
+      if (conv.key === "Alex-Johan") {
+        setTimeout(() => {
+          const responses = [
+            "Ouais d'accord! 👍",
+            "Cool! 😄",
+            "T'as raison! 💯",
+            "Pas bête! 🧠",
+            "Alright! 😊",
+            "Nickel! ✨",
+            "Entendu! 👌",
+            "Clairement! 💬"
+          ];
+          const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+          const responseTime = new Date();
+          responseTime.setSeconds(responseTime.getSeconds() + 1);
+          const respTime = responseTime.toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' });
+          
+          // Déterminer qui répond (l'autre utilisateur)
+          const otherUser = currentUser === "Alex" ? "Johan" : "Alex";
+          
+          msgs.push({
+            sender: otherUser,
+            content: randomResponse,
+            timestamp: respTime
+          });
+
+          messagesData[conv.key] = msgs;
+          sessionStorage.setItem("messages", JSON.stringify(messagesData));
+          
+          displayMessages(currentConversation);
+        }, 1000);
+      }
+
+      // Réinitialiser le textarea
+      textarea.value = "";
+      textarea.focus();
+    });
+  }
+}
+
+// Envoyer un message - ancienne version (kept pour compatibilité)
+const messageForm = document.getElementById("message-form");
+if (messageForm) {
+  messageForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+    console.log("Message form submitted");
+    
+    if (!currentConversation) {
+      alert("Sélectionne d'abord une conversation");
+      return;
+    }
+
+    const textarea = document.getElementById("new-message");
+    if (!textarea) {
+      console.error("Textarea not found");
+      return;
+    }
+    
+    const message = textarea.value.trim();
+    console.log("Message:", message);
+    
+    if (message === "") {
+      console.log("Message vide");
+      return;
+    }
+
+    const currentUser = sessionStorage.getItem("currentUser");
+    const conv = conversationsData[currentConversation];
+    
+    if (!conv) {
+      console.error("Conversation not found");
+      return;
+    }
+    
+    // Obtenir l'heure actuelle
+    const now = new Date();
+    const time = now.toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' });
+
+    // Charger les messages
+    const messagesData = JSON.parse(sessionStorage.getItem("messages") || "{}");
+    const msgs = messagesData[conv.key] || [];
+
+    // Ajouter le message de l'utilisateur courant
+    msgs.push({
+      sender: currentUser,
+      content: message,
+      timestamp: time
+    });
+
+    // Sauvegarder
+    messagesData[conv.key] = msgs;
+    sessionStorage.setItem("messages", JSON.stringify(messagesData));
+
+    // Afficher les messages mis à jour
+    displayMessages(currentConversation);
+    
+    // Si c'est une conversation entre deux élèves, simuler une réponse
+    if (conv.key === "Alex-Johan") {
+      setTimeout(() => {
+        const responses = [
+          "Ouais d'accord! 👍",
+          "Cool! 😄",
+          "T'as raison! 💯",
+          "Pas bête! 🧠",
+          "Alright! 😊",
+          "Nickel! ✨",
+          "Entendu! 👌",
+          "Clairement! 💬"
+        ];
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        const responseTime = new Date();
+        responseTime.setSeconds(responseTime.getSeconds() + 1);
+        const respTime = responseTime.toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' });
+        
+        // Déterminer qui répond (l'autre utilisateur)
+        const otherUser = currentUser === "Alex" ? "Johan" : "Alex";
+        
+        msgs.push({
+          sender: otherUser,
+          content: randomResponse,
+          timestamp: respTime
+        });
+
+        messagesData[conv.key] = msgs;
+        sessionStorage.setItem("messages", JSON.stringify(messagesData));
+        
+        displayMessages(currentConversation);
+      }, 1000);
+    }
+
+*/
+
+// Code du calendrier de l'emploi du temps
 let semaineActuelle = 1;
 const maxSemaines = 6; 
 
@@ -569,7 +1214,7 @@ function mettreAJourEmploiDuTemps() {
   const img = document.getElementById("img-emploi");
   const label = document.getElementById("semaine-label");
 
-  img.src = `emplois/semaine${semaineActuelle}.jpg`;
+  img.src = `emploidutemps_page-0001.jpg`;
   img.alt = `Emploi du temps semaine ${semaineActuelle}`;
   label.textContent = `Semaine ${semaineActuelle}`;
 }
@@ -587,6 +1232,8 @@ document.getElementById("btn-next").addEventListener("click", () => {
     mettreAJourEmploiDuTemps();
   }
 });
+
+// Messagerie déplacée dans messages.html
 
 </script>
 
