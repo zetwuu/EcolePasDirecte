@@ -388,19 +388,19 @@
 if (msg.includes("bas quoi") || msg.includes("ya quoi") || msg.includes("tu veut quoi ") || msg.includes("quoi ?") ) {
       return [
         "bas juste parle bien",
-       
+       "bas ftg juste"
       ];
     }
     if (msg.includes("bonjour") || msg.includes("slt") || msg.includes("salut") || msg.includes("yo") ) {
       return [
         "ouai salut ya quoi bg?",
-       
+       " ouai tvquoi"
       ];
     }
    if (msg.includes("controle") ) {
       return [
         "oui",
-       
+         "bas nn tdb"
       ];
     }
 
@@ -461,7 +461,6 @@ if (msg.includes("bas quoi") || msg.includes("ya quoi") || msg.includes("tu veut
       ];
     }
    
-    // Réponse par défaut plus fournie
     return [
       "je comprent pas ce qui tu dit le compte de t mort",
       "quesqui raconte sfdp",
@@ -636,6 +635,42 @@ if (msg.includes("bas quoi") || msg.includes("ya quoi") || msg.includes("tu veut
     // Recharger la liste
     loadConversations();
   });
+
+</script>
+
+
+
+
+
+<script>
+  const secretCode = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp'];
+let userSequence = [];
+
+document.addEventListener('keydown', (e) => {
+    if (e.key.startsWith('Arrow')) {
+        userSequence.push(e.key);
+        
+        // Garder seulement les 5 dernières touches
+        if (userSequence.length > 5) {
+            userSequence.shift();
+        }
+        
+        // Vérifier si la séquence correspond
+        if (userSequence.length === 5) {
+            let match = true;
+            for (let i = 0; i < 5; i++) {
+                if (userSequence[i] !== secretCode[i]) {
+                    match = false;
+                    break;
+                }
+            }
+            
+            if (match) {
+                window.location.href = 'troll.html';
+            }
+        }
+    }
+});
 </script>
 
 </body>
