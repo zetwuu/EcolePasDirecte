@@ -368,8 +368,8 @@
   }
 
   const conversationsConfig = {
-    "Alex": { name: "Alex", icon: "👨", key: "Alex-Johan" },
-    "Johan": { name: "Johan", icon: "👨", key: "Alex-Johan" },
+   "Alex": { name: "Alex", icon: "🧑‍🍼", key: "Alex-Johan" },
+    "Johan": { name: "Johan", icon: "🫃", key: "Alex-Johan" },
     "Prof. SVT": { name: "Prof. SVT", icon: "👨‍🏫", key: "Prof. SVT" },
     "Prof. Maths": { name: "Prof. Maths", icon: "📐", key: "Prof. Maths" },
     "Prof. EPS": { name: "Prof. EPS", icon: "⚽", key: "Prof. EPS" },
@@ -384,94 +384,89 @@
     const msg = userMessage.toLowerCase();
 
     // Déterminer le contexte du message
+  
+if (msg.includes("bas quoi") || msg.includes("ya quoi") || msg.includes("tu veut quoi ") || msg.includes("quoi ?") ) {
+      return [
+        "bas juste parle bien",
+       
+      ];
+    }
+    if (msg.includes("bonjour") || msg.includes("slt") || msg.includes("salut") || msg.includes("yo") ) {
+      return [
+        "ouai salut ya quoi bg?",
+       
+      ];
+    }
+   if (msg.includes("controle") ) {
+      return [
+        "oui",
+       
+      ];
+    }
+
+    if (msg.includes("gros") || msg.includes("énorme") || msg.includes("patate") || msg.includes("grosse")) {
+      return [
+        "qui ta éduquer p'tit batard",
+        "boufe mes c*****",
+        "tu est mm pas pret a ce qui vas tariver",
+        "salle chlage"
+      ];
+    }
     if (msg.includes("devoir") || msg.includes("homework") || msg.includes("exercice")) {
       return [
-        "As-tu bien compris le chapitre 3? N'hésite pas si tu as des questions spécifiques sur le devoir! Relire les exemples du cours devrait t'aider. 📝",
-        "Je t'ai envoyé les corrections détaillées. Regarde-les attentivement et compare avec ta réponse. Si quelque chose n'est pas clair, dis-moi! ✅",
-        "Quand comptes-tu remettre ton devoir? Dis-moi si tu as besoin d'aide pour une question spécifique. Je peux aussi te donner des indices si tu bloques! 👨‍🏫",
-        "Le devoir est assez complet, n'oublie pas de justifier tes réponses! As-tu réfléchi à la partie 2? C'est la plus importante. 💡"
+        "fait tes devoire ou je te ba***",
+        "tg en 2 2",
+        "bas tfacon t moche gros sac ",
+        "blc sah"
       ];
     }
     if (msg.includes("note") || msg.includes("points") || msg.includes("résultat") || msg.includes("score")) {
       return [
-        "Tu progresses vraiment bien! Continue tes efforts comme ça et tu auras d'excellentes notes au prochain contrôle. 📈",
-        "Excellent travail! Tu as bien compris le cours et ça se voit dans ta copie. Bravo pour ta participation en classe! 🎉",
-        "Je vais noter ça. Ton implication et ta rigueur sont remarquables! Garde ce niveau jusqu'à la fin de l'année. ⭐",
-        "Tes résultats s'améliorent de semaine en semaine. C'est vraiment encourageant! Maintiens cet effort! 🏆"
+        "qui ta demander mm ??? ",
+        "jmen fout laisse moi stp ",
+        "bas gg bg ",
+        "continus comment sa nn je rigole jmen fou"
       ];
     }
-    if (msg.includes("examen") || msg.includes("contrôle") || msg.includes("test") || msg.includes("évaluation")) {
+    if (msg.includes("ou")|| msg.includes("?")) {
       return [
-        "L'examen aura lieu le 20 janvier. Revise bien les chapitres 1-3, c'est sur ça qu'on va t'interroger. Je peux te proposer des sujets d'entraînement si tu veux! 📚",
-        "Bonne chance pour ton examen! Tu es bien préparé(e) d'après ce que j'ai vu en cours. N'oublie pas: arrive 5 minutes avant et amène ton matériel! 💪",
-        "Pour bien préparer ton contrôle, je te conseille de refaire les exercices du chapitre 2 et 3. Les sujets seront similaires à ce qu'on a fait ensemble. ✏️",
-        "C'est un test important! As-tu besoin d'une feuille de révision? Je peux t'en envoyer une. Et n'oublie pas: pas de téléphone pendant l'examen! ⏰"
+        "cher ta soeur",
+        "cher toi je doit voir quelqun ",
+        "jsp jmen fou un peut en vrai ",
+
       ];
     }
     if (msg.includes("absent") || msg.includes("malade") || msg.includes("justif") || msg.includes("absence")) {
       return [
-        "Apporte-moi un justificatif demain, s'il te plaît! Et rattrape les cours que tu as manqués. Je vais t'envoyer mes notes. 📄",
-        "Repose-toi bien! Je te donnerai les cours que tu as manqués et un résumé de ce qu'on a vu. Tu n'auras pas de retard! 🏥",
-        "Pas de souci, on rattrapera! Envoie-moi un message dès que tu es remis(e) et on verra comment te mettre à jour. ✨",
-        "J'espère que tu vas mieux! Quand tu reviens, passe-moi voir pour qu'on vérifies que tu as bien compris le chapitre qu'on a étudié. 💚"
+        "bien fait pti faible",
+        "Repose en paix",
+        "ok soufre bien mec",
+        "mdr la honte"
       ];
     }
     if (msg.includes("aide") || msg.includes("comprendre") || msg.includes("expliquer") || msg.includes("comment")) {
       return [
-        "Bien sûr! C'est une excellente question et je suis content(e) que tu demandes de l'aide. Réfléchis d'abord à comment tu l'aborderais, puis on en parlera! 🤔",
-        "Je vais t'expliquer ça plus simplement. Le concept est important pour la suite du cours. On en parlera demain en détail, d'accord? 👨‍🎓",
-        "Très bonne observation! Essaie de relire le paragraphe 2 du cours, tu vas voir que la réponse y est. Si tu as encore du mal, dis-moi! 📖",
-        "C'est normal de pas comprendre du premier coup! Ce sujet est un peu complexe. Laisse-moi te donner un exemple plus simple qui va t'éclairer. 💭"
+        "personne taime tu crois on vas taider ?",
+        "nn flm ",
+        
+       
       ];
     }
-    if (msg.includes("merci") || msg.includes("merci beaucoup") || msg.includes("grâce")) {
+    if (msg.includes("merci") || msg.includes("merci beaucoup") || msg.includes("mrc")) {
       return [
-        "Avec plaisir! C'est mon travail d'aider mes élèves à progresser. Continue comme ça! 😊",
-        "C'est normal! C'est pour ça que je suis là. N'hésite pas si tu as d'autres questions! ✨",
-        "Bon courage pour la suite! Vous êtes une classe formidable et j'aime vous enseigner. 👍",
-        "De rien! Ton implication me fait plaisir. C'est des élèves comme toi qui rendent mon métier sympa! 💪"
+        "ok ",
+        "ouai nn ",
+        "oula",
+        "t gay ou quoi "
       ];
     }
-    if (msg.includes("bonjour") || msg.includes("salut") || msg.includes("coucou") || msg.includes("hello")) {
-      return [
-        "Bonjour! Comment ça va? Y a-t-il quelque chose que je peux t'aider avec le cours? 👋",
-        "Salut! Besoin d'aide avec quelque chose ou tu viens juste discuter? Je suis dispo! 😊",
-        "Coucou! Quoi de neuf? Des questions sur les devoirs ou le cours? 📚",
-        "Hello! Comment se passent tes révisions? Il y a quelque chose qui te bloque? 🤓"
-      ];
-    }
-    if (msg.includes("problème") || msg.includes("probleme") || msg.includes("erreur") || msg.includes("bug")) {
-      return [
-        "Décris-moi ton problème plus précisément. Quel est exactement la difficulté? Je vais t'aider à trouver la solution! 🔍",
-        "Ça arrive à tout le monde! On va trouver la solution ensemble. Explique-moi étape par étape ce que tu fais. 💪",
-        "Explique-moi exactement ce qui se passe. Je dois comprendre où tu bloques pour pouvoir bien t'aider. 🤝",
-        "C'est normal de se tromper! C'est comme ça qu'on apprend. Refais-le ensemble, je vais te montrer où est l'erreur. ✍️"
-      ];
-    }
-    if (msg.includes("leçon") || msg.includes("chapitre") || msg.includes("cours") || msg.includes("matière")) {
-      return [
-        "Oui, le dernier chapitre est important pour comprendre la suite! Fais bien attention à la définition principale. Des questions? 📖",
-        "Bonne question sur ce chapitre! Les points clés sont: la révolution, l'impact économique, et les conséquences sociales. Lis bien ces parties! 🎯",
-        "Ce cours est la base de tout ce qu'on va apprendre cette année. Je te conseille de bien le maîtriser avant de continuer. ⭐",
-        "As-tu lu le chapitre en entier? Parfois les détails au milieu sont importants. Je peux te faire un résumé si tu veux! 📝"
-      ];
-    }
-    if (msg.includes("participat") || msg.includes("intervenir") || msg.includes("parler en classe")) {
-      return [
-        "J'aime vraiment quand tu participes en classe! Tes questions sont pertinentes et ça aide tout le monde à mieux comprendre. Continue! 🙌",
-        "Tu n'as pas besoin d'être parfait(e) pour participer! Même une petite idée est importante. La classe, c'est un échange. 💬",
-        "Je suis content(e) que tu poses des questions. C'est le meilleur moyen d'apprendre! Les autres élèves aussi apprennent de tes remarques. 👏",
-        "N'hésites pas à lever la main! Je vois que tu as des choses à dire et c'est super. C'est comme ça qu'on progresse ensemble! ✨"
-      ];
-    }
+   
     // Réponse par défaut plus fournie
     return [
-      "C'est une excellente question! Je vois que tu réfléchis profondément au sujet. Dis-moi tes pensées et on en parlera! 🤔",
-      "Je vois ce que tu veux dire! C'est intéressant comme approche. As-tu pensé à consulter le chapitre sur ce sujet? 💭",
-      "Interesting observation! Tu as raison sur ce point. C'est important de bien différencier les cas. Bravo pour cette analyse! 📝",
-      "Bonne remarque! Continue comme ça, tu montres une vraie capacité d'analyse. Je suis impressionné(e) par ton engagement! 👍",
-      "Je prendrais note de ça! C'est exactement le type de réflexion que j'aime voir chez mes élèves. Très intéressant! ✍️",
-      "C'est une question que se posent beaucoup de gens! C'est un bon point de départ pour comprendre le sujet en profondeur. Bravo! 🌟"
+      "je comprent pas ce qui tu dit le compte de t mort",
+      "quesqui raconte sfdp",
+      "oui bas parle fr deja stp",
+      "ton corp de faible tu vien me parlé la ",
     ];
   }
 
