@@ -38,3 +38,9 @@ Alexandre : Développement du menu d'Accueil.
 Alexandre : Début du développement du système back-end de connexion par identifiant et mot de passe.
 
 Johan : Supression d'une érreur dans le code de l'index.html et verification du validProfiles.
+
+16/01/2026
+
+Johan : mise sur un serveur et creation de boite mail qui marche mais pas en ligne.
+
+Johan : amelioration de la fausse IA prof avec un vocabulaire plus complet mise a jour du git 
