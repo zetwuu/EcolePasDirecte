@@ -44,3 +44,7 @@ Johan : Supression d'une érreur dans le code de l'index.html et verification du
 Johan : mise sur un serveur et creation de boite mail qui marche mais pas en ligne.
 
 Johan : amelioration de la fausse IA prof avec un vocabulaire plus complet mise a jour du git 
+
+19/01/2026 
+
+Johan : ajout site cacher ⬆️⬇️⬅️➡️⬆️
