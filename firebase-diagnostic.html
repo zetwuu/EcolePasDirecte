@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Diagnostic Firebase</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f0f4f8;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: #005fa3;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .diagnostic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .check {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .check h3 {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.1rem;
+    }
+
+    .status {
+      padding: 12px 15px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .status.warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+
+    .details {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .section h2 {
+      color: #005fa3;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #005fa3;
+      padding-bottom: 10px;
+    }
+
+    .list {
+      list-style: none;
+    }
+
+    .list li {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .list li:last-child {
+      border-bottom: none;
+    }
+
+    .code {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      margin: 10px 0;
+    }
+
+    .action-btn {
+      display: inline-block;
+      background: #005fa3;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      margin-top: 10px;
+      cursor: pointer;
+      border: none;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .action-btn:hover {
+      background: #004285;
+      transform: translateY(-2px);
+    }
+
+    .emoji {
+      font-size: 1.2em;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    table td:first-child {
+      font-weight: 600;
+      width: 40%;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: #eee;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .progress {
+      height: 100%;
+      background: #28a745;
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Diagnostic Firebase</h1>
+
+    <!-- CHECKS EN TEMPS RÉEL -->
+    <div class="diagnostic-grid">
+      <div class="check">
+        <h3><span class="emoji">🔗</span> Firebase SDK</h3>
+        <div class="status" id="firebase-status">Vérification...</div>
+        <div class="details" id="firebase-details"></div>
+      </div>
+
+      <div class="check">
+        <h3><span class="emoji">⚙️</span> Configuration</h3>
+        <div class="status" id="config-status">Vérification...</div>
+        <div class="details" id="config-details"></div>
+      </div>
+
+      <div class="check">
+        <h3><span class="emoji">🔐</span> Authentification</h3>
+        <div class="status" id="auth-status">Vérification...</div>
+        <div class="details" id="auth-details"></div>
+      </div>
+
+      <div class="check">
+        <h3><span class="emoji">🗄️</span> Firestore</h3>
+        <div class="status" id="firestore-status">Vérification...</div>
+        <div class="details" id="firestore-details"></div>
+      </div>
+
+      <div class="check">
+        <h3><span class="emoji">📡</span> Connexion Internet</h3>
+        <div class="status" id="network-status">Vérification...</div>
+        <div class="details" id="network-details"></div>
+      </div>
+
+      <div class="check">
+        <h3><span class="emoji">📦</span> Modules JavaScript</h3>
+        <div class="status" id="modules-status">Vérification...</div>
+        <div class="details" id="modules-details"></div>
+      </div>
+    </div>
+
+    <!-- LOGS DE CONSOLE -->
+    <div class="section">
+      <h2>📋 Logs de Console</h2>
+      <div class="details">
+        <p>Appuyez sur <strong>F12</strong> pour ouvrir la console du navigateur et regarder les messages:</p>
+        <div class="code">
+F12 → Onglet "Console"
+        </div>
+        <p style="margin-top: 10px;">Vous devriez voir:</p>
+        <ul class="list">
+          <li>✅ Firebase SDK chargé</li>
+          <li>✅ Firebase initialisé</li>
+          <li>✅ Module de messagerie chargé</li>
+          <li>✅ Utilisateur connecté</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CHECKLIST DE CONFIGURATION -->
+    <div class="section">
+      <h2>✅ Checklist de Configuration</h2>
+      <table>
+        <tr>
+          <td>1. Compte Firebase créé?</td>
+          <td>
+            <input type="checkbox" id="check1"> Oui
+            <a href="https://console.firebase.google.com" target="_blank" class="action-btn">Créer</a>
+          </td>
+        </tr>
+        <tr>
+          <td>2. Configuration copiée?</td>
+          <td>
+            <input type="checkbox" id="check2"> Oui
+          </td>
+        </tr>
+        <tr>
+          <td>3. firebase-config.js mis à jour?</td>
+          <td>
+            <input type="checkbox" id="check3"> Oui
+          </td>
+        </tr>
+        <tr>
+          <td>4. Firestore créé?</td>
+          <td>
+            <input type="checkbox" id="check4"> Oui
+          </td>
+        </tr>
+        <tr>
+          <td>5. Mode test activé?</td>
+          <td>
+            <input type="checkbox" id="check5"> Oui
+          </td>
+        </tr>
+        <tr>
+          <td>6. Règles Firestore mises à jour?</td>
+          <td>
+            <input type="checkbox" id="check6"> Oui
+          </td>
+        </tr>
+      </table>
+      <div class="progress-bar" style="margin-top: 20px;">
+        <div class="progress" id="progress-bar" style="width: 0%"></div>
+      </div>
+      <p style="text-align: center; margin-top: 10px;">
+        Progression: <strong id="progress-text">0/6</strong>
+      </p>
+    </div>
+
+    <!-- SOLUTIONS RAPIDES -->
+    <div class="section">
+      <h2>🔧 Solutions Rapides</h2>
+      <ul class="list">
+        <li>
+          <strong>Les messages ne s'envoient pas?</strong>
+          <ol>
+            <li>Appuyez sur F12 et regardez la console pour les erreurs</li>
+            <li>Vérifiez que firebase-config.js est correct</li>
+            <li>Vérifiez que Firestore est créé en mode test</li>
+          </ol>
+        </li>
+        <li style="margin-top: 15px;">
+          <strong>Firebase not defined?</strong>
+          <ol>
+            <li>Attendez 2 secondes que la page se charge</li>
+            <li>Vérifiez la connexion internet</li>
+            <li>Rechargez la page (F5)</li>
+          </ol>
+        </li>
+        <li style="margin-top: 15px;">
+          <strong>Les messages ne se synchronisent pas?</strong>
+          <ol>
+            <li>Vérifiez que vous avez deux onglets ouverts</li>
+            <li>Attendez 2-3 secondes après envoi</li>
+            <li>Ouvrez les deux onglets avec messages-firebase.html</li>
+          </ol>
+        </li>
+      </ul>
+    </div>
+
+    <!-- LIENS UTILES -->
+    <div class="section">
+      <h2>🔗 Liens Utiles</h2>
+      <ul class="list">
+        <li>
+          <a href="https://console.firebase.google.com" target="_blank" class="action-btn">🔥 Console Firebase</a>
+        </li>
+        <li>
+          <a href="firebase-setup.html" class="action-btn">📚 Guide d'Installation</a>
+        </li>
+        <li>
+          <a href="messages-firebase.html" class="action-btn">💬 Messagerie</a>
+        </li>
+        <li>
+          <a href="https://firebase.google.com/docs/firestore" target="_blank" class="action-btn">📖 Documentation Firestore</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Vérifier Firebase SDK
+    function checkFirebaseSDK() {
+      const status = document.getElementById('firebase-status');
+      const details = document.getElementById('firebase-details');
+      
+      if (typeof firebase !== 'undefined') {
+        status.className = 'status success';
+        status.textContent = '✅ Chargé';
+        details.textContent = 'Version: ' + firebase.VERSION;
+      } else {
+        status.className = 'status error';
+        status.textContent = '❌ Non chargé';
+        details.textContent = 'Attendez quelques secondes et rechargez la page';
+      }
+    }
+
+    // Vérifier la configuration
+    function checkConfig() {
+      const status = document.getElementById('config-status');
+      const details = document.getElementById('config-details');
+      
+      if (typeof firebaseConfig !== 'undefined') {
+        status.className = 'status success';
+        status.textContent = '✅ Configurée';
+        details.textContent = 'Projet: ' + firebaseConfig.projectId;
+      } else {
+        status.className = 'status error';
+        status.textContent = '❌ Non configurée';
+        details.textContent = 'Vérifiez firebase-config.js';
+      }
+    }
+
+    // Vérifier Firestore
+    function checkFirestore() {
+      const status = document.getElementById('firestore-status');
+      const details = document.getElementById('firestore-details');
+      
+      if (typeof db !== 'undefined') {
+        status.className = 'status success';
+        status.textContent = '✅ Connecté';
+        details.textContent = 'Prêt à stocker des données';
+      } else {
+        status.className = 'status error';
+        status.textContent = '❌ Non connecté';
+        details.textContent = 'Créez une base Firestore';
+      }
+    }
+
+    // Vérifier la connexion Internet
+    function checkNetwork() {
+      const status = document.getElementById('network-status');
+      const details = document.getElementById('network-details');
+      
+      if (navigator.onLine) {
+        status.className = 'status success';
+        status.textContent = '✅ Connecté';
+        details.textContent = 'Internet OK';
+      } else {
+        status.className = 'status error';
+        status.textContent = '❌ Déconnecté';
+        details.textContent = 'Vérifiez votre connexion Internet';
+      }
+    }
+
+    // Vérifier les modules
+    function checkModules() {
+      const status = document.getElementById('modules-status');
+      const details = document.getElementById('modules-details');
+      
+      if (typeof firebaseMsg !== 'undefined') {
+        status.className = 'status success';
+        status.textContent = '✅ Chargés';
+        details.textContent = 'Tous les modules sont chargés';
+      } else {
+        status.className = 'status warning';
+        status.textContent = '⏳ Chargement...';
+        details.textContent = 'Les modules se chargent...';
+      }
+    }
+
+    // Mettre à jour la barre de progression
+    function updateProgress() {
+      let checked = 0;
+      for (let i = 1; i <= 6; i++) {
+        if (document.getElementById('check' + i).checked) {
+          checked++;
+        }
+      }
+      document.getElementById('progress-bar').style.width = (checked * 16.67) + '%';
+      document.getElementById('progress-text').textContent = checked + '/6';
+    }
+
+    // Ajouter les event listeners
+    for (let i = 1; i <= 6; i++) {
+      document.getElementById('check' + i).addEventListener('change', updateProgress);
+    }
+
+    // Vérifications initiales
+    checkFirebaseSDK();
+    checkNetwork();
+
+    // Vérifications après 1 seconde (après chargement)
+    setTimeout(() => {
+      checkConfig();
+      checkFirestore();
+      checkModules();
+    }, 1000);
+
+    // Revérifier toutes les 3 secondes
+    setInterval(() => {
+      checkFirebaseSDK();
+      checkConfig();
+      checkFirestore();
+      checkNetwork();
+      checkModules();
+    }, 3000);
+
+    console.log('🔍 Diagnostic Firebase lancé');
+  </script>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Firebase - Centre de Contrôle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 30px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* HEADER */
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 50px;
+    }
+
+    .header h1 {
+      font-size: 3.5rem;
+      margin-bottom: 10px;
+      text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .header p {
+      font-size: 1.3rem;
+      opacity: 0.95;
+    }
+
+    /* SECTION PRINCIPALE */
+    .main-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-icon {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      color: #005fa3;
+      margin-bottom: 15px;
+      font-size: 1.4rem;
+    }
+
+    .card p {
+      color: #666;
+      line-height: 1.6;
+      flex-grow: 1;
+      margin-bottom: 20px;
+    }
+
+    .card .badge {
+      display: inline-block;
+      background: #e8f0f8;
+      color: #005fa3;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .card .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .card .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .card.featured {
+      grid-column: span 1;
+      border: 3px solid #667eea;
+    }
+
+    /* SECTIONS */
+    .section {
+      background: white;
+      border-radius: 15px;
+      padding: 35px;
+      margin-bottom: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .section h2 {
+      color: #005fa3;
+      margin-bottom: 25px;
+      font-size: 2rem;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 15px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .feature {
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+    }
+
+    .feature strong {
+      color: #005fa3;
+      font-size: 1.1rem;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .feature p {
+      color: #666;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    /* STATUS BOARD */
+    .status-board {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .status-board h2 {
+      color: #005fa3;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+    }
+
+    .status-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .status-item {
+      padding: 20px;
+      text-align: center;
+      border-radius: 10px;
+      background: #f8f9fa;
+    }
+
+    .status-item .icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .status-item .label {
+      color: #666;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .status-item .value {
+      color: #005fa3;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    /* FOOTER */
+    .footer {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      text-align: center;
+      padding: 30px;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+
+    .footer h3 {
+      margin-bottom: 15px;
+    }
+
+    .footer p {
+      opacity: 0.9;
+      line-height: 1.8;
+    }
+
+    .footer a {
+      color: #ffd700;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.5rem;
+      }
+
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section {
+        padding: 20px;
+      }
+    }
+
+    .badge-primary {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .badge-warning {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .badge-danger {
+      background: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- HEADER -->
+    <div class="header">
+      <h1>🔥 Firebase</h1>
+      <p>Centre de Contrôle - Messagerie en Temps Réel</p>
+    </div>
+
+    <!-- CARTES PRINCIPALES -->
+    <div class="main-grid">
+      <!-- MESSAGERIE -->
+      <div class="card featured">
+        <div class="card-icon">💬</div>
+        <div class="badge badge-primary">PRINCIPAL</div>
+        <h2>Messagerie</h2>
+        <p>Communiquez avec Alex en temps réel! Vos messages sont synchronisés instantanément.</p>
+        <a href="messages-firebase.html" class="btn">Ouvrir la messagerie</a>
+      </div>
+
+      <!-- GUIDE -->
+      <div class="card">
+        <div class="card-icon">📚</div>
+        <div class="badge">GUIDE</div>
+        <h2>Guide Interactif</h2>
+        <p>Suivez les étapes pour configurer Firebase. Parfait pour les débutants!</p>
+        <a href="firebase-setup.html" class="btn">Voir le guide</a>
+      </div>
+
+      <!-- CHECKLIST -->
+      <div class="card">
+        <div class="card-icon">✅</div>
+        <div class="badge">SUIVI</div>
+        <h2>Checklist</h2>
+        <p>Tracez votre progression dans la configuration avec une checklist visuelle.</p>
+        <a href="firebase-checklist.html" class="btn">Voir le checklist</a>
+      </div>
+
+      <!-- DIAGNOSTIC -->
+      <div class="card">
+        <div class="card-icon">🔍</div>
+        <div class="badge badge-warning">DIAGNOSTIC</div>
+        <h2>Diagnostic</h2>
+        <p>Vérifiez que tout fonctionne correctement et trouvez les problèmes.</p>
+        <a href="firebase-diagnostic.html" class="btn">Lancer le diagnostic</a>
+      </div>
+
+      <!-- DOCUMENTATION -->
+      <div class="card">
+        <div class="card-icon">📖</div>
+        <div class="badge">DOC</div>
+        <h2>Documentation</h2>
+        <p>Lisez les explications détaillées sur comment Firebase fonctionne.</p>
+        <a href="EXPLICATIONS-FIREBASE.md" target="_blank" class="btn">Lire la doc</a>
+      </div>
+
+      <!-- CONSOLE FIREBASE -->
+      <div class="card">
+        <div class="card-icon">⚙️</div>
+        <div class="badge">EXTERNE</div>
+        <h2>Console Firebase</h2>
+        <p>Allez sur le site officiel de Firebase pour gérer votre configuration.</p>
+        <a href="https://console.firebase.google.com" target="_blank" class="btn">Ouvrir Firebase</a>
+      </div>
+    </div>
+
+    <!-- SECTION FEATURES -->
+    <div class="section">
+      <h2>✨ Fonctionnalités Principales</h2>
+      <div class="features-grid">
+        <div class="feature">
+          <strong>⚡ Temps Réel</strong>
+          <p>Les messages arrivent instantanément. Pas de délai, pas de rafraîchissement!</p>
+        </div>
+        <div class="feature">
+          <strong>☁️ Cloud Storage</strong>
+          <p>Tous les messages sont sauvegardés dans le cloud de Google.</p>
+        </div>
+        <div class="feature">
+          <strong>📱 Multi-Appareil</strong>
+          <p>Ça fonctionne sur ordi, téléphone, tablette... n'importe où!</p>
+        </div>
+        <div class="feature">
+          <strong>🔄 Synchronisation</strong>
+          <p>Tous les appareils voient la même chose à tout moment.</p>
+        </div>
+        <div class="feature">
+          <strong>🗑️ Suppression</strong>
+          <p>Effacez une conversation entière quand vous le souhaitez.</p>
+        </div>
+        <div class="feature">
+          <strong>🔐 Sécurité</strong>
+          <p>Protégé par les serveurs de Google. Vos données sont en sécurité.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATUS BOARD -->
+    <div class="status-board">
+      <h2>📊 État du Système</h2>
+      <div class="status-items">
+        <div class="status-item">
+          <div class="icon">🟢</div>
+          <div class="label">Fichiers créés</div>
+          <div class="value">7</div>
+        </div>
+        <div class="status-item">
+          <div class="icon">🟢</div>
+          <div class="label">Configuration</div>
+          <div class="value">À faire</div>
+        </div>
+        <div class="status-item">
+          <div class="icon">🟢</div>
+          <div class="label">Guides</div>
+          <div class="value">3</div>
+        </div>
+        <div class="status-item">
+          <div class="icon">🟢</div>
+          <div class="label">Outils</div>
+          <div class="value">2</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION DÉMARRAGE RAPIDE -->
+    <div class="section">
+      <h2>🚀 Démarrage Rapide (3 étapes)</h2>
+      <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; line-height: 1.8;">
+        <p><strong style="color: #005fa3;">1️⃣ Créer un compte Firebase</strong></p>
+        <p style="color: #666; margin-bottom: 20px;">Allez sur <a href="https://console.firebase.google.com" target="_blank" style="color: #667eea;">console.firebase.google.com</a>, créez un projet, et copiez votre configuration.</p>
+
+        <p><strong style="color: #005fa3;">2️⃣ Mettre à jour firebase-config.js</strong></p>
+        <p style="color: #666; margin-bottom: 20px;">Ouvrez <code style="background: white; padding: 2px 6px; border-radius: 3px;">firebase-config.js</code> et remplacez la configuration. Sauvegardez!</p>
+
+        <p><strong style="color: #005fa3;">3️⃣ Tester la messagerie</strong></p>
+        <p style="color: #666;">Ouvrez deux onglets avec des noms différents. Les messages s'envoient en temps réel! ✨</p>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <h3>🆘 Besoin d'Aide?</h3>
+      <p>
+        👉 Ouvrez le <a href="firebase-setup.html">guide interactif</a> pour un guide pas à pas<br>
+        👉 Utilisez le <a href="firebase-diagnostic.html">diagnostic</a> pour vérifier votre configuration<br>
+        👉 Lisez la <a href="EXPLICATIONS-FIREBASE.md" target="_blank">documentation</a> pour comprendre<br>
+      </p>
+      <p style="margin-top: 20px; opacity: 0.8;">© 2024 École Pas Directe - Messagerie Firebase</p>
+    </div>
+  </div>
+
+  <!-- BONUS: Vérification en temps réel -->
+  <script>
+    // Vérifier si Firebase est configuré
+    setTimeout(() => {
+      if (typeof firebase !== 'undefined') {
+        console.log('✅ Firebase SDK détecté!');
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

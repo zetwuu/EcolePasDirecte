@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🔥 Démarrage Rapide Firebase</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 50px 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 1.2rem;
+      opacity: 0.95;
+    }
+
+    .content {
+      padding: 40px 30px;
+    }
+
+    .step {
+      margin-bottom: 30px;
+      display: flex;
+      gap: 20px;
+    }
+
+    .step-number {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .step-content h3 {
+      color: #005fa3;
+      margin-bottom: 8px;
+      font-size: 1.2rem;
+    }
+
+    .step-content p {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .step-action {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+    }
+
+    .step-action:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .divider {
+      height: 2px;
+      background: #e8e8e8;
+      margin: 30px 0;
+    }
+
+    .footer {
+      background: #f8f9fa;
+      padding: 30px;
+      text-align: center;
+      border-top: 1px solid #e8e8e8;
+    }
+
+    .footer h3 {
+      color: #005fa3;
+      margin-bottom: 15px;
+    }
+
+    .footer p {
+      color: #666;
+      line-height: 1.8;
+    }
+
+    .footer a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    .success {
+      background: #d4edda;
+      border: 2px solid #c3e6cb;
+      color: #155724;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .tip {
+      background: #e7f3ff;
+      border-left: 4px solid #667eea;
+      padding: 12px 15px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: #005fa3;
+      line-height: 1.5;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- HEADER -->
+    <div class="header">
+      <h1>⚡ En 5 minutes!</h1>
+      <p>Configurez Firebase et discutez avec Alex</p>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+      <div class="success">
+        ✅ Tous les fichiers ont été créés!<br>
+        Suivez maintenant ces 4 étapes.
+      </div>
+
+      <!-- STEP 1 -->
+      <div class="step">
+        <div class="step-number">1️⃣</div>
+        <div class="step-content">
+          <h3>Créer un compte Firebase</h3>
+          <p>Allez sur console.firebase.google.com et créez un nouveau projet avec votre compte Google.</p>
+          <a href="https://console.firebase.google.com" target="_blank" class="step-action">
+            Créer maintenant →
+          </a>
+          <div class="tip">
+            💡 Si vous ne savez pas comment faire, ouvrez le <a href="firebase-setup.html" style="color: inherit; font-weight: bold;">guide détaillé</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step">
+        <div class="step-number">2️⃣</div>
+        <div class="step-content">
+          <h3>Copier la configuration</h3>
+          <p>Dans Firebase → Paramètres → Général → Vos applications, copiez le code JavaScript.</p>
+          <div class="tip">
+            Le code commence par: <code>const firebaseConfig = {</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step">
+        <div class="step-number">3️⃣</div>
+        <div class="step-content">
+          <h3>Mettre à jour firebase-config.js</h3>
+          <p>Ouvrez le fichier <strong>firebase-config.js</strong> et remplacez TOUT le contenu par votre configuration.</p>
+          <p><strong>Sauvegardez:</strong> Ctrl+S</p>
+          <div class="tip">
+            ⚠️ C'est TRÈS important! Sans ça, ça ne fonctionnera pas.
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step">
+        <div class="step-number">4️⃣</div>
+        <div class="step-content">
+          <h3>Créer Firestore & Tester</h3>
+          <p>Retournez à Firebase, créez une base Firestore en mode test, puis ouvrez <strong>messages-firebase.html</strong>.</p>
+          <a href="firebase-setup.html" class="step-action">
+            Voir le guide complet →
+          </a>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- TEST -->
+      <div class="step">
+        <div class="step-number">✨</div>
+        <div class="step-content">
+          <h3>C'est prêt!</h3>
+          <p>Ouvrez 2 onglets avec des noms différents et testez les messages. Ils s'envoient en temps réel!</p>
+          <a href="messages-firebase.html" class="step-action">
+            Ouvrir la messagerie →
+          </a>
+          <div class="tip">
+            🎯 Onglet 1: "Johan" | Onglet 2: "Alex"
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <h3>Besoin d'aide?</h3>
+      <p>
+        <a href="firebase-setup.html">📚 Guide Complet</a> • 
+        <a href="firebase-diagnostic.html">🔍 Diagnostic</a> • 
+        <a href="firebase-checklist.html">✅ Checklist</a>
+      </p>
+      <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.8;">
+        Tous ces outils sont dans votre dossier EcolePasDirecte
+      </p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Configuration Firebase - Aide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      color: #005fa3;
+      margin-bottom: 30px;
+      text-align: center;
+      font-size: 2.5rem;
+    }
+
+    .step {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-left: 5px solid #005fa3;
+      border-radius: 8px;
+    }
+
+    .step h2 {
+      color: #005fa3;
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-number {
+      background: #005fa3;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .step ol, .step ul {
+      margin-left: 20px;
+      line-height: 1.8;
+    }
+
+    .step li {
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .code-block {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 15px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+    }
+
+    .highlight {
+      background: #fff3cd;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #856404;
+      font-weight: 600;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: #005fa3;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #004285;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 95, 163, 0.3);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .success {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    .warning {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      color: #856404;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    .error {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    .faq {
+      margin-top: 40px;
+      border-top: 2px solid #eee;
+      padding-top: 30px;
+    }
+
+    .faq-item {
+      margin-bottom: 20px;
+    }
+
+    .faq-question {
+      background: #e8f0f8;
+      padding: 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #005fa3;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    .faq-question:hover {
+      background: #d4e4f0;
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 15px;
+      background: #f9f9f9;
+      border-left: 3px solid #005fa3;
+      margin-top: 10px;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .faq-answer.show {
+      display: block;
+    }
+
+    .emoji {
+      font-size: 1.3em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔥 Configuration Firebase</h1>
+    <p style="text-align: center; color: #666; margin-bottom: 30px;">
+      Suivez ces étapes pour activer la messagerie en temps réel avec Firebase
+    </p>
+
+    <!-- ÉTAPE 1 -->
+    <div class="step">
+      <h2>
+        <div class="step-number">1</div>
+        Créer un compte Firebase
+      </h2>
+      <ol>
+        <li>Allez sur <strong>https://console.firebase.google.com</strong></li>
+        <li>Connectez-vous avec votre compte Google</li>
+        <li>Cliquez sur <span class="highlight">"Créer un nouveau projet"</span></li>
+        <li>Donnez un nom (ex: "EcolePasDirecte")</li>
+        <li>Acceptez les conditions et cliquez <span class="highlight">"Continuer"</span></li>
+      </ol>
+    </div>
+
+    <!-- ÉTAPE 2 -->
+    <div class="step">
+      <h2>
+        <div class="step-number">2</div>
+        Récupérer la configuration
+      </h2>
+      <ol>
+        <li>Dans la console Firebase, cliquez sur ⚙️ <span class="highlight">Paramètres</span> (en haut à gauche)</li>
+        <li>Allez à l'onglet <span class="highlight">"Général"</span></li>
+        <li>Scroll vers le bas et cherchez <span class="highlight">"Vos applications"</span></li>
+        <li>Si aucune app web n'existe, créez-en une (cliquez sur l'icône <code>&lt;/&gt;</code>)</li>
+        <li>Vous verrez une boîte avec du code qui ressemble à:
+          <div class="code-block">
+const firebaseConfig = {<br>
+  apiKey: "AIzaSyD...",<br>
+  authDomain: "votreprojet.firebaseapp.com",<br>
+  projectId: "votreprojet",<br>
+  storageBucket: "votreprojet.appspot.com",<br>
+  messagingSenderId: "000...",<br>
+  appId: "1:000...:web:..."<br>
+};
+          </div>
+        </li>
+        <li><strong>COPIEZ TOUT CE CODE</strong></li>
+      </ol>
+    </div>
+
+    <!-- ÉTAPE 3 -->
+    <div class="step">
+      <h2>
+        <div class="step-number">3</div>
+        Mettre à jour le fichier de configuration
+      </h2>
+      <ol>
+        <li>Ouvrez le fichier <span class="highlight">firebase-config.js</span> du projet</li>
+        <li><strong>REMPLACEZ</strong> tout le contenu par le code que vous avez copié à l'étape 2</li>
+        <li>Sauvegardez le fichier (Ctrl+S)</li>
+      </ol>
+      <div class="success">
+        ✅ La première partie est terminée!
+      </div>
+    </div>
+
+    <!-- ÉTAPE 4 -->
+    <div class="step">
+      <h2>
+        <div class="step-number">4</div>
+        Créer une base de données Firestore
+      </h2>
+      <ol>
+        <li>Retournez à la console Firebase (https://console.firebase.google.com)</li>
+        <li>Dans le menu de gauche, cliquez sur <span class="highlight">"Firestore Database"</span></li>
+        <li>Cliquez sur <span class="highlight">"Créer une base de données"</span></li>
+        <li>Choisissez votre région (ex: <code>europe-west1</code> pour l'Europe)</li>
+        <li><strong>TRÈS IMPORTANT:</strong> Choisissez <span class="highlight">"Démarrer en mode test"</span></li>
+        <li>Cliquez <span class="highlight">"Créer"</span></li>
+      </ol>
+      <div class="warning">
+        ⚠️ <strong>Mode test:</strong> Les données sont publiques mais c'est parfait pour tester. Nous allons sécuriser après.
+      </div>
+    </div>
+
+    <!-- ÉTAPE 5 -->
+    <div class="step">
+      <h2>
+        <div class="step-number">5</div>
+        Configurer les règles de sécurité
+      </h2>
+      <ol>
+        <li>Dans Firestore, allez à l'onglet <span class="highlight">"Règles"</span></li>
+        <li>Remplacez le contenu par:
+          <div class="code-block">
+rules_version = '2';<br>
+service cloud.firestore {<br>
+  match /databases/{database}/documents {<br>
+    match /conversations/{document=**} {<br>
+      allow read, write: if true;<br>
+    }<br>
+  }<br>
+}
+          </div>
+        </li>
+        <li>Cliquez <span class="highlight">"Publier"</span></li>
+      </ol>
+      <div class="success">
+        ✅ Firebase est maintenant configuré!
+      </div>
+    </div>
+
+    <!-- ÉTAPE 6 -->
+    <div class="step">
+      <h2>
+        <div class="step-number">6</div>
+        Tester la messagerie
+      </h2>
+      <ol>
+        <li>Ouvrez <span class="highlight">messages-firebase.html</span> dans votre navigateur</li>
+        <li>Connectez-vous avec votre nom</li>
+        <li><strong>Ouvrez un autre onglet</strong> et connectez-vous avec un nom différent (ex: "Alex")</li>
+        <li>Dans le premier onglet, envoyez un message</li>
+        <li>Regardez le deuxième onglet - le message apparaît <strong>EN TEMPS RÉEL</strong> ✨</li>
+      </ol>
+      <div class="success">
+        ✅ Félicitations! La messagerie fonctionne!
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq">
+      <h2>❓ Questions Fréquentes</h2>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>Où je dois mettre ma clé API Firebase?</span>
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          Dans le fichier <strong>firebase-config.js</strong>. C'est pas grave que les autres voient votre clé API - les données sont protégées par les règles Firestore.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>Les messages ne s'envoient pas, que faire?</span>
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          <ol>
+            <li>Appuyez sur <strong>F12</strong> et allez à l'onglet <strong>"Console"</strong></li>
+            <li>Cherchez les messages d'erreur en rouge</li>
+            <li>Vérifiez que votre configuration Firebase est correcte</li>
+            <li>Vérifiez que Firestore est bien créé</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>Pourquoi je dois utiliser "Mode test"?</span>
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          Le mode test vous permet de tester facilement sans authentification. Pour la production (quand vous mettez en ligne), vous devez ajouter une vraie authentification et de vraies règles de sécurité.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>Comment je simule deux utilisateurs?</span>
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          <ol>
+            <li>Ouvrez deux onglets du navigateur</li>
+            <li>Dans chaque onglet, connectez-vous avec des noms différents</li>
+            <li>Envoyez des messages d'un onglet à l'autre</li>
+            <li>C'est magique! Les messages s'envoient en temps réel 🚀</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>Est-ce que ma configuration Firebase est sécurisée?</span>
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          En mode test: <strong>NON</strong> - C'est pour le développement seulement. Les données sont publiques. Pour la production, activez Firebase Authentication et écrivez de vraies règles de sécurité.
+        </div>
+      </div>
+    </div>
+
+    <!-- BOUTONS D'ACTION -->
+    <div class="button-group" style="margin-top: 40px; justify-content: center;">
+      <a href="https://console.firebase.google.com" target="_blank" class="btn btn-primary">
+        🔥 Aller à la console Firebase
+      </a>
+      <a href="messages-firebase.html" class="btn btn-secondary">
+        💬 Accéder à la messagerie
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Toggle FAQ answers
+    document.querySelectorAll(".faq-question").forEach((question) => {
+      question.addEventListener("click", () => {
+        const answer = question.nextElementSibling;
+        answer.classList.toggle("show");
+      });
+    });
+  </script>
+</body>
+</html>

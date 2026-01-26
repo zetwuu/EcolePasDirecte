@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Checklist Firebase</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 30px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #005fa3;
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 1.1rem;
+    }
+
+    .progress-section {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 30px;
+      background: #e8e8e8;
+      border-radius: 15px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .progress {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      width: 0%;
+      transition: width 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .progress-text {
+      text-align: center;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .checklist {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .checklist h2 {
+      color: #005fa3;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      background: #f8f9fa;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .checklist-item:hover {
+      background: #e8f0f8;
+      transform: translateX(5px);
+    }
+
+    .checklist-item.completed {
+      background: #d4edda;
+    }
+
+    .checkbox {
+      width: 30px;
+      height: 30px;
+      margin-right: 15px;
+      margin-top: 2px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .checkbox:checked + .content .title {
+      color: #155724;
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+
+    .checkbox:checked + .content {
+      opacity: 0.7;
+    }
+
+    .content {
+      flex: 1;
+    }
+
+    .title {
+      font-weight: 600;
+      color: #005fa3;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+
+    .description {
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .action-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .action-btn-secondary {
+      background: #e8e8e8;
+      color: #333;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-weight: 700;
+      color: #005fa3;
+      margin: 25px 0 15px 0;
+      font-size: 1.3rem;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e8e8e8;
+    }
+
+    .completion-message {
+      text-align: center;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .completion-message.show {
+      display: block;
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .completion-message h3 {
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+    }
+
+    .tips {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      color: #856404;
+      line-height: 1.6;
+    }
+
+    .emoji {
+      font-size: 1.2em;
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- HEADER -->
+    <div class="header">
+      <h1>📋 Checklist Firebase</h1>
+      <p>Suivez votre progression pour configurer la messagerie</p>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="progress-section">
+      <div class="progress-bar">
+        <div class="progress" id="progress" style="width: 0%;"></div>
+      </div>
+      <div class="progress-text">
+        <span id="progress-count">0</span> / <span id="total-count">11</span> tâches complétées
+      </div>
+    </div>
+
+    <!-- CHECKLIST -->
+    <div class="checklist">
+      <h2>🚀 Configuration Firebase</h2>
+
+      <!-- SECTION 1: PRÉPARATION -->
+      <div class="section">
+        <div class="section-title">1️⃣ Préparation</div>
+
+        <label class="checklist-item">
+          <input type="checkbox" class="checkbox" data-index="0">
+          <div class="content">
+            <div class="title">📖 Lire les explications</div>
+            <div class="description">Comprendre comment Firebase fonctionne</div>
+            <div class="action-links">
+              <a href="EXPLICATIONS-FIREBASE.md" target="_blank" class="action-btn">Lire</a>
+            </div>
+          </div>
+        </label>
+
+        <label class="checklist-item">
+          <input type="checkbox" class="checkbox" data-index="1">
+          <div class="content">
+            <div class="title">🖥️ Ouvrir la console Firebase</div>
+            <div class="description">Aller sur console.firebase.google.com et créer un compte</div>
+            <div class="tips">
+              <span class="emoji">💡</span>
+              Vous avez besoin d'un compte Google (Gmail)
+            </div>
+            <div class="action-links">
+              <a href="https://console.firebase.google.com" target="_blank" class="action-btn">Ouvrir Firebase</a>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <!-- SECTION 2: CRÉATION DU PROJET -->
+      <div class="section">
+        <div class="section-title">2️⃣ Créer le Projet Firebase</div>
+
+        <label class="checklist-item">
+          <input type="checkbox" class="checkbox" data-index="2">
+          <div class="content">
+            <div class="title">🔥 Créer un nouveau projet</div>
+            <div class="description">Cliquez sur "Créer un nouveau projet" et suivez les étapes</div>
+            <div class="tips">
+              <span class="emoji">💡</span>
+              Nom du projet: "EcolePasDirecte" (ou ce que vous voulez)
+            </div>
+            <div class="action-links">
+              <a href="firebase-setup.html" target="_blank" class="action-btn">Voir le guide</a>
+            </div>
+          </div>
+        </label>
+
+        <label class="checklist-item">
+          <input type="checkbox" class="checkbox" data-index="3">
+          <div class="content">
+            <div class="title">⚙️ Copier la configuration</div>
+            <div class="description">Allez dans Paramètres → Général → Vos applications → Copier le code</div>
+            <div class="tips">
+              <span class="emoji">💡</span>
+              Le code commence par: const firebaseConfig = {...}
+            </div>
+            <div class="action-links">
+              <a href="firebase-setup.html#config-copy" target="_blank" class="action-btn">Voir comment copier</a>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <!-- SECTION 3: CONFIGURATION LOCAL -->
+      <div class="section">
+        <div class="section-title">3️⃣ Configuration Locale</div>
+
+        <label class="checklist-item">
+          <input type="checkbox" class="checkbox" data-index="4">
+          <div class="content">
+            <div class="title">📝 Ouvrir firebase-config.js</div>
+            <div class="description">Ouvrez le fichier dans votre éditeur</div>
+            <div class="tips">
+              <span class="emoji">💡</span>
+              Le fichier est dans le dossier EcolePasDirecte
+            </div>
+          </div>
+        </label>
+
+        <label class="checklist-item">
+          <input type="checkbox" class="checkbox" data-index="5">
+          <div class="content">
+            <div class="title">✏️ Remplacer la configuration</div>
+            <div class="description">Remplacez TOUT le contenu par votre configuration copiée</div>
+            <div class="tips">
+              <span class="emoji">⚠️</span>
+              N'oubliez pas: votre apiKey, projectId, etc
+            </div>
+          </div>
+        </label>
+
+        <label class="checklist-item">
+          <input type="checkbox" class="checkbox" data-index="6">
+          <div class="content">
+            <div class="title">💾 Sauvegarder le fichier</div>
+            <div class="description">Appuyez sur Ctrl+S (ou Cmd+S sur Mac)</div>
+            <div class="tips">
+              <span class="emoji">💡</span>
+              Vous devriez voir une petite croix blanche disparaître dans l'onglet
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <!-- SECTION 4: FIRESTORE DATABASE -->
+      <div class="section">
+        <div class="section-title">4️⃣ Créer Firestore Database</div>
+
+        <label class="checklist-item">
+          <input type="checkbox" class="checkbox" data-index="7">
+          <div class="content">
+            <div class="title">📊 Créer Firestore</div>
+            <div class="description">Allez dans "Firestore Database" → "Créer une base"</div>
+            <div class="tips">
+              <span class="emoji">🌍</span>
+              Région: europe-west1 (pour l'Europe)
+            </div>
+            <div class="action-links">
+              <a href="firebase-setup.html#firestore-step" target="_blank" class="action-btn">Voir le guide</a>
+            </div>
+          </div>
+        </label>
+
+        <label class="checklist-item">
+          <input type="checkbox" class="checkbox" data-index="8">
+          <div class="content">
+            <div class="title">🔓 Choisir "Mode test"</div>
+            <div class="description">C'est important! Sans ça, ça ne fonctionnera pas</div>
+            <div class="tips">
+              <span class="emoji">⚠️</span>
+              À changer plus tard pour la sécurité
+            </div>
+          </div>
+        </label>
+
+        <label class="checklist-item">
+          <input type="checkbox" class="checkbox" data-index="9">
+          <div class="content">
+            <div class="title">📋 Mettre à jour les règles</div>
+            <div class="description">Allez dans l'onglet "Règles" et remplacez par le code du guide</div>
+            <div class="tips">
+              <span class="emoji">💡</span>
+              Puis cliquez "Publier"
+            </div>
+            <div class="action-links">
+              <a href="firebase-setup.html#rules-step" target="_blank" class="action-btn">Voir le code des règles</a>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <!-- SECTION 5: TEST -->
+      <div class="section">
+        <div class="section-title">5️⃣ Tester la Messagerie</div>
+
+        <label class="checklist-item">
+          <input type="checkbox" class="checkbox" data-index="10">
+          <div class="content">
+            <div class="title">🧪 Tester avec deux onglets</div>
+            <div class="description">Ouvrez messages-firebase.html dans deux onglets avec des noms différents</div>
+            <div class="tips">
+              <span class="emoji">🎯</span>
+              Onglet 1: "Johan" | Onglet 2: "Alex"
+            </div>
+            <div class="action-links">
+              <a href="messages-firebase.html" target="_blank" class="action-btn">Ouvrir messagerie</a>
+              <a href="firebase-diagnostic.html" target="_blank" class="action-btn action-btn-secondary">Diagnostic</a>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <!-- MESSAGE DE COMPLÉTION -->
+      <div class="completion-message" id="completion-message">
+        <h3>🎉 Félicitations!</h3>
+        <p>Vous avez complété toutes les étapes! La messagerie devrait maintenant fonctionner avec Firebase.</p>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div style="text-align: center; color: white; margin-top: 40px; padding: 20px;">
+      <p>Besoin d'aide? Ouvrez <a href="firebase-setup.html" style="color: #ffd700;">le guide complet</a></p>
+    </div>
+  </div>
+
+  <script>
+    const checkboxes = document.querySelectorAll('.checkbox');
+    const progressBar = document.getElementById('progress');
+    const progressCount = document.getElementById('progress-count');
+    const totalCount = document.getElementById('total-count');
+    const completionMessage = document.getElementById('completion-message');
+
+    totalCount.textContent = checkboxes.length;
+
+    function updateProgress() {
+      let checked = 0;
+      checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+          checked++;
+          checkbox.parentElement.classList.add('completed');
+        } else {
+          checkbox.parentElement.classList.remove('completed');
+        }
+      });
+
+      const percentage = (checked / checkboxes.length) * 100;
+      progressBar.style.width = percentage + '%';
+      progressBar.textContent = Math.round(percentage) + '%';
+      progressCount.textContent = checked;
+
+      // Afficher le message de complétion
+      if (checked === checkboxes.length) {
+        completionMessage.classList.add('show');
+      } else {
+        completionMessage.classList.remove('show');
+      }
+
+      // Sauvegarder dans localStorage
+      const checkedItems = Array.from(checkboxes).map((c, i) => c.checked);
+      localStorage.setItem('firebaseChecklist', JSON.stringify(checkedItems));
+    }
+
+    // Charger les données sauvegardées
+    const saved = localStorage.getItem('firebaseChecklist');
+    if (saved) {
+      const checkedItems = JSON.parse(saved);
+      checkboxes.forEach((c, i) => {
+        c.checked = checkedItems[i];
+      });
+    }
+
+    // Ajouter des listeners
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', updateProgress);
+    });
+
+    // Mise à jour initiale
+    updateProgress();
+  </script>
+</body>
+</html>
