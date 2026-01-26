@@ -196,8 +196,11 @@
       justify-content: flex-end;
     }
 
-    .message-content {
+    .message-bubble {
       max-width: 70%;
+    }
+
+    .message-content {
       padding: 10px 14px;
       border-radius: 12px;
       word-wrap: break-word;
@@ -467,7 +470,7 @@
             const time = msg.timestamp ? formatTime(msg.timestamp) : "";
 
             msgDiv.innerHTML = `
-              <div>
+              <div class="message-bubble">
                 <div class="message-content">${escapeHtml(msg.content)}</div>
                 <div class="message-time">${time}</div>
               </div>
@@ -593,7 +596,7 @@
             const time = msg.timestamp ? formatTime(msg.timestamp) : "";
 
             msgDiv.innerHTML = `
-              <div>
+              <div class="message-bubble">
                 <div class="message-content">${escapeHtml(msg.content)}</div>
                 <div class="message-time">${time}</div>
               </div>
