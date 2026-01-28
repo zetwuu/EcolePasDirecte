@@ -2,61 +2,537 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Vote Délégué</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vote Délégué de Classe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
-      background: #f0f4f8;
-      padding: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    form {
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .card {
       background: #ffffff;
-      padding: 30px;
-      border-radius: 12px;
-      max-width: 500px;
-      margin: auto;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      margin-bottom: 30px;
+      animation: slideUp 0.6s ease-out;
     }
-    button {
-      background-color: #005fa3;
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      text-align: center;
+      color: #2d3748;
+      font-size: 2em;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #718096;
+      margin-bottom: 30px;
+      font-size: 0.95em;
+    }
+
+    .candidates {
+      display: grid;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .candidate-option {
+      position: relative;
+      border: 3px solid #e2e8f0;
+      border-radius: 15px;
+      padding: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #f7fafc;
+    }
+
+    .candidate-option:hover {
+      border-color: #667eea;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+    }
+
+    .candidate-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .candidate-option input[type="radio"]:checked ~ .candidate-content {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .candidate-option input[type="radio"]:checked ~ .candidate-content .candidate-name {
+      color: white;
+    }
+
+    .candidate-option input[type="radio"]:checked ~ .candidate-content .candidate-emoji {
+      transform: scale(1.2);
+    }
+
+    .candidate-content {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .candidate-emoji {
+      font-size: 3em;
+      transition: transform 0.3s ease;
+    }
+
+    .candidate-info {
+      flex: 1;
+    }
+
+    .candidate-name {
+      font-size: 1.4em;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 5px;
+    }
+
+    .candidate-description {
+      font-size: 0.9em;
+      color: rgba(255,255,255,0.8);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .candidate-option input[type="radio"]:checked ~ .candidate-content .candidate-description {
+      opacity: 1;
+    }
+
+    .btn-vote {
+      width: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border: none;
-      padding: 10px 20px;
-      font-weight: bold;
+      padding: 18px;
+      font-size: 1.1em;
+      font-weight: 600;
       cursor: pointer;
-      border-radius: 6px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
-    #vote-result {
+
+    .btn-vote:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-vote:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-vote:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #vote-message {
       margin-top: 20px;
-      font-weight: bold;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #vote-message.show {
+      opacity: 1;
+    }
+
+    #vote-message.success {
+      background: #c6f6d5;
+      color: #22543d;
+      border: 2px solid #9ae6b4;
+    }
+
+    #vote-message.error {
+      background: #fed7d7;
+      color: #742a2a;
+      border: 2px solid #fc8181;
+    }
+
+    #vote-message.info {
+      background: #bee3f8;
+      color: #2c5282;
+      border: 2px solid #90cdf4;
+    }
+
+    .results-section {
+      margin-top: 20px;
+    }
+
+    .result-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .result-label {
+      min-width: 120px;
+      font-weight: 600;
+      color: #2d3748;
+      font-size: 1.1em;
+    }
+
+    .result-bar-container {
+      flex: 1;
+      height: 40px;
+      background: #e2e8f0;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .result-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      transition: width 0.8s ease;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 15px;
+      color: white;
+      font-weight: 600;
+    }
+
+    .result-count {
+      margin-left: 15px;
+      font-weight: 700;
+      color: #2d3748;
+      font-size: 1.1em;
+      min-width: 60px;
+    }
+
+    .total-votes {
+      text-align: center;
+      margin-top: 25px;
+      padding: 20px;
+      background: #f7fafc;
+      border-radius: 12px;
+      font-size: 1.1em;
+      color: #4a5568;
+    }
+
+    .total-votes strong {
+      color: #667eea;
+      font-size: 1.4em;
+    }
+
+    .loading {
+      text-align: center;
+      color: #718096;
+      padding: 20px;
+    }
+
+    .spinner {
+      border: 4px solid #e2e8f0;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        padding: 25px;
+      }
+
+      h1 {
+        font-size: 1.5em;
+      }
+
+      .candidate-emoji {
+        font-size: 2.5em;
+      }
+
+      .candidate-name {
+        font-size: 1.2em;
+      }
+
+      .result-label {
+        min-width: 80px;
+        font-size: 1em;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h2>Vote pour le délégué de classe</h2>
-  <form id="vote-form">
-    <p>Choisissez votre candidat :</p>
-    <label><input type="radio" name="candidat" value="Alex"> Alex</label><br />
-    <label><input type="radio" name="candidat" value="Johan"> Johan</label><br />
-    <label><input type="radio" name="candidat" value="Aucun"> Aucun des deux</label><br /><br />
-    <button type="submit">Voter</button>
-  </form>
-  <p id="vote-result"></p>
+  <div class="container">
+    <!-- Formulaire de vote -->
+    <div class="card">
+      <h1>🗳️ Vote Délégué de Classe</h1>
+      <p class="subtitle">Choisissez votre représentant pour l'année scolaire</p>
 
-  <script>
-    document.getElementById("vote-form").addEventListener("submit", function(e) {
+      <form id="vote-form">
+        <div class="candidates">
+          <label class="candidate-option">
+            <input type="radio" name="candidat" value="Alex" />
+            <div class="candidate-content">
+              <div class="candidate-emoji">👨‍🎓</div>
+              <div class="candidate-info">
+                <div class="candidate-name">Alex</div>
+                <div class="candidate-description">Engagement et écoute</div>
+              </div>
+            </div>
+          </label>
+
+          <label class="candidate-option">
+            <input type="radio" name="candidat" value="Johan" />
+            <div class="candidate-content">
+              <div class="candidate-emoji">👨‍💼</div>
+              <div class="candidate-info">
+                <div class="candidate-name">Johan</div>
+                <div class="candidate-description">Leadership et initiative</div>
+              </div>
+            </div>
+          </label>
+
+          <label class="candidate-option">
+            <input type="radio" name="candidat" value="Aucun" />
+            <div class="candidate-content">
+              <div class="candidate-emoji">🚫</div>
+              <div class="candidate-info">
+                <div class="candidate-name">Aucun des deux</div>
+                <div class="candidate-description">Vote blanc</div>
+              </div>
+            </div>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-vote" id="vote-btn">Valider mon vote</button>
+      </form>
+
+      <div id="vote-message"></div>
+    </div>
+
+    <!-- Résultats en temps réel -->
+    <div class="card">
+      <h1>📊 Résultats en Direct</h1>
+      <p class="subtitle">Les votes sont mis à jour en temps réel</p>
+      
+      <div id="results-container">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Chargement des résultats...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getDatabase, ref, set, get, update, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+    // Configuration Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAJRxSQ6NDTAhAoUX-uqmfJT68cJjog1bw",
+      authDomain: "ecolepasdirect.firebaseapp.com",
+      projectId: "ecolepasdirect",
+      storageBucket: "ecolepasdirect.firebasestorage.app",
+      messagingSenderId: "524734025311",
+      appId: "1:524734025311:web:875aba50c8c71a82b415ea",
+      measurementId: "G-VZK62BH947",
+      databaseURL: "https://ecolepasdirect-default-rtdb.europe-west1.firebasedatabase.app"
+    };
+
+    // Initialiser Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // Références
+    const votesRef = ref(database, 'votes');
+    const form = document.getElementById('vote-form');
+    const voteBtn = document.getElementById('vote-btn');
+    const voteMessage = document.getElementById('vote-message');
+    const resultsContainer = document.getElementById('results-container');
+
+    // Vérifier si l'utilisateur a déjà voté
+    function hasVoted() {
+      return localStorage.getItem('hasVoted') === 'true';
+    }
+
+    // Marquer comme ayant voté
+    function markAsVoted() {
+      localStorage.setItem('hasVoted', 'true');
+    }
+
+    // Afficher un message
+    function showMessage(message, type) {
+      voteMessage.textContent = message;
+      voteMessage.className = `show ${type}`;
+      setTimeout(() => {
+        voteMessage.classList.remove('show');
+      }, 5000);
+    }
+
+    // Initialiser les votes dans Firebase si nécessaire
+    async function initializeVotes() {
+      try {
+        const snapshot = await get(votesRef);
+        if (!snapshot.exists()) {
+          await set(votesRef, {
+            Alex: 0,
+            Johan: 0,
+            Aucun: 0
+          });
+        }
+      } catch (error) {
+        console.error("Erreur d'initialisation:", error);
+      }
+    }
+
+    // Soumettre un vote
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const choix = document.querySelector('input[name="candidat"]:checked');
-      const result = document.getElementById("vote-result");
 
-      if (!choix) {
-        result.textContent = "Veuillez sélectionner un candidat avant de voter.";
+      if (hasVoted()) {
+        showMessage('❌ Vous avez déjà voté ! Un seul vote par personne.', 'error');
         return;
       }
 
-      result.textContent = "Merci pour votre vote ! Vous avez choisi : " + choix.value + ".";
+      const choix = document.querySelector('input[name="candidat"]:checked');
+      
+      if (!choix) {
+        showMessage('⚠️ Veuillez sélectionner un candidat avant de voter.', 'info');
+        return;
+      }
+
+      voteBtn.disabled = true;
+      voteBtn.textContent = 'Vote en cours...';
+
+      try {
+        const snapshot = await get(votesRef);
+        const votes = snapshot.val() || { Alex: 0, Johan: 0, Aucun: 0 };
+        
+        // Incrémenter le vote
+        votes[choix.value] = (votes[choix.value] || 0) + 1;
+        
+        await set(votesRef, votes);
+        
+        markAsVoted();
+        showMessage(`✅ Merci ! Votre vote pour "${choix.value}" a été enregistré.`, 'success');
+        
+        form.reset();
+        voteBtn.textContent = 'Vote enregistré ✓';
+        
+        // Désactiver le formulaire
+        document.querySelectorAll('input[name="candidat"]').forEach(input => {
+          input.disabled = true;
+        });
+        
+      } catch (error) {
+        console.error("Erreur lors du vote:", error);
+        showMessage('❌ Erreur lors de l\'enregistrement du vote. Réessayez.', 'error');
+        voteBtn.disabled = false;
+        voteBtn.textContent = 'Valider mon vote';
+      }
     });
+
+    // Afficher les résultats en temps réel
+    function displayResults(votes) {
+      const total = Object.values(votes).reduce((sum, count) => sum + count, 0);
+      
+      let html = '<div class="results-section">';
+      
+      Object.entries(votes).forEach(([candidat, count]) => {
+        const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+        
+        html += `
+          <div class="result-item">
+            <div class="result-label">${candidat}</div>
+            <div class="result-bar-container">
+              <div class="result-bar" style="width: ${percentage}%">
+                ${percentage}%
+              </div>
+            </div>
+            <div class="result-count">${count} vote${count > 1 ? 's' : ''}</div>
+          </div>
+        `;
+      });
+      
+      html += `
+        <div class="total-votes">
+          Total : <strong>${total}</strong> vote${total > 1 ? 's' : ''}
+        </div>
+      </div>`;
+      
+      resultsContainer.innerHTML = html;
+    }
+
+    // Écouter les changements en temps réel
+    onValue(votesRef, (snapshot) => {
+      const votes = snapshot.val() || { Alex: 0, Johan: 0, Aucun: 0 };
+      displayResults(votes);
+    });
+
+    // Vérifier si l'utilisateur a déjà voté au chargement
+    if (hasVoted()) {
+      voteBtn.textContent = 'Vous avez déjà voté';
+      voteBtn.disabled = true;
+      document.querySelectorAll('input[name="candidat"]').forEach(input => {
+        input.disabled = true;
+      });
+      showMessage('ℹ️ Vous avez déjà participé au vote.', 'info');
+    }
+
+    // Initialiser les votes
+    initializeVotes();
+
   </script>
+
 </body>
 </html>
