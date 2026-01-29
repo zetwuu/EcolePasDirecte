@@ -576,8 +576,8 @@
   <h3>📊 Progression</h3>
   <p>Moyenne générale</p>
   <div class="progress-bar">
-    <div style="width: 55%;">
-      12,75/20
+    <div style="width: 25%;">
+      5/20
     </div>
   </div>
 </div>
@@ -664,6 +664,19 @@
 
   window.profilesData = {};
 
+  // Fonction pour peupler les listes
+  function populateList(listId, data, formatter) {
+    const list = document.getElementById(listId);
+    if (list) {
+      list.innerHTML = "";
+      data.forEach(item => {
+        const li = document.createElement("li");
+        li.innerHTML = formatter(item);
+        list.appendChild(li);
+      });
+    }
+  }
+
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       sessionStorage.clear();
@@ -687,9 +700,36 @@
 
         window.profilesData[userData.username] = userData;
 
-        populateList("notes-list", userData.notes || [], i => `<strong>${i.matiere}</strong> : ${i.note}`);
-        populateList("devoirs-list", userData.devoirs || [], i => `<strong>${i.matiere}</strong> : ${i.description}`);
-        populateList("carnet-list", userData.carnet || [], i => `<strong>${i.date} - ${i.type}</strong> : ${i.description}`);
+        // Données par défaut négatives pour TOUS les utilisateurs
+        const defaultNotes = [
+          { matiere: "Mathématiques", note: "4/20 - Travail insuffisant" },
+          { matiere: "Français", note: "5/20 - Nombreuses fautes" },
+          { matiere: "Histoire-Géo", note: "3/20 - Leçons non apprises" },
+          { matiere: "Anglais", note: "6/20 - Participation inexistante" },
+          { matiere: "Sciences", note: "4/20 - Manque de sérieux" },
+          { matiere: "EPS", note: "7/20 - Efforts insuffisants" }
+        ];
+
+        const defaultCarnet = [
+          { date: "15/01/2026", type: "⚠️ AVERTISSEMENT", description: "Comportement inacceptable en classe. Perturbation constante du cours. Manque total de respect envers l'enseignant." },
+          { date: "20/01/2026", type: "❌ RETENUE", description: "Devoirs non faits pour la 5ème fois consécutive. Attitude désinvolte et méprisante. Retenue samedi matin de 8h à 12h." },
+          { date: "23/01/2026", type: "🚫 EXCLUSION", description: "Violence verbale envers un camarade. Langage grossier et inapproprié. Exclusion de cours immédiate." },
+          { date: "27/01/2026", type: "⛔ CONVOCATION", description: "Parents convoqués d'urgence. Résultats catastrophiques et attitude déplorable. Risque de redoublement." },
+          { date: "29/01/2026", type: "📵 CONFISCATION", description: "Téléphone confisqué en classe pour la 3ème fois. Refus d'obéir aux consignes. À récupérer par les parents uniquement." }
+        ];
+
+        const defaultDevoirs = [
+          { matiere: "Mathématiques", description: "Pour demain : Faire tous les exercices du chapitre 12 pages 145 à 167 (soit 87 exercices), rédiger une dissertation de 10 pages sur l'histoire des mathématiques de l'Antiquité à nos jours, apprendre par cœur les 50 formules du polycopié, créer un exposé PowerPoint de 30 slides sur les fractales, et résoudre les 25 problèmes bonus en fin de manuel. Aucun retard toléré." },
+          { matiere: "Français", description: "Pour vendredi : Lire les 3 œuvres intégrales (soit 1200 pages au total), faire une analyse détaillée de chaque personnage (minimum 5 pages par personnage), apprendre les 200 figures de style avec exemples, rédiger une dissertation comparative de 15 pages, préparer un exposé oral de 45 minutes, et compléter les 15 fiches de lecture. Évaluation surprise possible." },
+          { matiere: "Histoire-Géo", description: "Pour lundi : Apprendre l'intégralité des chapitres 1 à 15 (150 pages), créer 50 cartes annotées à la main avec tous les détails géographiques et historiques, rédiger un dossier de 20 pages sur les guerres mondiales, préparer une présentation de 1 heure avec maquettes, et mémoriser toutes les dates de 1789 à 2025. Contrôle noté coefficient 5." },
+          { matiere: "Anglais", description: "Pour jeudi : Apprendre par cœur les 500 verbes irréguliers avec leurs 3 formes, lire et résumer 5 romans en anglais (minimum 2000 pages), rédiger 10 lettres de motivation en anglais parfait, préparer un débat argumenté de 2 heures sur un sujet politique complexe, traduire 50 pages de textes techniques, et créer un journal audio de 30 minutes. Accent britannique exigé." },
+          { matiere: "Sciences", description: "Pour demain : Réaliser 25 expériences complètes avec compte-rendus détaillés de 10 pages chacune, apprendre tous les éléments du tableau périodique avec leurs propriétés, construire 15 maquettes scientifiques fonctionnelles, rédiger une thèse de 50 pages sur la physique quantique, résoudre 100 équations chimiques complexes, et préparer une démonstration pratique. Matériel à fournir." }
+        ];
+
+        // Utiliser TOUJOURS les données par défaut négatives (ignorer les données Firebase)
+        populateList("notes-list", defaultNotes, i => `<strong>${i.matiere}</strong> : ${i.note}`);
+        populateList("devoirs-list", defaultDevoirs, i => `<strong>${i.matiere}</strong> : ${i.description}`);
+        populateList("carnet-list", defaultCarnet, i => `<strong>${i.date} - ${i.type}</strong> : ${i.description}`);
       }
     } catch (error) {
       console.error("Erreur:", error);
