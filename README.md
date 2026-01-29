@@ -54,3 +54,7 @@ Ajout de tous les fichiers HTML et JavaScript liés à Firebase, puis création 
 (En attente de la V3, qui intégrera davantage de comptes et une messagerie plus propre / mieux optimisée.)
 
 
+29/01/2026
+
+johan: v1/v5 message     v1vote v1 conection 
+
