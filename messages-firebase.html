@@ -105,6 +105,7 @@
       border-bottom: 1px solid #eee;
       cursor: pointer;
       transition: all 0.2s;
+      position: relative;
     }
 
     .conversation-item:hover {
@@ -120,6 +121,9 @@
     .conversation-item .name {
       font-weight: 600;
       margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .conversation-item .preview {
@@ -128,6 +132,15 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    .group-badge {
+      background: #28a745;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
     }
 
     /* PANEL DE CHAT */
@@ -150,6 +163,9 @@
       margin: 0;
       color: #005fa3;
       font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .delete-btn {
@@ -179,6 +195,8 @@
       margin-bottom: 12px;
       display: flex;
       animation: slideIn 0.3s ease-in-out;
+      position: relative;
+      gap: 8px;
     }
 
     @keyframes slideIn {
@@ -198,6 +216,19 @@
 
     .message-bubble {
       max-width: 70%;
+      position: relative;
+    }
+
+    .message-sender {
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #005fa3;
+    }
+
+    .message.own .message-sender {
+      text-align: right;
+      color: #004285;
     }
 
     .message-content {
@@ -207,6 +238,7 @@
       word-break: break-word;
       white-space: normal;
       overflow-wrap: break-word;
+      position: relative;
     }
 
     .message.own .message-content {
@@ -224,6 +256,34 @@
       opacity: 0.6;
       margin-top: 4px;
       text-align: right;
+    }
+
+    .message-delete-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(220, 53, 69, 0.9);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .message-bubble:hover .message-delete-btn {
+      opacity: 1;
+    }
+
+    .message-delete-btn:hover {
+      background: #c82333;
+      transform: scale(1.1);
     }
 
     .empty-chat {
@@ -307,6 +367,161 @@
       margin-bottom: 15px;
       border: 1px solid #c3e6cb;
     }
+
+    /* MODAL POUR CRÉER UN GROUPE */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      animation: fadeIn 0.2s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: white;
+      margin: 10% auto;
+      padding: 25px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      animation: slideDown 0.3s;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+      color: #005fa3;
+      margin: 0;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #999;
+      transition: color 0.2s;
+    }
+
+    .close-modal:hover {
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #005fa3;
+      box-shadow: 0 0 0 3px rgba(0, 95, 163, 0.1);
+    }
+
+    .participant-tag {
+      display: inline-block;
+      background: #e8f0f8;
+      color: #005fa3;
+      padding: 5px 10px;
+      border-radius: 15px;
+      margin: 5px 5px 5px 0;
+      font-size: 0.9rem;
+    }
+
+    .participant-tag button {
+      background: none;
+      border: none;
+      color: #dc3545;
+      margin-left: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-primary {
+      background: #005fa3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+      margin-top: 10px;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #004285;
+      transform: scale(1.02);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-buttons button {
+      flex: 1;
+    }
+
+    #new-group-btn {
+      width: 100%;
+      margin-top: 5px;
+      padding: 8px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    #new-group-btn:hover {
+      background: #218838;
+      transform: scale(1.02);
+    }
   </style>
 </head>
 <body>
@@ -326,7 +541,10 @@
       <div class="conversations-panel">
         <div class="conversations-header">
           <h3>📬 Conversations</h3>
-          <button id="new-conv-btn" style="width: 100%; margin-top: 10px; padding: 8px; background: #005fa3; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">+ Nouvelle</button>
+          <div class="action-buttons">
+            <button id="new-conv-btn" style="padding: 8px; background: #005fa3; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">+ Privé</button>
+            <button id="new-group-btn">👥 Groupe</button>
+          </div>
         </div>
         <div id="conversations-list">
           <div class="empty-chat">Initialisation...</div>
@@ -359,6 +577,33 @@
     </div>
   </div>
 
+  <!-- MODAL CRÉATION DE GROUPE -->
+  <div id="group-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>👥 Créer un groupe</h2>
+        <button class="close-modal">&times;</button>
+      </div>
+      
+      <div class="form-group">
+        <label>Nom du groupe</label>
+        <input type="text" id="group-name-input" placeholder="Ex: Les copains, Famille..." />
+      </div>
+
+      <div class="form-group">
+        <label>Ajouter des participants</label>
+        <input type="text" id="participant-input" placeholder="Nom du participant" />
+        <button type="button" id="add-participant-btn" class="btn-primary" style="margin-top: 8px;">+ Ajouter</button>
+      </div>
+
+      <div id="participants-list" style="margin-top: 10px; margin-bottom: 15px;">
+        <!-- Les participants apparaîtront ici -->
+      </div>
+
+      <button id="create-group-btn" class="btn-primary">✅ Créer le groupe</button>
+    </div>
+  </div>
+
   <script>
     // Configuration Firebase
     const firebaseConfig = {
@@ -388,9 +633,11 @@
     console.log("✅ Firebase initialisé!");
     console.log("✅ connecté au autre boite message");
     console.log("📌vous êtes connecté en tant que:", currentUser);
-    console.log("📩vous pouvez maintenant envoyer et recevoir des messages ",currentUser);
+    console.log("📩vous pouvez maintenant envoyer et recevoir des messages",currentUser);
 
     let currentConversation = null;
+    let currentConversationData = null;
+    let groupParticipants = [];
 
     // Charger les conversations
     async function loadConversations() {
@@ -408,17 +655,27 @@
         convList.innerHTML = "";
         snapshot.forEach((doc) => {
           const data = doc.data();
-          const otherParticipant = data.participants.find(p => p !== currentUser);
+          const isGroup = data.isGroup || false;
+          
+          let displayName = "";
+          if (isGroup) {
+            displayName = data.groupName || "Groupe sans nom";
+          } else {
+            displayName = data.participants.find(p => p !== currentUser);
+          }
           
           const div = document.createElement("div");
           div.className = "conversation-item";
           
           div.innerHTML = `
-            <div class="name">${otherParticipant}</div>
+            <div class="name">
+              ${isGroup ? '👥 ' : ''}${displayName}
+              ${isGroup ? '<span class="group-badge">GROUPE</span>' : ''}
+            </div>
             <div class="preview">${data.lastMessage || "Pas de messages"}</div>
           `;
 
-          div.addEventListener("click", () => selectConversation(otherParticipant, div));
+          div.addEventListener("click", () => selectConversation(doc.id, data, div));
           convList.appendChild(div);
         });
       } catch (error) {
@@ -427,8 +684,9 @@
     }
 
     // Sélectionner une conversation
-    function selectConversation(name, element) {
-      currentConversation = name;
+    function selectConversation(convId, convData, element) {
+      currentConversation = convId;
+      currentConversationData = convData;
       
       // Mettre à jour le style actif
       document.querySelectorAll(".conversation-item").forEach(item => {
@@ -436,19 +694,27 @@
       });
       element.classList.add("active");
 
-      document.getElementById("chat-title").textContent = name;
+      const isGroup = convData.isGroup || false;
+      let displayName = "";
+      
+      if (isGroup) {
+        displayName = convData.groupName || "Groupe sans nom";
+        document.getElementById("chat-title").innerHTML = `👥 ${displayName}`;
+      } else {
+        displayName = convData.participants.find(p => p !== currentUser);
+        document.getElementById("chat-title").textContent = displayName;
+      }
+
       document.getElementById("delete-btn").style.display = "block";
       document.getElementById("input-area").style.display = "block";
 
-      loadMessages(name);
+      loadMessages(convId, isGroup);
     }
 
     // Charger les messages
-    function loadMessages(name) {
+    function loadMessages(convId, isGroup = false) {
       const chatMessages = document.getElementById("chat-messages");
       chatMessages.innerHTML = '<div class="loading">Chargement...</div>';
-
-      const convId = [currentUser, name].sort().join("_");
 
       db.collection("conversations").doc(convId).collection("messages")
         .orderBy("timestamp", "asc")
@@ -470,10 +736,15 @@
             }
 
             const time = msg.timestamp ? formatTime(msg.timestamp) : "";
+            const senderName = isGroup && msg.sender !== currentUser ? `<div class="message-sender">${msg.sender}</div>` : '';
 
             msgDiv.innerHTML = `
               <div class="message-bubble">
-                <div class="message-content">${escapeHtml(msg.content)}</div>
+                ${senderName}
+                <div class="message-content">
+                  ${escapeHtml(msg.content)}
+                  ${msg.sender === currentUser ? `<button class="message-delete-btn" onclick="deleteMessage('${convId}', '${doc.id}')">🗑️</button>` : ''}
+                </div>
                 <div class="message-time">${time}</div>
               </div>
             `;
@@ -485,6 +756,19 @@
         });
     }
 
+    // Supprimer un message individuel
+    window.deleteMessage = async function(convId, messageId) {
+      if (!confirm("Supprimer ce message?")) return;
+
+      try {
+        await db.collection("conversations").doc(convId).collection("messages").doc(messageId).delete();
+        console.log("✅ Message supprimé");
+      } catch (error) {
+        console.error("❌ Erreur:", error);
+        alert("Erreur lors de la suppression: " + error.message);
+      }
+    };
+
     // Envoyer un message
     document.getElementById("chat-form").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -495,17 +779,15 @@
       if (!message || !currentConversation) return;
 
       try {
-        const convId = [currentUser, currentConversation].sort().join("_");
         const timestamp = firebase.firestore.FieldValue.serverTimestamp();
 
-        await db.collection("conversations").doc(convId).set({
-          participants: [currentUser, currentConversation],
+        await db.collection("conversations").doc(currentConversation).update({
           lastMessage: message,
           lastSender: currentUser,
           lastTimestamp: timestamp
-        }, { merge: true });
+        });
 
-        await db.collection("conversations").doc(convId).collection("messages").add({
+        await db.collection("conversations").doc(currentConversation).collection("messages").add({
           sender: currentUser,
           content: message,
           timestamp: timestamp
@@ -526,13 +808,13 @@
       if (!confirm("Effacer cette conversation?")) return;
 
       try {
-        const convId = [currentUser, currentConversation].sort().join("_");
-        const snapshot = await db.collection("conversations").doc(convId).collection("messages").get();
+        const snapshot = await db.collection("conversations").doc(currentConversation).collection("messages").get();
         
         snapshot.forEach(doc => doc.ref.delete());
-        await db.collection("conversations").doc(convId).delete();
+        await db.collection("conversations").doc(currentConversation).delete();
 
         currentConversation = null;
+        currentConversationData = null;
         document.getElementById("chat-messages").innerHTML = '<div class="empty-chat">Conversation effacée</div>';
         document.getElementById("delete-btn").style.display = "none";
         document.getElementById("input-area").style.display = "none";
@@ -558,59 +840,133 @@
     loadConversations();
     setInterval(loadConversations, 3000);
 
-    // Bouton nouvelle conversation
+    // Bouton nouvelle conversation privée
     document.getElementById("new-conv-btn").addEventListener("click", () => {
       const name = prompt("Avec qui veux-tu discuter? (Tape le nom)");
       if (!name || name.trim() === "") return;
 
       const recipientName = name.trim();
-      
-      // Créer la conversation directement
-      currentConversation = recipientName;
-      document.getElementById("chat-title").textContent = recipientName;
-      document.getElementById("delete-btn").style.display = "block";
-      document.getElementById("input-area").style.display = "block";
-
-      const chatMessages = document.getElementById("chat-messages");
-      chatMessages.innerHTML = '<div class="empty-chat">Aucun message encore<br>Lance la conversation!</div>';
-
-      // Charger les messages en temps réel
       const convId = [currentUser, recipientName].sort().join("_");
-      db.collection("conversations").doc(convId).collection("messages")
-        .orderBy("timestamp", "asc")
-        .onSnapshot((snapshot) => {
-          chatMessages.innerHTML = "";
-          
-          if (snapshot.empty) {
-            chatMessages.innerHTML = '<div class="empty-chat">Aucun message encore</div>';
-            return;
-          }
+      
+      // Créer ou ouvrir la conversation
+      db.collection("conversations").doc(convId).set({
+        participants: [currentUser, recipientName],
+        isGroup: false,
+        lastMessage: "",
+        lastSender: currentUser,
+        lastTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).then(() => {
+        currentConversation = convId;
+        currentConversationData = { participants: [currentUser, recipientName], isGroup: false };
+        
+        document.getElementById("chat-title").textContent = recipientName;
+        document.getElementById("delete-btn").style.display = "block";
+        document.getElementById("input-area").style.display = "block";
 
-          snapshot.forEach((doc) => {
-            const msg = doc.data();
-            const msgDiv = document.createElement("div");
-            msgDiv.className = "message";
-            
-            if (msg.sender === currentUser) {
-              msgDiv.classList.add("own");
-            }
+        loadMessages(convId, false);
+        loadConversations();
+        document.getElementById("message-input").focus();
+      });
+    });
 
-            const time = msg.timestamp ? formatTime(msg.timestamp) : "";
+    // GESTION DU MODAL GROUPE
+    const modal = document.getElementById("group-modal");
+    const closeBtn = document.querySelector(".close-modal");
+    const newGroupBtn = document.getElementById("new-group-btn");
 
-            msgDiv.innerHTML = `
-              <div class="message-bubble">
-                <div class="message-content">${escapeHtml(msg.content)}</div>
-                <div class="message-time">${time}</div>
-              </div>
-            `;
+    newGroupBtn.addEventListener("click", () => {
+      modal.style.display = "block";
+      groupParticipants = [];
+      document.getElementById("group-name-input").value = "";
+      document.getElementById("participant-input").value = "";
+      document.getElementById("participants-list").innerHTML = "";
+    });
 
-            chatMessages.appendChild(msgDiv);
-          });
+    closeBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
 
-          chatMessages.scrollTop = chatMessages.scrollHeight;
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+
+    // Ajouter un participant
+    document.getElementById("add-participant-btn").addEventListener("click", () => {
+      const input = document.getElementById("participant-input");
+      const name = input.value.trim();
+
+      if (!name) return;
+      if (name === currentUser) {
+        alert("Tu es déjà dans le groupe!");
+        return;
+      }
+      if (groupParticipants.includes(name)) {
+        alert("Cette personne est déjà ajoutée!");
+        return;
+      }
+
+      groupParticipants.push(name);
+      updateParticipantsList();
+      input.value = "";
+      input.focus();
+    });
+
+    function updateParticipantsList() {
+      const list = document.getElementById("participants-list");
+      list.innerHTML = "";
+
+      groupParticipants.forEach((name, index) => {
+        const tag = document.createElement("span");
+        tag.className = "participant-tag";
+        tag.innerHTML = `${name} <button onclick="removeParticipant(${index})">×</button>`;
+        list.appendChild(tag);
+      });
+    }
+
+    window.removeParticipant = function(index) {
+      groupParticipants.splice(index, 1);
+      updateParticipantsList();
+    };
+
+    // Créer le groupe
+    document.getElementById("create-group-btn").addEventListener("click", async () => {
+      const groupName = document.getElementById("group-name-input").value.trim();
+
+      if (!groupName) {
+        alert("Donne un nom au groupe!");
+        return;
+      }
+
+      if (groupParticipants.length === 0) {
+        alert("Ajoute au moins 1 participant!");
+        return;
+      }
+
+      try {
+        const allParticipants = [currentUser, ...groupParticipants];
+        const groupId = "group_" + Date.now();
+
+        await db.collection("conversations").doc(groupId).set({
+          participants: allParticipants,
+          isGroup: true,
+          groupName: groupName,
+          createdBy: currentUser,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          lastMessage: "Groupe créé",
+          lastSender: currentUser,
+          lastTimestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-      document.getElementById("message-input").focus();
+        modal.style.display = "none";
+        loadConversations();
+        
+        alert("✅ Groupe créé!");
+      } catch (error) {
+        console.error("❌ Erreur:", error);
+        alert("Erreur: " + error.message);
+      }
     });
   </script>
 </body>
