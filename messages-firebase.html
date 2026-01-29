@@ -231,6 +231,14 @@
       color: #004285;
     }
 
+    .system-message {
+      text-align: center;
+      margin: 15px 0;
+      font-size: 0.85rem;
+      color: #999;
+      font-style: italic;
+    }
+
     .message-content {
       padding: 10px 14px;
       border-radius: 12px;
@@ -781,7 +789,10 @@
       <div class="chat-panel">
         <div class="chat-header">
           <h3 class="chat-title" id="chat-title">Sélectionne une conversation</h3>
-          <button class="delete-btn" id="delete-btn" style="display: none;">🗑️ Effacer</button>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="delete-btn" id="add-member-btn" style="display: none; background: #28a745;">👥 Ajouter</button>
+            <button class="delete-btn" id="delete-btn" style="display: none;">🗑️ Effacer</button>
+          </div>
         </div>
 
         <div class="chat-messages" id="chat-messages">
@@ -972,7 +983,8 @@
               content: "",
               imageUrl: base64Image,
               timestamp: timestamp,
-              reactions: {}
+              reactions: {},
+              readBy: [currentUser]
             });
 
             progressDiv.style.display = 'none';
@@ -1067,9 +1079,11 @@
       if (isGroup) {
         displayName = convData.groupName || "Groupe sans nom";
         document.getElementById("chat-title").innerHTML = `👥 ${displayName}`;
+        document.getElementById("add-member-btn").style.display = "block";
       } else {
         displayName = convData.participants.find(p => p !== currentUser);
         document.getElementById("chat-title").textContent = displayName;
+        document.getElementById("add-member-btn").style.display = "none";
       }
 
       document.getElementById("delete-btn").style.display = "block";
@@ -1095,15 +1109,52 @@
 
           snapshot.forEach((doc) => {
             const msg = doc.data();
+            
+            // Messages système
+            if (msg.isSystemMessage) {
+              const systemDiv = document.createElement("div");
+              systemDiv.className = "system-message";
+              systemDiv.textContent = msg.content;
+              chatMessages.appendChild(systemDiv);
+              return;
+            }
+
             const msgDiv = document.createElement("div");
             msgDiv.className = "message";
             
             if (msg.sender === currentUser) {
               msgDiv.classList.add("own");
+            } else {
+              // Marquer comme lu si pas encore fait
+              const readBy = msg.readBy || [];
+              if (!readBy.includes(currentUser)) {
+                db.collection("conversations").doc(convId).collection("messages").doc(doc.id).update({
+                  readBy: firebase.firestore.FieldValue.arrayUnion(currentUser)
+                }).catch(err => console.log('Erreur lecture:', err));
+              }
             }
 
             const time = msg.timestamp ? formatTime(msg.timestamp) : "";
             const senderName = isGroup && msg.sender !== currentUser ? `<div class="message-sender">${msg.sender}</div>` : '';
+
+            // Statut de lecture (pour messages envoyés par l'utilisateur)
+            let readStatus = '';
+            if (msg.sender === currentUser) {
+              const readBy = msg.readBy || [currentUser];
+              const participants = currentConversationData.participants || [];
+              const otherParticipants = participants.filter(p => p !== currentUser);
+              
+              if (readBy.length === 1 && readBy[0] === currentUser) {
+                // Non lu
+                readStatus = '<span style="color: #999; font-size: 0.9rem;">✓</span>';
+              } else if (readBy.length >= participants.length) {
+                // Lu par tout le monde
+                readStatus = '<span style="color: #4CAF50; font-size: 0.9rem;">✓✓</span>';
+              } else {
+                // Lu par certains
+                readStatus = '<span style="color: #4CAF50; font-size: 0.9rem;">✓✓</span>';
+              }
+            }
 
             // Contenu du message (texte ou image)
             let messageContent = '';
@@ -1146,7 +1197,7 @@
                   ${msg.sender === currentUser ? `<button class="message-delete-btn" onclick="deleteMessage('${convId}', '${doc.id}')">🗑️</button>` : ''}
                 </div>
                 <div class="message-time">
-                  ${time}
+                  ${time} ${readStatus}
                 </div>
                 <div class="message-reactions">
                   ${reactionsHtml}
@@ -1277,7 +1328,8 @@
           sender: currentUser,
           content: message,
           timestamp: timestamp,
-          reactions: {}
+          reactions: {},
+          readBy: [currentUser]
         });
 
         input.value = "";
@@ -1305,10 +1357,51 @@
         currentConversationData = null;
         document.getElementById("chat-messages").innerHTML = '<div class="empty-chat">Conversation effacée</div>';
         document.getElementById("delete-btn").style.display = "none";
+        document.getElementById("add-member-btn").style.display = "none";
         document.getElementById("input-area").style.display = "none";
         loadConversations();
       } catch (error) {
         console.error("❌ Erreur:", error);
+      }
+    });
+
+    // Ajouter un membre au groupe
+    document.getElementById("add-member-btn").addEventListener("click", async () => {
+      if (!currentConversation || !currentConversationData) return;
+      if (!currentConversationData.isGroup) return;
+
+      const memberName = prompt("Qui veux-tu ajouter au groupe?");
+      if (!memberName || memberName.trim() === "") return;
+
+      const newMember = memberName.trim();
+      const currentParticipants = currentConversationData.participants || [];
+
+      if (currentParticipants.includes(newMember)) {
+        alert("Cette personne est déjà dans le groupe!");
+        return;
+      }
+
+      try {
+        await db.collection("conversations").doc(currentConversation).update({
+          participants: firebase.firestore.FieldValue.arrayUnion(newMember)
+        });
+
+        // Message système
+        await db.collection("conversations").doc(currentConversation).collection("messages").add({
+          sender: "Système",
+          content: `${currentUser} a ajouté ${newMember} au groupe`,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          reactions: {},
+          readBy: [],
+          isSystemMessage: true
+        });
+
+        currentConversationData.participants.push(newMember);
+        alert(`✅ ${newMember} a été ajouté au groupe!`);
+        loadConversations();
+      } catch (error) {
+        console.error("❌ Erreur:", error);
+        alert("Erreur: " + error.message);
       }
     });
 
