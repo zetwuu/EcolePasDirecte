@@ -1788,9 +1788,40 @@
     }
 
     // Initialiser
-    loadConversations();
+   function listenToConversations() {
+    // On crée un écouteur qui reste ouvert
+    db.collection("conversations")
+      .where("participants", "array-contains", currentUser)
+      .onSnapshot((snapshot) => {
+          const convList = document.getElementById("conversations-list");
+          convList.innerHTML = ""; // On vide la liste actuelle
+
+          snapshot.forEach((doc) => {
+    const data = doc.data();
+    const div = document.createElement("div");
+    div.className = "conversation-item";
+    
+    // On remet ta logique d'affichage ici
+    const isGroup = data.isGroup || false;
+    const displayName = isGroup ? data.groupName : data.participants.find(p => p !== currentUser);
+    
+    div.innerHTML = `
+        <div class="name">${isGroup ? '👥 ' : ''}${displayName}</div>
+        <div class="preview">${data.lastMessage || "Pas de messages"}</div>
+    `;
+
+    div.addEventListener("click", () => selectConversation(doc.id, data, div));
+    convList.appendChild(div);
+convList.appendChild(div);
+      }); // Ferme le snapshot.forEach
+      console.log("🔄 Liste mise à jour !"); // Vérifie bien la parenthèse ici
+    }); // Ferme le onSnapshot
+} // Ferme la fonction listenToConversations
+
+// Appelle la fonction UNE SEULE FOIS au démarrage
+listenToConversations();
     loadEmojiPicker();
-    setInterval(loadConversations, 3000);
+   
 
     // Bouton nouvelle conversation privée
     document.getElementById("new-conv-btn").addEventListener("click", () => {
