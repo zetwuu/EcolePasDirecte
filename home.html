@@ -636,100 +636,77 @@
 
 </div>
 
-<script>
-  const profilesData = {
-    Alex: {
-      notes: [
-        { matiere: "Moyenne generale", note: "12,75/20" },
-        { matiere: "Maths", note: "5/20" },
-        { matiere: "Histoire", note: "1/20" },
-        { matiere: "SVT", note: "14,5/20" },
-        { matiere: "Anglais", note: "18/20" },
-        { matiere: "Physique", note: "13/20" },
-        { matiere: "Technologie", note: "16/20" },
-        { matiere: "EPS", note: "19/20" },
-        { matiere: "Français", note: "15,5/20" }
-      ],
-      devoirs: [
-        { matiere: "Français", description: "Finir le manuel en entier pour demain." },
-        { matiere: "Physique", description: "Vous savez déja ce qui vous attend..." },
-        { matiere: "Maths", description: "Révision pour le contrôle + exercices en ligne" },
-        { matiere: "Histoire", description: "Fiche sur la révolution française" },
-        { matiere: "Anglais", description: "Rédiger un mail formel - pour le 7 juin" }
-      ],
-      messages: [
-        { from: "Prof. SVT", content: "Le TP est en ligne sur Moodle." },
-        { from: "Prof. Maths", content: "N'oubliez pas la révision du chapitre 3." },
-        { from: "Prof. EPS", content: "Apportez vos baskets jeudi." },
-        { from: "Prof. Français", content: "Contrôle de lecture vendredi." }
-      ],
-      carnet: [
-        { date: "15/05/2025", type: "Observation", description: "Se met un doigt dans l'arrière-train et dit je cite (Sent c'est d'la bonne)." },
-        { date: "22/05/2025", type: "Remarque positive", description: "Participation active en SVT." },
-        { date: "27/05/2025", type: "Observation", description: "Travail non rendu en physique." }
-    ]
-      
-      
-    },
-    Johan: {
-      notes: [
-        { matiere: "moyenne generale", note: "5/20" },
-        { matiere: "Maths", note: "3/20" },
-        { matiere: "Histoire", note: "1/20" },
-        { matiere: "SVT", note: "1/20" },
-        { matiere: "Anglais", note: "1/20" },
-        { matiere: "Physique", note: "1/20" },
-        { matiere: "Français", note: "1/20" },
-        { matiere: "Technologie", note: "1/20" },
-        { matiere: "EPS", note: "1/20" }
-      ],
-      devoirs: [
-        { matiere: "Français", description: "Résumé chapitre 4 + questions 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24 et 25 - pour le 10 juin" },
-        { matiere: "Physique", description: "Exercices page 92 n° 1 à 4 - pour le 7 juin" },
-        { matiere: "Maths", description: "Révision + fiche méthode - pour le 8 juin" },
-        { matiere: "SVT", description: "Préparer exposé sur les écosystèmes" }
-      ],
-      messages: [
-        { from: "Prof. SVT", content: "Le laboratoire sera fermé vendredi." },
-        { from: "Prof. Maths", content: "Correction du dernier contrôle en ligne." },
-        { from: "Prof. Anglais", content: "Travail oral à rendre sur Teams." }
-      ],
-      carnet: [
-        { date: "9/05/2025", type: "Retenue", description: "Montre son postérieur en cours de mathématiques, ceci n'est pas un comportement acceptable." },
-        { date: "10/05/2025", type: "Remarque positive", description: "Comportement exemplaire en classe." },
-        { date: "20/05/2025", type: "Note", description: "Nécessite de travailler les conjugaisons." },
-        { date: "28/05/2025", type: "Remarque négative", description: "Participation trop faible en anglais." }
-      ]
-    }
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { 
+    getAuth, 
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { 
+    getFirestore,
+    doc,
+    getDoc
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAJRxSO6NDTAhAoUX-uqmTJT68cJjog1bw",
+    authDomain: "ecolepasdirect.firebaseapp.com",
+    projectId: "ecolepasdirect",
+    storageBucket: "ecolepasdirect.firebasestorage.app",
+    messagingSenderId: "524734025311",
+    appId: "1:524734025311:web:3a1cbbbaedb4622bb415ea"
   };
-  
 
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  if (sessionStorage.getItem("isLoggedIn") !== "true") {
-    window.location.href = "index.html";
-  }
+  window.profilesData = {};
 
-  const currentUser = sessionStorage.getItem("currentUser");
-  if (!currentUser || !profilesData[currentUser]) {
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      sessionStorage.clear();
+      window.location.href = "index.html";
+      return;
+    }
+
+    try {
+      const userDocRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        
+        sessionStorage.setItem("isLoggedIn", "true");
+        sessionStorage.setItem("currentUser", userData.username);
+        sessionStorage.setItem("userEmail", user.email);
+        sessionStorage.setItem("userId", user.uid);
+
+        document.getElementById("username-display").textContent = "Bienvenue, " + userData.username + " !";
+
+        window.profilesData[userData.username] = userData;
+
+        populateList("notes-list", userData.notes || [], i => `<strong>${i.matiere}</strong> : ${i.note}`);
+        populateList("devoirs-list", userData.devoirs || [], i => `<strong>${i.matiere}</strong> : ${i.description}`);
+        populateList("carnet-list", userData.carnet || [], i => `<strong>${i.date} - ${i.type}</strong> : ${i.description}`);
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+    }
+  });
+
+  window.logout = async function() {
+    await signOut(auth);
     sessionStorage.clear();
     window.location.href = "index.html";
-  }
-  
-  document.getElementById("username-display").textContent = "Bienvenue, " + currentUser + " !";
+  };
+</script>
 
-  function populateList(id, items, formatter) {
-    const ul = document.getElementById(id);
-    ul.innerHTML = "";
-    items.forEach(item => {
-      const li = document.createElement("li");
-      li.innerHTML = formatter(item);
-      ul.appendChild(li);
-    });
-  }
+<script>
 
-  populateList("notes-list", profilesData[currentUser].notes, i => `<strong>${i.matiere}</strong> : ${i.note}`);
-  populateList("devoirs-list", profilesData[currentUser].devoirs, i => `<strong>${i.matiere}</strong> : ${i.description}`);
-  populateList("carnet-list", profilesData[currentUser].carnet, i => `<strong>${i.date} - ${i.type}</strong> : ${i.description}`);
+ let profilesData = {};
+
 
   const buttons = document.querySelectorAll("nav button");
   const sections = document.querySelectorAll(".tab-content");
@@ -815,396 +792,6 @@
   result.textContent = "Merci pour votre vote ! Vous avez choisi : " + choix.value + ".";
 });
 
-// Le code de messagerie a été déplacé dans messages.html
-// ANCIEN CODE DE MESSAGERIE SUPPRIMÉ (voir messages.html)
-/* CODE SUPPRIMÉ
-  if (!sessionStorage.getItem("messages")) {
-    const defaultMessages = {
-      "Alex-Johan": [
-        { sender: "Alex", content: "Salut Johan! Ça va?", timestamp: "10:30" },
-        { sender: "Johan", content: "Ouais ça va! Et toi?", timestamp: "10:35" },
-        { sender: "Alex", content: "Bien bien, tu as fais tes devoirs?", timestamp: "10:40" }
-      ],
-      "Prof. SVT": [
-        { sender: "Prof. SVT", content: "Le TP est en ligne sur Moodle.", timestamp: "14:30" }
-      ],
-      "Prof. Maths": [
-        { sender: "Prof. Maths", content: "N'oubliez pas la révision du chapitre 3.", timestamp: "10:15" }
-      ],
-      "Prof. EPS": [
-        { sender: "Prof. EPS", content: "Apportez vos baskets jeudi.", timestamp: "09:00" }
-      ],
-      "Prof. Français": [
-        { sender: "Prof. Français", content: "Contrôle de lecture vendredi.", timestamp: "11:20" }
-      ],
-      "Prof. Physique": [
-        { sender: "Prof. Physique", content: "Les exercices sont à faire pour demain.", timestamp: "15:00" }
-      ]
-    };
-    sessionStorage.setItem("messages", JSON.stringify(defaultMessages));
-  }
-}
-
-const conversationsData = {
-  "Alex": {
-    name: "Alex",
-    icon: "👨",
-    key: "Alex-Johan"
-  },
-  "Johan": {
-    name: "Johan",
-    icon: "👨",
-    key: "Alex-Johan"
-  },
-  "Prof. SVT": {
-    name: "Prof. SVT",
-    icon: "👨‍🏫",
-    key: "Prof. SVT"
-  },
-  "Prof. Maths": {
-    name: "Prof. Maths",
-    icon: "📐",
-    key: "Prof. Maths"
-  },
-  "Prof. EPS": {
-    name: "Prof. EPS",
-    icon: "⚽",
-    key: "Prof. EPS"
-  },
-  "Prof. Français": {
-    name: "Prof. Français",
-    icon: "📚",
-    key: "Prof. Français"
-  },
-  "Prof. Physique": {
-    name: "Prof. Physique",
-    icon: "⚛️",
-    key: "Prof. Physique"
-  }
-};
-
-let currentConversation = null;
-
-// Initialiser les conversations
-function initializeMessaging() {
-  try {
-    initializeMessages(); // Initialiser les messages stockés
-    
-    const conversationsList = document.getElementById("conversations");
-    if (!conversationsList) {
-      console.error("conversations list not found");
-      return;
-    }
-    
-    conversationsList.innerHTML = "";
-
-    const messagesData = JSON.parse(sessionStorage.getItem("messages") || "{}");
-    const currentUser = sessionStorage.getItem("currentUser");
-
-    Object.keys(conversationsData).forEach(key => {
-      const conv = conversationsData[key];
-      
-      // Ne pas afficher la conversation avec soi-même
-      if (conv.name === currentUser) return;
-      
-      const li = document.createElement("li");
-      li.className = "conversation-item";
-      li.setAttribute("data-key", key);
-      li.style.cursor = "pointer";
-      li.onclick = () => openConversation(key);
-      
-      const messageKey = conv.key;
-      const msgs = messagesData[messageKey] || [];
-      const lastMsg = msgs.length > 0 ? msgs[msgs.length - 1] : { content: "Pas de messages" };
-      
-      li.innerHTML = `
-        <div class="conversation-item-name">${conv.icon} ${conv.name}</div>
-        <div class="conversation-item-preview">${lastMsg.content}</div>
-      `;
-      conversationsList.appendChild(li);
-    });
-    
-    console.log("Messagerie initialisée");
-    
-    // Attacher l'écouteur du formulaire
-    attachMessageFormListener();
-  } catch(e) {
-    console.error("Erreur init messagerie:", e);
-  }
-}
-
-// Ouvrir une conversation
-function openConversation(key) {
-  currentConversation = key;
-  const conv = conversationsData[key];
-  
-  if (!conv) {
-    console.error("Conversation not found:", key);
-    return;
-  }
-  
-  // Marquer comme active
-  document.querySelectorAll(".conversation-item").forEach(el => {
-    el.classList.remove("active");
-  });
-  
-  const activeItem = document.querySelector(`[data-key="${key}"]`);
-  if (activeItem) {
-    activeItem.classList.add("active");
-  }
-
-  // Mettre à jour l'en-tête
-  const chatTitle = document.getElementById("chat-title");
-  if (chatTitle) {
-    chatTitle.textContent = `${conv.icon} ${conv.name}`;
-  }
-  
-  // Afficher les messages
-  displayMessages(key);
-  
-  // Afficher le formulaire d'entrée
-  const inputArea = document.getElementById("message-input-area");
-  if (inputArea) {
-    inputArea.style.display = "block";
-  }
-  
-  // Focus sur le textarea
-  setTimeout(() => {
-    const textarea = document.getElementById("new-message");
-    if (textarea) textarea.focus();
-  }, 100);
-}
-
-// Afficher les messages d'une conversation
-function displayMessages(key) {
-  const conv = conversationsData[key];
-  if (!conv) return;
-  
-  const messagesData = JSON.parse(sessionStorage.getItem("messages") || "{}");
-  const msgs = messagesData[conv.key] || [];
-  const chatMessages = document.getElementById("chat-messages");
-  
-  if (!chatMessages) return;
-  
-  chatMessages.innerHTML = "";
-
-  if (msgs.length === 0) {
-    chatMessages.innerHTML = `<p style="color: #999; text-align: center; padding: 20px;">Aucun message pour l'instant</p>`;
-    return;
-  }
-
-  msgs.forEach(msg => {
-    const msgDiv = document.createElement("div");
-    const currentUser = sessionStorage.getItem("currentUser");
-    const isOwn = msg.sender === currentUser;
-    
-    msgDiv.className = `chat-message ${isOwn ? "sent" : "received"}`;
-    msgDiv.style.wordWrap = "break-word";
-    msgDiv.innerHTML = `
-      <strong>${msg.sender}</strong><br/>
-      ${msg.content}
-      <div class="message-time">${msg.timestamp}</div>
-    `;
-    chatMessages.appendChild(msgDiv);
-  });
-
-  // Auto-scroll vers le bas
-  setTimeout(() => {
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }, 50);
-}
-
-// Envoyer un message
-function attachMessageFormListener() {
-  const messageForm = document.getElementById("message-form");
-  if (messageForm && !messageForm.dataset.listenerAttached) {
-    messageForm.dataset.listenerAttached = "true";
-    
-    messageForm.addEventListener("submit", function(e) {
-      e.preventDefault();
-      console.log("Message form submitted");
-      
-      if (!currentConversation) {
-        alert("Sélectionne d'abord une conversation");
-        return;
-      }
-
-      const textarea = document.getElementById("new-message");
-      if (!textarea) {
-        console.error("Textarea not found");
-        return;
-      }
-      
-      const message = textarea.value.trim();
-      console.log("Message:", message);
-      
-      if (message === "") {
-        console.log("Message vide");
-        return;
-      }
-
-      const currentUser = sessionStorage.getItem("currentUser");
-      const conv = conversationsData[currentConversation];
-      
-      if (!conv) {
-        console.error("Conversation not found");
-        return;
-      }
-      
-      // Obtenir l'heure actuelle
-      const now = new Date();
-      const time = now.toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' });
-
-      // Charger les messages
-      const messagesData = JSON.parse(sessionStorage.getItem("messages") || "{}");
-      const msgs = messagesData[conv.key] || [];
-
-      // Ajouter le message de l'utilisateur courant
-      msgs.push({
-        sender: currentUser,
-        content: message,
-        timestamp: time
-      });
-
-      // Sauvegarder
-      messagesData[conv.key] = msgs;
-      sessionStorage.setItem("messages", JSON.stringify(messagesData));
-
-      // Afficher les messages mis à jour
-      displayMessages(currentConversation);
-      
-      // Si c'est une conversation entre deux élèves, simuler une réponse
-      if (conv.key === "Alex-Johan") {
-        setTimeout(() => {
-          const responses = [
-            "Ouais d'accord! 👍",
-            "Cool! 😄",
-            "T'as raison! 💯",
-            "Pas bête! 🧠",
-            "Alright! 😊",
-            "Nickel! ✨",
-            "Entendu! 👌",
-            "Clairement! 💬"
-          ];
-          const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-          const responseTime = new Date();
-          responseTime.setSeconds(responseTime.getSeconds() + 1);
-          const respTime = responseTime.toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' });
-          
-          // Déterminer qui répond (l'autre utilisateur)
-          const otherUser = currentUser === "Alex" ? "Johan" : "Alex";
-          
-          msgs.push({
-            sender: otherUser,
-            content: randomResponse,
-            timestamp: respTime
-          });
-
-          messagesData[conv.key] = msgs;
-          sessionStorage.setItem("messages", JSON.stringify(messagesData));
-          
-          displayMessages(currentConversation);
-        }, 1000);
-      }
-
-      // Réinitialiser le textarea
-      textarea.value = "";
-      textarea.focus();
-    });
-  }
-}
-
-// Envoyer un message - ancienne version (kept pour compatibilité)
-const messageForm = document.getElementById("message-form");
-if (messageForm) {
-  messageForm.addEventListener("submit", function(e) {
-    e.preventDefault();
-    console.log("Message form submitted");
-    
-    if (!currentConversation) {
-      alert("Sélectionne d'abord une conversation");
-      return;
-    }
-
-    const textarea = document.getElementById("new-message");
-    if (!textarea) {
-      console.error("Textarea not found");
-      return;
-    }
-    
-    const message = textarea.value.trim();
-    console.log("Message:", message);
-    
-    if (message === "") {
-      console.log("Message vide");
-      return;
-    }
-
-    const currentUser = sessionStorage.getItem("currentUser");
-    const conv = conversationsData[currentConversation];
-    
-    if (!conv) {
-      console.error("Conversation not found");
-      return;
-    }
-    
-    // Obtenir l'heure actuelle
-    const now = new Date();
-    const time = now.toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' });
-
-    // Charger les messages
-    const messagesData = JSON.parse(sessionStorage.getItem("messages") || "{}");
-    const msgs = messagesData[conv.key] || [];
-
-    // Ajouter le message de l'utilisateur courant
-    msgs.push({
-      sender: currentUser,
-      content: message,
-      timestamp: time
-    });
-
-    // Sauvegarder
-    messagesData[conv.key] = msgs;
-    sessionStorage.setItem("messages", JSON.stringify(messagesData));
-
-    // Afficher les messages mis à jour
-    displayMessages(currentConversation);
-    
-    // Si c'est une conversation entre deux élèves, simuler une réponse
-    if (conv.key === "Alex-Johan") {
-      setTimeout(() => {
-        const responses = [
-          "Ouais d'accord! 👍",
-          "Cool! 😄",
-          "T'as raison! 💯",
-          "Pas bête! 🧠",
-          "Alright! 😊",
-          "Nickel! ✨",
-          "Entendu! 👌",
-          "Clairement! 💬"
-        ];
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-        const responseTime = new Date();
-        responseTime.setSeconds(responseTime.getSeconds() + 1);
-        const respTime = responseTime.toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' });
-        
-        // Déterminer qui répond (l'autre utilisateur)
-        const otherUser = currentUser === "Alex" ? "Johan" : "Alex";
-        
-        msgs.push({
-          sender: otherUser,
-          content: randomResponse,
-          timestamp: respTime
-        });
-
-        messagesData[conv.key] = msgs;
-        sessionStorage.setItem("messages", JSON.stringify(messagesData));
-        
-        displayMessages(currentConversation);
-      }, 1000);
-    }
-
-*/
 
 // Code du calendrier de l'emploi du temps
 let semaineActuelle = 1;

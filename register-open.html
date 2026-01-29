@@ -1,0 +1,205 @@
+Register open · HTML
+Copier
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inscription - EcolePasDirecte</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-wrapper">
+    <div class="login-left">
+      <div class="logo-container">
+        <img src="1747986702534.jpeg" alt="Logo EcolePasDirecte" />
+      </div>
+
+      <h2>Créer un compte</h2>
+
+      <div id="error-message" class="error-message" style="display: none;"></div>
+      <div id="success-message" style="display: none; color: #28a745; margin-bottom: 15px; font-weight: 600;"></div>
+      <div id="loading-message" style="display: none; color: #005fa3; margin-bottom: 15px;">
+        Création du compte en cours...
+      </div>
+
+      <form id="register-form">
+        <label for="username">Nom d'utilisateur</label>
+        <input type="text" id="username" name="username" placeholder="Ton nom d'utilisateur" required minlength="3" />
+        <small style="color: #666;">Minimum 3 caractères</small>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="exemple@email.com" required />
+
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" name="password" minlength="6" required />
+        <small style="color: #666;">Minimum 6 caractères</small>
+
+        <label for="confirm-password">Confirmer le mot de passe</label>
+        <input type="password" id="confirm-password" name="confirm-password" required />
+
+        <button type="submit">S'inscrire</button>
+      </form>
+
+      <div class="extra-links">
+        <p>Déjà un compte ? <a href="index.html">Connectez-vous</a></p>
+      </div>
+    </div>
+
+    <div class="login-right">
+      <div class="welcome-message">
+        <h1>Rejoignez EcolePasDirecte !</h1>
+        <p>Créez votre compte en quelques secondes.</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getFirestore,
+      doc,
+      setDoc,
+      serverTimestamp,
+      query,
+      collection,
+      where,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Configuration Firebase - EcolePasDirecte
+    const firebaseConfig = {
+      apiKey: "AIzaSyAJRxSO6NDTAhAoUX-uqmTJT68cJjog1bw",
+      authDomain: "ecolepasdirect.firebaseapp.com",
+      databaseURL: "https://ecolepasdirect-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "ecolepasdirect",
+      storageBucket: "ecolepasdirect.firebasestorage.app",
+      messagingSenderId: "524734025311",
+      appId: "1:524734025311:web:3a1cbbbaedb4622bb415ea",
+      measurementId: "G-6XBK66GCXX"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const registerForm = document.getElementById("register-form");
+    const errorMessage = document.getElementById("error-message");
+    const successMessage = document.getElementById("success-message");
+    const loadingMessage = document.getElementById("loading-message");
+
+    registerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirm-password").value;
+
+      // Validation
+      if (password !== confirmPassword) {
+        errorMessage.textContent = "❌ Les mots de passe ne correspondent pas.";
+        errorMessage.style.display = "block";
+        return;
+      }
+
+      if (username.length < 3) {
+        errorMessage.textContent = "❌ Le nom d'utilisateur doit contenir au moins 3 caractères.";
+        errorMessage.style.display = "block";
+        return;
+      }
+
+      errorMessage.style.display = "none";
+      successMessage.style.display = "none";
+      loadingMessage.style.display = "block";
+
+      try {
+        console.log("🔄 Vérification du nom d'utilisateur...");
+
+        // Vérifier si le nom d'utilisateur existe déjà
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("username", "==", username));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          loadingMessage.style.display = "none";
+          errorMessage.textContent = "❌ Ce nom d'utilisateur est déjà pris.";
+          errorMessage.style.display = "block";
+          return;
+        }
+
+        console.log("🔄 Création du compte pour:", username);
+
+        // Créer le compte Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        console.log("✅ Compte Auth créé:", user.uid);
+
+        // Mettre à jour le profil
+        await updateProfile(user, {
+          displayName: username
+        });
+
+        // Créer un profil vide pour le nouvel utilisateur
+        const profileData = {
+          username: username,
+          email: email,
+          createdAt: serverTimestamp(),
+          notes: [
+            { matiere: "Moyenne generale", note: "Non calculée" }
+          ],
+          devoirs: [
+            { matiere: "Bienvenue", description: "Bienvenue sur École Pas Directe ! Commence à ajouter tes devoirs." }
+          ],
+          carnet: [
+            { date: new Date().toLocaleDateString("fr-FR"), type: "Information", description: "Compte créé avec succès !" }
+          ]
+        };
+
+        // Créer le document utilisateur dans Firestore
+        await setDoc(doc(db, "users", user.uid), profileData);
+
+        console.log("✅ Profil créé dans Firestore");
+
+        loadingMessage.style.display = "none";
+        successMessage.textContent = "✅ Compte créé avec succès ! Redirection...";
+        successMessage.style.display = "block";
+
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 2000);
+
+      } catch (error) {
+        loadingMessage.style.display = "none";
+        errorMessage.style.display = "block";
+
+        console.error("❌ Erreur inscription:", error);
+
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            errorMessage.textContent = "❌ Cet email est déjà utilisé.";
+            break;
+          case 'auth/invalid-email':
+            errorMessage.textContent = "❌ Format d'email invalide.";
+            break;
+          case 'auth/weak-password':
+            errorMessage.textContent = "❌ Le mot de passe est trop faible (min 6 caractères).";
+            break;
+          case 'auth/operation-not-allowed':
+            errorMessage.textContent = "❌ L'authentification Email/Password n'est pas activée. Active-la dans Firebase Console > Authentication.";
+            break;
+          default:
+            errorMessage.textContent = "❌ Erreur: " + error.message;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
