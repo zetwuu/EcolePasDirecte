@@ -562,7 +562,7 @@
       border: 1px solid #c3e6cb;
     }
 
-    /* MODAL POUR CRÉER UN GROUPE */
+    /* MODAL */
     .modal {
       display: none;
       position: fixed;
@@ -589,6 +589,8 @@
       max-width: 500px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.2);
       animation: slideDown 0.3s;
+      max-height: 80vh;
+      overflow-y: auto;
     }
 
     @keyframes slideDown {
@@ -756,6 +758,103 @@
       max-height: 90%;
       border-radius: 8px;
     }
+
+    /* INFO GROUPE - NOUVEAU STYLE */
+    .info-section {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .info-section:last-child {
+      border-bottom: none;
+    }
+
+    .info-section h3 {
+      color: #005fa3;
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+
+    .info-item {
+      padding: 8px 0;
+      color: #333;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: #666;
+      margin-right: 8px;
+    }
+
+    .member-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .member-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .member-item:hover {
+      background: #e9ecef;
+    }
+
+    .member-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .member-icon {
+      font-size: 1.5rem;
+    }
+
+    .member-name {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .member-role {
+      font-size: 0.8rem;
+      color: #666;
+      font-style: italic;
+    }
+
+    .creator-badge {
+      background: #ffc107;
+      color: #000;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .remove-member-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .remove-member-btn:hover {
+      background: #c82333;
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
@@ -790,8 +889,9 @@
         <div class="chat-header">
           <h3 class="chat-title" id="chat-title">Sélectionne une conversation</h3>
           <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="delete-btn" id="group-info-btn" style="display: none; background: #17a2b8;">ℹ️ Info</button>
             <button class="delete-btn" id="add-member-btn" style="display: none; background: #28a745;">👥 Ajouter</button>
-            <button class="delete-btn" id="delete-btn" style="display: none;">🗑️ Effacer</button>
+            <button class="delete-btn" id="delete-btn" style="display: none;">🗑️ Supprimer</button>
           </div>
         </div>
 
@@ -832,7 +932,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>👥 Créer un groupe</h2>
-        <button class="close-modal">&times;</button>
+        <button class="close-modal" id="close-group-modal">&times;</button>
       </div>
       
       <div class="form-group">
@@ -851,6 +951,20 @@
       </div>
 
       <button id="create-group-btn" class="btn-primary">✅ Créer le groupe</button>
+    </div>
+  </div>
+
+  <!-- MODAL INFO GROUPE -->
+  <div id="info-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>ℹ️ Informations du groupe</h2>
+        <button class="close-modal" id="close-info-modal">&times;</button>
+      </div>
+      
+      <div id="group-info-content">
+        <!-- Le contenu sera inséré ici -->
+      </div>
     </div>
   </div>
 
@@ -893,6 +1007,77 @@
     let currentConversation = null;
     let currentConversationData = null;
     let groupParticipants = [];
+
+    // GROUPE GÉNÉRAL - Rejoindre automatiquement
+    async function joinGeneralGroup() {
+      const generalGroupId = "general_group_ecole";
+      
+      try {
+        const groupRef = db.collection("conversations").doc(generalGroupId);
+        const groupDoc = await groupRef.get();
+
+        if (!groupDoc.exists) {
+          // Créer le groupe général s'il n'existe pas
+          console.log("📢 Création du groupe général...");
+          await groupRef.set({
+            participants: [currentUser],
+            isGroup: true,
+            groupName: "🌍 Groupe Général",
+            createdBy: "Système",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            lastMessage: "Bienvenue dans le groupe général!",
+            lastSender: "Système",
+            lastTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            isGeneralGroup: true
+          });
+
+          // Message de bienvenue
+          await groupRef.collection("messages").add({
+            sender: "Système",
+            content: `🎉 Bienvenue dans le groupe général! Tous les membres de l'école sont ici.`,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            reactions: {},
+            readBy: [],
+            isSystemMessage: true
+          });
+
+          console.log("✅ Groupe général créé!");
+        } else {
+          // Vérifier si l'utilisateur est déjà dans le groupe
+          const groupData = groupDoc.data();
+          const participants = groupData.participants || [];
+
+          if (!participants.includes(currentUser)) {
+            // Ajouter l'utilisateur au groupe
+            await groupRef.update({
+              participants: firebase.firestore.FieldValue.arrayUnion(currentUser),
+              lastMessage: `${currentUser} a rejoint le groupe`,
+              lastSender: "Système",
+              lastTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // Message système
+            await groupRef.collection("messages").add({
+              sender: "Système",
+              content: `👋 ${currentUser} a rejoint le groupe général!`,
+              timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+              reactions: {},
+              readBy: [],
+              isSystemMessage: true
+            });
+
+            console.log("✅ Ajouté au groupe général!");
+          } else {
+            console.log("✅ Déjà membre du groupe général");
+          }
+        }
+      } catch (error) {
+        console.error("❌ Erreur groupe général:", error);
+      }
+    }
+
+    // Rejoindre le groupe général au démarrage
+    joinGeneralGroup();
 
     // EMOJIS POPULAIRES
     const emojis = ['😊','😂','❤️','👍','😍','🎉','🔥','✨','😎','🤔','😢','😮','🙏','💪','🎈','🌟','🎊','🎁','🌈','⭐','💯','✅','❌','⚡','💫','🌺','🌸','🌼','🍕','🍔','🍟','🍦','☕','🎵','🎮','⚽','🏀','🎯','🎪','🎭','🎬'];
@@ -942,7 +1127,7 @@
       document.getElementById('photo-input').click();
     });
 
-    // Upload photo - VERSION AVEC BASE64 (sans Firebase Storage)
+    // Upload photo - VERSION AVEC BASE64
     document.getElementById('photo-input').addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -963,13 +1148,11 @@
         progressDiv.style.display = 'block';
         progressPercent.textContent = 'Traitement...';
 
-        // Convertir en Base64
         const reader = new FileReader();
         reader.onload = async function(event) {
           const base64Image = event.target.result;
           
           try {
-            // Envoyer le message avec l'image
             const timestamp = firebase.firestore.FieldValue.serverTimestamp();
 
             await db.collection("conversations").doc(currentConversation).update({
@@ -1043,13 +1226,15 @@
             displayName = data.participants.find(p => p !== currentUser);
           }
           
+          const isGeneralGroup = data.isGeneralGroup || false;
+          
           const div = document.createElement("div");
           div.className = "conversation-item";
           
           div.innerHTML = `
             <div class="name">
               ${isGroup ? '👥 ' : ''}${displayName}
-              ${isGroup ? '<span class="group-badge">GROUPE</span>' : ''}
+              ${isGeneralGroup ? '<span class="group-badge" style="background: #ff6b6b;">GÉNÉRAL</span>' : isGroup ? '<span class="group-badge">GROUPE</span>' : ''}
             </div>
             <div class="preview">${data.lastMessage || "Pas de messages"}</div>
           `;
@@ -1067,26 +1252,41 @@
       currentConversation = convId;
       currentConversationData = convData;
       
-      // Mettre à jour le style actif
       document.querySelectorAll(".conversation-item").forEach(item => {
         item.classList.remove("active");
       });
       element.classList.add("active");
 
       const isGroup = convData.isGroup || false;
+      const isGeneralGroup = convData.isGeneralGroup || false;
       let displayName = "";
       
       if (isGroup) {
         displayName = convData.groupName || "Groupe sans nom";
         document.getElementById("chat-title").innerHTML = `👥 ${displayName}`;
-        document.getElementById("add-member-btn").style.display = "block";
+        
+        // Afficher le bouton d'ajout SEULEMENT pour les groupes normaux (pas le groupe général)
+        if (isGeneralGroup) {
+          document.getElementById("add-member-btn").style.display = "none";
+        } else {
+          document.getElementById("add-member-btn").style.display = "block";
+        }
+        
+        document.getElementById("group-info-btn").style.display = "block";
       } else {
         displayName = convData.participants.find(p => p !== currentUser);
         document.getElementById("chat-title").textContent = displayName;
         document.getElementById("add-member-btn").style.display = "none";
+        document.getElementById("group-info-btn").style.display = "none";
       }
 
-      document.getElementById("delete-btn").style.display = "block";
+      // Ne pas afficher le bouton supprimer pour le groupe général
+      if (isGeneralGroup) {
+        document.getElementById("delete-btn").style.display = "none";
+      } else {
+        document.getElementById("delete-btn").style.display = "block";
+      }
+      
       document.getElementById("input-area").style.display = "block";
 
       loadMessages(convId, isGroup);
@@ -1110,7 +1310,6 @@
           snapshot.forEach((doc) => {
             const msg = doc.data();
             
-            // Messages système
             if (msg.isSystemMessage) {
               const systemDiv = document.createElement("div");
               systemDiv.className = "system-message";
@@ -1125,7 +1324,6 @@
             if (msg.sender === currentUser) {
               msgDiv.classList.add("own");
             } else {
-              // Marquer comme lu si pas encore fait
               const readBy = msg.readBy || [];
               if (!readBy.includes(currentUser)) {
                 db.collection("conversations").doc(convId).collection("messages").doc(doc.id).update({
@@ -1137,26 +1335,20 @@
             const time = msg.timestamp ? formatTime(msg.timestamp) : "";
             const senderName = isGroup && msg.sender !== currentUser ? `<div class="message-sender">${msg.sender}</div>` : '';
 
-            // Statut de lecture (pour messages envoyés par l'utilisateur)
             let readStatus = '';
             if (msg.sender === currentUser) {
               const readBy = msg.readBy || [currentUser];
               const participants = currentConversationData.participants || [];
-              const otherParticipants = participants.filter(p => p !== currentUser);
               
               if (readBy.length === 1 && readBy[0] === currentUser) {
-                // Non lu
                 readStatus = '<span style="color: #999; font-size: 0.9rem;">✓</span>';
               } else if (readBy.length >= participants.length) {
-                // Lu par tout le monde
                 readStatus = '<span style="color: #4CAF50; font-size: 0.9rem;">✓✓</span>';
               } else {
-                // Lu par certains
                 readStatus = '<span style="color: #4CAF50; font-size: 0.9rem;">✓✓</span>';
               }
             }
 
-            // Contenu du message (texte ou image)
             let messageContent = '';
             if (msg.imageUrl) {
               messageContent = `<img src="${msg.imageUrl}" class="message-image" onclick="showImageModal('${msg.imageUrl}')" alt="Image" />`;
@@ -1164,7 +1356,6 @@
               messageContent = escapeHtml(msg.content);
             }
 
-            // Réactions
             const reactions = msg.reactions || {};
             let reactionsHtml = '';
             const reactionCounts = {};
@@ -1225,7 +1416,6 @@
     window.showReactionPicker = function(event, convId, messageId) {
       event.stopPropagation();
       
-      // Fermer tous les autres pickers
       document.querySelectorAll('.reaction-picker').forEach(p => {
         p.classList.remove('show');
       });
@@ -1233,7 +1423,6 @@
       const picker = document.getElementById(`picker-${messageId}`);
       picker.classList.add('show');
       
-      // Fermer le picker si on clique ailleurs
       setTimeout(() => {
         const closeHandler = (e) => {
           if (!picker.contains(e.target)) {
@@ -1262,7 +1451,7 @@
       }
     };
 
-    // Toggle réaction (retirer si déjà présente)
+    // Toggle réaction
     window.toggleReaction = async function(convId, messageId, emoji) {
       try {
         const messageRef = db.collection("conversations").doc(convId).collection("messages").doc(messageId);
@@ -1345,6 +1534,12 @@
     document.getElementById("delete-btn").addEventListener("click", async () => {
       if (!currentConversation) return;
 
+      // Empêcher la suppression du groupe général
+      if (currentConversationData && currentConversationData.isGeneralGroup) {
+        alert("🚫 Le groupe général ne peut pas être supprimé!");
+        return;
+      }
+
       if (!confirm("Effacer cette conversation?")) return;
 
       try {
@@ -1358,6 +1553,7 @@
         document.getElementById("chat-messages").innerHTML = '<div class="empty-chat">Conversation effacée</div>';
         document.getElementById("delete-btn").style.display = "none";
         document.getElementById("add-member-btn").style.display = "none";
+        document.getElementById("group-info-btn").style.display = "none";
         document.getElementById("input-area").style.display = "none";
         loadConversations();
       } catch (error) {
@@ -1386,7 +1582,6 @@
           participants: firebase.firestore.FieldValue.arrayUnion(newMember)
         });
 
-        // Message système
         await db.collection("conversations").doc(currentConversation).collection("messages").add({
           sender: "Système",
           content: `${currentUser} a ajouté ${newMember} au groupe`,
@@ -1405,6 +1600,169 @@
       }
     });
 
+    // NOUVEAU: Afficher les informations du groupe
+    document.getElementById("group-info-btn").addEventListener("click", async () => {
+      if (!currentConversation || !currentConversationData) return;
+      if (!currentConversationData.isGroup) return;
+
+      const modal = document.getElementById("info-modal");
+      const content = document.getElementById("group-info-content");
+
+      try {
+        const convDoc = await db.collection("conversations").doc(currentConversation).get();
+        const data = convDoc.data();
+
+        const createdAt = data.createdAt ? formatDate(data.createdAt) : "Date inconnue";
+        const creator = data.createdBy || "Inconnu";
+        const participants = data.participants || [];
+        const isCreator = creator === currentUser;
+        const isGeneralGroup = data.isGeneralGroup || false;
+
+        let membersHtml = '';
+        participants.forEach(member => {
+          const isGroupCreator = member === creator;
+          const canRemove = isCreator && member !== currentUser && !isGeneralGroup;
+
+          membersHtml += `
+            <div class="member-item">
+              <div class="member-info">
+                <span class="member-icon">👤</span>
+                <div>
+                  <div class="member-name">
+                    ${member}
+                    ${isGroupCreator && !isGeneralGroup ? '<span class="creator-badge">CRÉATEUR</span>' : ''}
+                  </div>
+                  ${member === currentUser ? '<div class="member-role">C\'est toi!</div>' : ''}
+                </div>
+              </div>
+              ${canRemove ? `<button class="remove-member-btn" onclick="removeMember('${member}')">🗑️ Retirer</button>` : ''}
+            </div>
+          `;
+        });
+
+        let specialNotice = '';
+        if (isGeneralGroup) {
+          specialNotice = `
+            <div class="info-section">
+              <div style="padding: 12px; background: #d1ecf1; border-radius: 8px; border: 1px solid #bee5eb;">
+                <strong>🌍 Groupe Général de l'École</strong>
+                <p style="margin: 8px 0 0 0; font-size: 0.9rem; color: #0c5460;">
+                  Ce groupe contient automatiquement tous les membres de l'école. 
+                  Impossible de supprimer ce groupe ou de retirer des membres.
+                </p>
+              </div>
+            </div>
+          `;
+        } else if (isCreator) {
+          specialNotice = `
+            <div class="info-section">
+              <div style="padding: 12px; background: #fff3cd; border-radius: 8px; border: 1px solid #ffeaa7;">
+                <strong>ℹ️ Tu es le créateur du groupe</strong>
+                <p style="margin: 8px 0 0 0; font-size: 0.9rem; color: #856404;">
+                  Tu peux retirer des membres en cliquant sur le bouton 🗑️ à côté de leur nom.
+                </p>
+              </div>
+            </div>
+          `;
+        }
+
+        content.innerHTML = `
+          <div class="info-section">
+            <h3>📋 Détails du groupe</h3>
+            <div class="info-item">
+              <span class="info-label">Nom:</span>
+              <span>${data.groupName || "Sans nom"}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Créé par:</span>
+              <span>${creator}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Créé le:</span>
+              <span>${createdAt}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Membres:</span>
+              <span>${participants.length} personne${participants.length > 1 ? 's' : ''}</span>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <h3>👥 Membres du groupe</h3>
+            <div class="member-list">
+              ${membersHtml}
+            </div>
+          </div>
+
+          ${specialNotice}
+        `;
+
+        modal.style.display = "block";
+      } catch (error) {
+        console.error("❌ Erreur:", error);
+        alert("Erreur lors du chargement des infos: " + error.message);
+      }
+    });
+
+    // NOUVEAU: Retirer un membre du groupe
+    window.removeMember = async function(memberName) {
+      if (!currentConversation || !currentConversationData) return;
+      
+      const creator = currentConversationData.createdBy;
+      if (creator !== currentUser) {
+        alert("Seul le créateur peut retirer des membres!");
+        return;
+      }
+
+      if (!confirm(`Retirer ${memberName} du groupe?`)) return;
+
+      try {
+        await db.collection("conversations").doc(currentConversation).update({
+          participants: firebase.firestore.FieldValue.arrayRemove(memberName)
+        });
+
+        await db.collection("conversations").doc(currentConversation).collection("messages").add({
+          sender: "Système",
+          content: `${currentUser} a retiré ${memberName} du groupe`,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          reactions: {},
+          readBy: [],
+          isSystemMessage: true
+        });
+
+        currentConversationData.participants = currentConversationData.participants.filter(p => p !== memberName);
+        
+        document.getElementById("info-modal").style.display = "none";
+        
+        alert(`✅ ${memberName} a été retiré du groupe!`);
+        loadConversations();
+      } catch (error) {
+        console.error("❌ Erreur:", error);
+        alert("Erreur: " + error.message);
+      }
+    };
+
+    // Gestion des modals
+    document.getElementById("close-group-modal").addEventListener("click", () => {
+      document.getElementById("group-modal").style.display = "none";
+    });
+
+    document.getElementById("close-info-modal").addEventListener("click", () => {
+      document.getElementById("info-modal").style.display = "none";
+    });
+
+    window.addEventListener("click", (e) => {
+      const groupModal = document.getElementById("group-modal");
+      const infoModal = document.getElementById("info-modal");
+      
+      if (e.target === groupModal) {
+        groupModal.style.display = "none";
+      }
+      if (e.target === infoModal) {
+        infoModal.style.display = "none";
+      }
+    });
+
     // Fonctions utilitaires
     function escapeHtml(text) {
       const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
@@ -1415,6 +1773,18 @@
       if (!timestamp) return "";
       const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
       return date.toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatDate(timestamp) {
+      if (!timestamp) return "";
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      return date.toLocaleDateString("fr-FR", { 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     }
 
     // Initialiser
@@ -1430,7 +1800,6 @@
       const recipientName = name.trim();
       const convId = [currentUser, recipientName].sort().join("_");
       
-      // Créer ou ouvrir la conversation
       db.collection("conversations").doc(convId).set({
         participants: [currentUser, recipientName],
         isGroup: false,
@@ -1452,26 +1821,14 @@
     });
 
     // GESTION DU MODAL GROUPE
-    const modal = document.getElementById("group-modal");
-    const closeBtn = document.querySelector(".close-modal");
     const newGroupBtn = document.getElementById("new-group-btn");
 
     newGroupBtn.addEventListener("click", () => {
-      modal.style.display = "block";
+      document.getElementById("group-modal").style.display = "block";
       groupParticipants = [];
       document.getElementById("group-name-input").value = "";
       document.getElementById("participant-input").value = "";
       document.getElementById("participants-list").innerHTML = "";
-    });
-
-    closeBtn.addEventListener("click", () => {
-      modal.style.display = "none";
-    });
-
-    window.addEventListener("click", (e) => {
-      if (e.target === modal) {
-        modal.style.display = "none";
-      }
     });
 
     // Ajouter un participant
@@ -1541,7 +1898,7 @@
           lastTimestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        modal.style.display = "none";
+        document.getElementById("group-modal").style.display = "none";
         loadConversations();
         
         alert("✅ Groupe créé!");
