@@ -251,11 +251,27 @@
       color: #333;
     }
 
+    .message-image {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-top: 5px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .message-image:hover {
+      transform: scale(1.02);
+    }
+
     .message-time {
       font-size: 0.75rem;
       opacity: 0.6;
       margin-top: 4px;
       text-align: right;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      justify-content: flex-end;
     }
 
     .message-delete-btn {
@@ -286,6 +302,98 @@
       transform: scale(1.1);
     }
 
+    /* RÉACTIONS */
+    .message-reactions {
+      display: flex;
+      gap: 4px;
+      margin-top: 5px;
+      flex-wrap: wrap;
+    }
+
+    .reaction-item {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #dee2e6;
+      padding: 2px 6px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .reaction-item:hover {
+      background: #fff;
+      transform: scale(1.1);
+    }
+
+    .reaction-item.own-reaction {
+      background: #e8f0f8;
+      border-color: #005fa3;
+    }
+
+    .reaction-emoji {
+      font-size: 1rem;
+    }
+
+    .reaction-count {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .add-reaction-btn {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px dashed #dee2e6;
+      padding: 2px 6px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.2s;
+    }
+
+    .message-bubble:hover .add-reaction-btn {
+      opacity: 1;
+    }
+
+    .add-reaction-btn:hover {
+      background: #fff;
+      border-color: #005fa3;
+    }
+
+    .reaction-picker {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 8px;
+      display: none;
+      gap: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 100;
+    }
+
+    .reaction-picker.show {
+      display: flex;
+    }
+
+    .reaction-option {
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 5px;
+      transition: all 0.2s;
+    }
+
+    .reaction-option:hover {
+      background: #f0f0f0;
+      transform: scale(1.2);
+    }
+
     .empty-chat {
       display: flex;
       align-items: center;
@@ -312,22 +420,58 @@
     .chat-form {
       display: flex;
       gap: 10px;
+      align-items: flex-end;
+    }
+
+    .input-wrapper {
+      flex: 1;
+      position: relative;
     }
 
     #message-input {
-      flex: 1;
-      padding: 10px 14px;
+      width: 100%;
+      padding: 10px 50px 10px 14px;
       border: 1px solid #dee2e6;
       border-radius: 24px;
       font-family: 'Poppins', sans-serif;
       font-size: 1rem;
       transition: all 0.2s;
+      resize: none;
+      min-height: 44px;
+      max-height: 120px;
     }
 
     #message-input:focus {
       outline: none;
       border-color: #005fa3;
       box-shadow: 0 0 0 3px rgba(0, 95, 163, 0.1);
+    }
+
+    .input-actions {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      gap: 5px;
+    }
+
+    .emoji-btn, .photo-btn {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 50%;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .emoji-btn:hover, .photo-btn:hover {
+      background: #f0f0f0;
+      transform: scale(1.1);
     }
 
     .send-btn {
@@ -339,6 +483,7 @@
       cursor: pointer;
       font-weight: 600;
       transition: all 0.2s;
+      height: 44px;
     }
 
     .send-btn:hover {
@@ -348,6 +493,47 @@
 
     .send-btn:active {
       transform: scale(0.95);
+    }
+
+    /* EMOJI PICKER */
+    .emoji-picker {
+      position: absolute;
+      bottom: 60px;
+      right: 10px;
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 12px;
+      padding: 15px;
+      display: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      z-index: 100;
+      max-width: 320px;
+    }
+
+    .emoji-picker.show {
+      display: block;
+    }
+
+    .emoji-categories {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 5px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .emoji-item {
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 5px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .emoji-item:hover {
+      background: #f0f0f0;
+      transform: scale(1.2);
     }
 
     .error-message {
@@ -522,6 +708,46 @@
       background: #218838;
       transform: scale(1.02);
     }
+
+    #photo-input {
+      display: none;
+    }
+
+    .upload-progress {
+      padding: 10px;
+      background: #e8f0f8;
+      border-radius: 6px;
+      margin-top: 10px;
+      text-align: center;
+      color: #005fa3;
+      font-weight: 600;
+    }
+
+    /* IMAGE PREVIEW MODAL */
+    .image-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      animation: fadeIn 0.2s;
+      cursor: pointer;
+    }
+
+    .image-modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .image-modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
@@ -564,14 +790,27 @@
 
         <div class="chat-input-area" id="input-area" style="display: none;">
           <form class="chat-form" id="chat-form">
-            <input 
-              type="text" 
-              id="message-input" 
-              placeholder="Écris ton message..." 
-              autocomplete="off"
-            />
+            <div class="input-wrapper">
+              <textarea 
+                id="message-input" 
+                placeholder="Écris ton message..." 
+                autocomplete="off"
+                rows="1"
+              ></textarea>
+              <div class="input-actions">
+                <button type="button" class="emoji-btn" id="emoji-btn">😊</button>
+                <button type="button" class="photo-btn" id="photo-btn">📷</button>
+              </div>
+              <div class="emoji-picker" id="emoji-picker">
+                <div class="emoji-categories" id="emoji-categories"></div>
+              </div>
+            </div>
+            <input type="file" id="photo-input" accept="image/*" />
             <button type="submit" class="send-btn">Envoyer ✉️</button>
           </form>
+          <div id="upload-progress" class="upload-progress" style="display: none;">
+            Envoi de la photo... <span id="progress-percent">0%</span>
+          </div>
         </div>
       </div>
     </div>
@@ -602,6 +841,11 @@
 
       <button id="create-group-btn" class="btn-primary">✅ Créer le groupe</button>
     </div>
+  </div>
+
+  <!-- IMAGE PREVIEW MODAL -->
+  <div id="image-modal" class="image-modal">
+    <img id="modal-image" src="" alt="Image" />
   </div>
 
   <script>
@@ -638,6 +882,129 @@
     let currentConversation = null;
     let currentConversationData = null;
     let groupParticipants = [];
+
+    // EMOJIS POPULAIRES
+    const emojis = ['😊','😂','❤️','👍','😍','🎉','🔥','✨','😎','🤔','😢','😮','🙏','💪','🎈','🌟','🎊','🎁','🌈','⭐','💯','✅','❌','⚡','💫','🌺','🌸','🌼','🍕','🍔','🍟','🍦','☕','🎵','🎮','⚽','🏀','🎯','🎪','🎭','🎬'];
+
+    // Charger les emojis dans le picker
+    function loadEmojiPicker() {
+      const container = document.getElementById('emoji-categories');
+      container.innerHTML = '';
+      emojis.forEach(emoji => {
+        const span = document.createElement('span');
+        span.className = 'emoji-item';
+        span.textContent = emoji;
+        span.onclick = () => insertEmoji(emoji);
+        container.appendChild(span);
+      });
+    }
+
+    function insertEmoji(emoji) {
+      const input = document.getElementById('message-input');
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const text = input.value;
+      input.value = text.substring(0, start) + emoji + text.substring(end);
+      input.focus();
+      input.selectionStart = input.selectionEnd = start + emoji.length;
+      document.getElementById('emoji-picker').classList.remove('show');
+    }
+
+    // Toggle emoji picker
+    document.getElementById('emoji-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('emoji-picker').classList.toggle('show');
+    });
+
+    // Fermer le picker si on clique ailleurs
+    document.addEventListener('click', (e) => {
+      const picker = document.getElementById('emoji-picker');
+      const btn = document.getElementById('emoji-btn');
+      if (!picker.contains(e.target) && e.target !== btn) {
+        picker.classList.remove('show');
+      }
+    });
+
+    // Bouton photo
+    document.getElementById('photo-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('photo-input').click();
+    });
+
+    // Upload photo - VERSION AVEC BASE64 (sans Firebase Storage)
+    document.getElementById('photo-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('Seulement des images!');
+        return;
+      }
+
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Image trop grosse! Max 2MB');
+        return;
+      }
+
+      try {
+        const progressDiv = document.getElementById('upload-progress');
+        const progressPercent = document.getElementById('progress-percent');
+        progressDiv.style.display = 'block';
+        progressPercent.textContent = 'Traitement...';
+
+        // Convertir en Base64
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+          const base64Image = event.target.result;
+          
+          try {
+            // Envoyer le message avec l'image
+            const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+
+            await db.collection("conversations").doc(currentConversation).update({
+              lastMessage: "📷 Photo",
+              lastSender: currentUser,
+              lastTimestamp: timestamp
+            });
+
+            await db.collection("conversations").doc(currentConversation).collection("messages").add({
+              sender: currentUser,
+              content: "",
+              imageUrl: base64Image,
+              timestamp: timestamp,
+              reactions: {}
+            });
+
+            progressDiv.style.display = 'none';
+            document.getElementById('photo-input').value = '';
+            console.log('✅ Photo envoyée!');
+          } catch (error) {
+            console.error('❌ Erreur envoi:', error);
+            alert('Erreur lors de l\'envoi: ' + error.message);
+            progressDiv.style.display = 'none';
+          }
+        };
+
+        reader.onerror = function(error) {
+          console.error('❌ Erreur lecture:', error);
+          alert('Erreur lors de la lecture du fichier');
+          progressDiv.style.display = 'none';
+        };
+
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('❌ Erreur:', error);
+        alert('Erreur: ' + error.message);
+        progressDiv.style.display = 'none';
+      }
+    });
+
+    // Auto-resize textarea
+    const messageInput = document.getElementById('message-input');
+    messageInput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
 
     // Charger les conversations
     async function loadConversations() {
@@ -738,14 +1105,61 @@
             const time = msg.timestamp ? formatTime(msg.timestamp) : "";
             const senderName = isGroup && msg.sender !== currentUser ? `<div class="message-sender">${msg.sender}</div>` : '';
 
+            // Contenu du message (texte ou image)
+            let messageContent = '';
+            if (msg.imageUrl) {
+              messageContent = `<img src="${msg.imageUrl}" class="message-image" onclick="showImageModal('${msg.imageUrl}')" alt="Image" />`;
+            } else {
+              messageContent = escapeHtml(msg.content);
+            }
+
+            // Réactions
+            const reactions = msg.reactions || {};
+            let reactionsHtml = '';
+            const reactionCounts = {};
+            
+            Object.keys(reactions).forEach(userId => {
+              const emoji = reactions[userId];
+              if (!reactionCounts[emoji]) {
+                reactionCounts[emoji] = { count: 0, users: [] };
+              }
+              reactionCounts[emoji].count++;
+              reactionCounts[emoji].users.push(userId);
+            });
+
+            Object.keys(reactionCounts).forEach(emoji => {
+              const data = reactionCounts[emoji];
+              const isOwn = data.users.includes(currentUser);
+              reactionsHtml += `
+                <span class="reaction-item ${isOwn ? 'own-reaction' : ''}" onclick="toggleReaction('${convId}', '${doc.id}', '${emoji}')">
+                  <span class="reaction-emoji">${emoji}</span>
+                  <span class="reaction-count">${data.count}</span>
+                </span>
+              `;
+            });
+
             msgDiv.innerHTML = `
               <div class="message-bubble">
                 ${senderName}
                 <div class="message-content">
-                  ${escapeHtml(msg.content)}
+                  ${messageContent}
                   ${msg.sender === currentUser ? `<button class="message-delete-btn" onclick="deleteMessage('${convId}', '${doc.id}')">🗑️</button>` : ''}
                 </div>
-                <div class="message-time">${time}</div>
+                <div class="message-time">
+                  ${time}
+                </div>
+                <div class="message-reactions">
+                  ${reactionsHtml}
+                  <span class="add-reaction-btn" onclick="showReactionPicker(event, '${convId}', '${doc.id}')">➕</span>
+                </div>
+                <div class="reaction-picker" id="picker-${doc.id}">
+                  <span class="reaction-option" onclick="addReaction('${convId}', '${doc.id}', '👍')">👍</span>
+                  <span class="reaction-option" onclick="addReaction('${convId}', '${doc.id}', '❤️')">❤️</span>
+                  <span class="reaction-option" onclick="addReaction('${convId}', '${doc.id}', '😂')">😂</span>
+                  <span class="reaction-option" onclick="addReaction('${convId}', '${doc.id}', '😮')">😮</span>
+                  <span class="reaction-option" onclick="addReaction('${convId}', '${doc.id}', '😢')">😢</span>
+                  <span class="reaction-option" onclick="addReaction('${convId}', '${doc.id}', '🔥')">🔥</span>
+                </div>
               </div>
             `;
 
@@ -755,6 +1169,78 @@
           chatMessages.scrollTop = chatMessages.scrollHeight;
         });
     }
+
+    // Afficher le sélecteur de réaction
+    window.showReactionPicker = function(event, convId, messageId) {
+      event.stopPropagation();
+      
+      // Fermer tous les autres pickers
+      document.querySelectorAll('.reaction-picker').forEach(p => {
+        p.classList.remove('show');
+      });
+      
+      const picker = document.getElementById(`picker-${messageId}`);
+      picker.classList.add('show');
+      
+      // Fermer le picker si on clique ailleurs
+      setTimeout(() => {
+        const closeHandler = (e) => {
+          if (!picker.contains(e.target)) {
+            picker.classList.remove('show');
+            document.removeEventListener('click', closeHandler);
+          }
+        };
+        document.addEventListener('click', closeHandler);
+      }, 10);
+    };
+
+    // Ajouter une réaction
+    window.addReaction = async function(convId, messageId, emoji) {
+      try {
+        const messageRef = db.collection("conversations").doc(convId).collection("messages").doc(messageId);
+        const messageDoc = await messageRef.get();
+        const reactions = messageDoc.data().reactions || {};
+        
+        reactions[currentUser] = emoji;
+        
+        await messageRef.update({ reactions });
+        
+        document.getElementById(`picker-${messageId}`).classList.remove('show');
+      } catch (error) {
+        console.error('❌ Erreur:', error);
+      }
+    };
+
+    // Toggle réaction (retirer si déjà présente)
+    window.toggleReaction = async function(convId, messageId, emoji) {
+      try {
+        const messageRef = db.collection("conversations").doc(convId).collection("messages").doc(messageId);
+        const messageDoc = await messageRef.get();
+        const reactions = messageDoc.data().reactions || {};
+        
+        if (reactions[currentUser] === emoji) {
+          delete reactions[currentUser];
+        } else {
+          reactions[currentUser] = emoji;
+        }
+        
+        await messageRef.update({ reactions });
+      } catch (error) {
+        console.error('❌ Erreur:', error);
+      }
+    };
+
+    // Afficher l'image en grand
+    window.showImageModal = function(url) {
+      const modal = document.getElementById('image-modal');
+      const img = document.getElementById('modal-image');
+      img.src = url;
+      modal.classList.add('show');
+    };
+
+    document.getElementById('image-modal').addEventListener('click', function() {
+      this.classList.remove('show');
+    });
 
     // Supprimer un message individuel
     window.deleteMessage = async function(convId, messageId) {
@@ -790,10 +1276,12 @@
         await db.collection("conversations").doc(currentConversation).collection("messages").add({
           sender: currentUser,
           content: message,
-          timestamp: timestamp
+          timestamp: timestamp,
+          reactions: {}
         });
 
         input.value = "";
+        input.style.height = 'auto';
         input.focus();
       } catch (error) {
         console.error("❌ Erreur:", error);
@@ -838,6 +1326,7 @@
 
     // Initialiser
     loadConversations();
+    loadEmojiPicker();
     setInterval(loadConversations, 3000);
 
     // Bouton nouvelle conversation privée
