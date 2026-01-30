@@ -973,7 +973,7 @@
     <img id="modal-image" src="" alt="Image" />
   </div>
 
-  <script>
+<script>
     // Configuration Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAJRxSO6NDTAhAoUX-uqmTJT68cJjog1bw",
@@ -987,6 +987,12 @@
     // Initialiser Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    // Activer le cache
+    db.enablePersistence()
+      .catch((err) => {
+        console.log('Cache:', err.code);
+      });
 
     // Vérification d'authentification
     if (sessionStorage.getItem("isLoggedIn") !== "true") {
@@ -1007,8 +1013,11 @@
     let currentConversation = null;
     let currentConversationData = null;
     let groupParticipants = [];
+    let currentMessagesListener = null;
 
-    // GROUPE GÉNÉRAL - Rejoindre automatiquement
+    // ⚠️ GROUPE GÉNÉRAL DÉSACTIVÉ - Consomme trop de ressources avec 100+ personnes
+    // Décommentez seulement si vous passez au forfait payant
+    /*
     async function joinGeneralGroup() {
       const generalGroupId = "general_group_ecole";
       
@@ -1077,7 +1086,8 @@
     }
 
     // Rejoindre le groupe général au démarrage
-    joinGeneralGroup();
+    // joinGeneralGroup(); // ← DÉSACTIVÉ pour économiser
+    */
 
     // EMOJIS POPULAIRES
     const emojis = ['😊','😂','❤️','👍','😍','🎉','🔥','✨','😎','🤔','😢','😮','🙏','💪','🎈','🌟','🎊','🎁','🌈','⭐','💯','✅','❌','⚡','💫','🌺','🌸','🌼','🍕','🍔','🍟','🍦','☕','🎵','🎮','⚽','🏀','🎯','🎪','🎭','🎬'];
@@ -1201,54 +1211,13 @@
       this.style.height = Math.min(this.scrollHeight, 120) + 'px';
     });
 
-    // Charger les conversations
-    async function loadConversations() {
-      try {
-        const convList = document.getElementById("conversations-list");
-        const snapshot = await db.collection("conversations")
-          .where("participants", "array-contains", currentUser)
-          .get();
-
-        if (snapshot.empty) {
-          convList.innerHTML = '<div class="empty-chat">Aucune conversation<br>Commencez une nouvelle!</div>';
-          return;
-        }
-
-        convList.innerHTML = "";
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          const isGroup = data.isGroup || false;
-          
-          let displayName = "";
-          if (isGroup) {
-            displayName = data.groupName || "Groupe sans nom";
-          } else {
-            displayName = data.participants.find(p => p !== currentUser);
-          }
-          
-          const isGeneralGroup = data.isGeneralGroup || false;
-          
-          const div = document.createElement("div");
-          div.className = "conversation-item";
-          
-          div.innerHTML = `
-            <div class="name">
-              ${isGroup ? '👥 ' : ''}${displayName}
-              ${isGeneralGroup ? '<span class="group-badge" style="background: #ff6b6b;">GÉNÉRAL</span>' : isGroup ? '<span class="group-badge">GROUPE</span>' : ''}
-            </div>
-            <div class="preview">${data.lastMessage || "Pas de messages"}</div>
-          `;
-
-          div.addEventListener("click", () => selectConversation(doc.id, data, div));
-          convList.appendChild(div);
-        });
-      } catch (error) {
-        console.error("❌ Erreur:", error);
-      }
-    }
-
     // Sélectionner une conversation
     function selectConversation(convId, convData, element) {
+      // Détacher l'ancien listener
+      if (currentMessagesListener) {
+        currentMessagesListener();
+      }
+
       currentConversation = convId;
       currentConversationData = convData;
       
@@ -1292,13 +1261,15 @@
       loadMessages(convId, isGroup);
     }
 
-    // Charger les messages
+    // ⚡ OPTIMISATION MAXIMALE: Charger les messages (LIMITE À 30)
     function loadMessages(convId, isGroup = false) {
       const chatMessages = document.getElementById("chat-messages");
       chatMessages.innerHTML = '<div class="loading">Chargement...</div>';
 
-      db.collection("conversations").doc(convId).collection("messages")
-        .orderBy("timestamp", "asc")
+      // ⚡ LIMITE À 30 MESSAGES SEULEMENT (économie maximale)
+      currentMessagesListener = db.collection("conversations").doc(convId).collection("messages")
+        .orderBy("timestamp", "desc")
+        .limit(30)  // ← SEULEMENT 30 MESSAGES
         .onSnapshot((snapshot) => {
           chatMessages.innerHTML = "";
           
@@ -1307,9 +1278,15 @@
             return;
           }
 
+          // ⚡ Inverser l'ordre pour afficher correctement
+          const messages = [];
           snapshot.forEach((doc) => {
-            const msg = doc.data();
-            
+            messages.push({ id: doc.id, data: doc.data() });
+          });
+          messages.reverse();
+
+          // Boucler sur les messages inversés
+          messages.forEach(({ id, data: msg }) => {
             if (msg.isSystemMessage) {
               const systemDiv = document.createElement("div");
               systemDiv.className = "system-message";
@@ -1325,10 +1302,13 @@
               msgDiv.classList.add("own");
             } else {
               const readBy = msg.readBy || [];
+              // ⚡ Attendre 5 secondes avant de marquer comme lu (économie d'écritures)
               if (!readBy.includes(currentUser)) {
-                db.collection("conversations").doc(convId).collection("messages").doc(doc.id).update({
-                  readBy: firebase.firestore.FieldValue.arrayUnion(currentUser)
-                }).catch(err => console.log('Erreur lecture:', err));
+                setTimeout(() => {
+                  db.collection("conversations").doc(convId).collection("messages").doc(id).update({
+                    readBy: firebase.firestore.FieldValue.arrayUnion(currentUser)
+                  }).catch(err => console.log('Erreur lecture:', err));
+                }, 5000); // 5 secondes
               }
             }
 
@@ -1373,7 +1353,7 @@
               const data = reactionCounts[emoji];
               const isOwn = data.users.includes(currentUser);
               reactionsHtml += `
-                <span class="reaction-item ${isOwn ? 'own-reaction' : ''}" onclick="toggleReaction('${convId}', '${doc.id}', '${emoji}')">
+                <span class="reaction-item ${isOwn ? 'own-reaction' : ''}" onclick="toggleReaction('${convId}', '${id}', '${emoji}')">
                   <span class="reaction-emoji">${emoji}</span>
                   <span class="reaction-count">${data.count}</span>
                 </span>
@@ -1385,22 +1365,22 @@
                 ${senderName}
                 <div class="message-content">
                   ${messageContent}
-                  ${msg.sender === currentUser ? `<button class="message-delete-btn" onclick="deleteMessage('${convId}', '${doc.id}')">🗑️</button>` : ''}
+                  ${msg.sender === currentUser ? `<button class="message-delete-btn" onclick="deleteMessage('${convId}', '${id}')">🗑️</button>` : ''}
                 </div>
                 <div class="message-time">
                   ${time} ${readStatus}
                 </div>
                 <div class="message-reactions">
                   ${reactionsHtml}
-                  <span class="add-reaction-btn" onclick="showReactionPicker(event, '${convId}', '${doc.id}')">➕</span>
+                  <span class="add-reaction-btn" onclick="showReactionPicker(event, '${convId}', '${id}')">➕</span>
                 </div>
-                <div class="reaction-picker" id="picker-${doc.id}">
-                  <span class="reaction-option" onclick="addReaction('${convId}', '${doc.id}', '👍')">👍</span>
-                  <span class="reaction-option" onclick="addReaction('${convId}', '${doc.id}', '❤️')">❤️</span>
-                  <span class="reaction-option" onclick="addReaction('${convId}', '${doc.id}', '😂')">😂</span>
-                  <span class="reaction-option" onclick="addReaction('${convId}', '${doc.id}', '😮')">😮</span>
-                  <span class="reaction-option" onclick="addReaction('${convId}', '${doc.id}', '😢')">😢</span>
-                  <span class="reaction-option" onclick="addReaction('${convId}', '${doc.id}', '🔥')">🔥</span>
+                <div class="reaction-picker" id="picker-${id}">
+                  <span class="reaction-option" onclick="addReaction('${convId}', '${id}', '👍')">👍</span>
+                  <span class="reaction-option" onclick="addReaction('${convId}', '${id}', '❤️')">❤️</span>
+                  <span class="reaction-option" onclick="addReaction('${convId}', '${id}', '😂')">😂</span>
+                  <span class="reaction-option" onclick="addReaction('${convId}', '${id}', '😮')">😮</span>
+                  <span class="reaction-option" onclick="addReaction('${convId}', '${id}', '😢')">😢</span>
+                  <span class="reaction-option" onclick="addReaction('${convId}', '${id}', '🔥')">🔥</span>
                 </div>
               </div>
             `;
@@ -1555,7 +1535,6 @@
         document.getElementById("add-member-btn").style.display = "none";
         document.getElementById("group-info-btn").style.display = "none";
         document.getElementById("input-area").style.display = "none";
-        loadConversations();
       } catch (error) {
         console.error("❌ Erreur:", error);
       }
@@ -1593,7 +1572,6 @@
 
         currentConversationData.participants.push(newMember);
         alert(`✅ ${newMember} a été ajouté au groupe!`);
-        loadConversations();
       } catch (error) {
         console.error("❌ Erreur:", error);
         alert("Erreur: " + error.message);
@@ -1735,7 +1713,6 @@
         document.getElementById("info-modal").style.display = "none";
         
         alert(`✅ ${memberName} a été retiré du groupe!`);
-        loadConversations();
       } catch (error) {
         console.error("❌ Erreur:", error);
         alert("Erreur: " + error.message);
@@ -1787,41 +1764,45 @@
       });
     }
 
-    // Initialiser
-   function listenToConversations() {
-    // On crée un écouteur qui reste ouvert
-    db.collection("conversations")
-      .where("participants", "array-contains", currentUser)
-      .onSnapshot((snapshot) => {
+    // Écouter les conversations en temps réel
+    function listenToConversations() {
+      db.collection("conversations")
+        .where("participants", "array-contains", currentUser)
+        .onSnapshot((snapshot) => {
           const convList = document.getElementById("conversations-list");
-          convList.innerHTML = ""; // On vide la liste actuelle
+          convList.innerHTML = "";
+
+          if (snapshot.empty) {
+            convList.innerHTML = '<div class="empty-chat">Aucune conversation<br>Commencez une nouvelle!</div>';
+            return;
+          }
 
           snapshot.forEach((doc) => {
-    const data = doc.data();
-    const div = document.createElement("div");
-    div.className = "conversation-item";
-    
-    // On remet ta logique d'affichage ici
-    const isGroup = data.isGroup || false;
-    const displayName = isGroup ? data.groupName : data.participants.find(p => p !== currentUser);
-    
-    div.innerHTML = `
-        <div class="name">${isGroup ? '👥 ' : ''}${displayName}</div>
-        <div class="preview">${data.lastMessage || "Pas de messages"}</div>
-    `;
+            const data = doc.data();
+            const div = document.createElement("div");
+            div.className = "conversation-item";
+            
+            const isGroup = data.isGroup || false;
+            const isGeneralGroup = data.isGeneralGroup || false;
+            const displayName = isGroup ? (data.groupName || "Groupe sans nom") : data.participants.find(p => p !== currentUser);
+            
+            div.innerHTML = `
+              <div class="name">
+                ${isGroup ? '👥 ' : ''}${displayName}
+                ${isGeneralGroup ? '<span class="group-badge" style="background: #ff6b6b;">GÉNÉRAL</span>' : isGroup ? '<span class="group-badge">GROUPE</span>' : ''}
+              </div>
+              <div class="preview">${data.lastMessage || "Pas de messages"}</div>
+            `;
 
-    div.addEventListener("click", () => selectConversation(doc.id, data, div));
-    convList.appendChild(div);
-convList.appendChild(div);
-      }); // Ferme le snapshot.forEach
-      console.log("🔄 Liste mise à jour !"); // Vérifie bien la parenthèse ici
-    }); // Ferme le onSnapshot
-} // Ferme la fonction listenToConversations
+            div.addEventListener("click", () => selectConversation(doc.id, data, div));
+            convList.appendChild(div);
+          });
+        });
+    }
 
-// Appelle la fonction UNE SEULE FOIS au démarrage
-listenToConversations();
+    // Appelle la fonction UNE SEULE FOIS au démarrage
+    listenToConversations();
     loadEmojiPicker();
-   
 
     // Bouton nouvelle conversation privée
     document.getElementById("new-conv-btn").addEventListener("click", () => {
@@ -1846,7 +1827,6 @@ listenToConversations();
         document.getElementById("input-area").style.display = "block";
 
         loadMessages(convId, false);
-        loadConversations();
         document.getElementById("message-input").focus();
       });
     });
@@ -1930,7 +1910,6 @@ listenToConversations();
         });
 
         document.getElementById("group-modal").style.display = "none";
-        loadConversations();
         
         alert("✅ Groupe créé!");
       } catch (error) {
@@ -1939,5 +1918,3 @@ listenToConversations();
       }
     });
   </script>
-</body>
-</html>
