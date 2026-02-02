@@ -39,9 +39,9 @@ Johan : Supression d'une érreur dans le code de l'index.html et verification du
 
 16/01/2026
 
-Johan : mise sur un serveur et creation de boite mail qui marche mais pas en ligne.
+Johan : amelioration de la fausse IA prof avec un vocabulaire plus complet mise a jour du git et  mise sur un serveur et creation de boite mail qui marche mais pas en ligne.
 
-Johan : amelioration de la fausse IA prof avec un vocabulaire plus complet mise a jour du git 
+Alexandre : Amélioration du menu "Accueil" de l'application mobile.
 
 19/01/2026 
 
@@ -53,8 +53,14 @@ Johan : Suppression visuelle uniquement (non complète) de message.html, avec le
 Ajout de tous les fichiers HTML et JavaScript liés à Firebase, puis création en HTML d’une véritable messagerie fonctionnelle, utilisant uniquement les comptes existants.
 (En attente de la V3, qui intégrera davantage de comptes et une messagerie plus propre / mieux optimisée.)
 
+Alexandre : Intégration de notre base de données Firebase à notre système de login généré par le module Authentication sur l'application mobile.
+
 
 29/01/2026
 
 johan: v1/v5 message     v1vote v1 conection 
 
+
+02/02/2026
+
+Alexandre : Vérification du fonctionnement de la database et recherche sur un potentiel hébergeur local utilisant un Raspberry PI 5 16GO de Ram et 128GO de stockage.
