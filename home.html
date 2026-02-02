@@ -37,6 +37,12 @@
       z-index: 10;
     }
 
+    #user-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     #user-box button {
       background: #ffffff;
       color: #005fa3;
@@ -46,6 +52,254 @@
       border-radius: 6px;
       cursor: pointer;
       margin-left: 10px;
+    }
+
+    /* SYSTÈME DE PIÈCES */
+    #coins-display {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #coins-display:hover {
+      background: rgba(255,255,255,0.3);
+      transform: scale(1.05);
+    }
+
+    #coins-count {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: white;
+    }
+
+    .coin-animation {
+      animation: coinBounce 0.6s ease;
+    }
+
+    @keyframes coinBounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+    }
+
+    /* MODAL BOUTIQUE */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 900px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 3px solid #005fa3;
+    }
+
+    .modal-header h2 {
+      color: #005fa3;
+      margin: 0;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #666;
+      transition: color 0.3s;
+    }
+
+    .close-btn:hover {
+      color: #005fa3;
+    }
+
+    .shop-section {
+      margin: 25px 0;
+    }
+
+    .shop-section h3 {
+      color: #005fa3;
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+    }
+
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+    }
+
+    .shop-item {
+      background: #f9f9f9;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .shop-item:hover {
+      transform: translateY(-5px);
+      border-color: #005fa3;
+      box-shadow: 0 5px 15px rgba(0,95,163,0.2);
+    }
+
+    .shop-item.owned {
+      border-color: #28a745;
+      background: #e8f5e9;
+    }
+
+    .shop-item.active {
+      border-color: #ffd700;
+      background: #fff9e6;
+      box-shadow: 0 0 15px rgba(255,215,0,0.5);
+    }
+
+    .item-preview {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 10px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+    }
+
+    .item-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+    }
+
+    .item-price {
+      color: #ffd700;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin: 5px 0;
+    }
+
+    .item-button {
+      background: #005fa3;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background 0.3s;
+    }
+
+    .item-button:hover {
+      background: #00497d;
+    }
+
+    .item-button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .daily-bonus-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      border-radius: 10px;
+      color: white;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .bonus-btn {
+      background: white;
+      color: #667eea;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-top: 10px;
+      transition: all 0.3s;
+    }
+
+    .bonus-btn:hover:not(:disabled) {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+    }
+
+    .bonus-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .notification {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      z-index: 2000;
+      animation: slideInRight 0.5s ease;
+      display: none;
+    }
+
+    .notification.show {
+      display: block;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
     }
 
     nav {
@@ -649,10 +903,49 @@
       #statistiques {
         padding: 20px;
       }
+
+      .items-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
     }
   </style>
 </head>
 <body>
+
+<!-- NOTIFICATION -->
+<div id="notification" class="notification"></div>
+
+<!-- MODAL BOUTIQUE -->
+<div id="shop-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>🛒 Boutique</h2>
+      <button class="close-btn" onclick="closeShop()">&times;</button>
+    </div>
+
+    <!-- BONUS QUOTIDIEN -->
+    <div class="daily-bonus-section">
+      <h3 style="margin: 0 0 10px 0;">🎁 Bonus Quotidien</h3>
+      <p style="margin: 0;">Reviens chaque jour pour gagner des pièces !</p>
+      <button id="daily-bonus-btn" class="bonus-btn" onclick="claimDailyBonus()">
+        Récupérer 50 pièces
+      </button>
+      <p id="bonus-timer" style="margin-top: 10px; font-size: 0.9rem;"></p>
+    </div>
+
+    <!-- AVATARS -->
+    <div class="shop-section">
+      <h3>👤 Photos de Profil</h3>
+      <div class="items-grid" id="avatars-grid"></div>
+    </div>
+
+    <!-- FONDS D'ÉCRAN -->
+    <div class="shop-section">
+      <h3>🎨 Fonds d'Écran</h3>
+      <div class="items-grid" id="backgrounds-grid"></div>
+    </div>
+  </div>
+</div>
 
 <header>
   <div id="brand">
@@ -660,6 +953,10 @@
     <span>École Pas Directe</span>
   </div>
   <div id="user-box">
+    <div id="coins-display" onclick="openShop()">
+      <i class="fa-solid fa-coins" style="color: #ffd700; font-size: 1.3rem;"></i>
+      <span id="coins-count">0</span>
+    </div>
     <div id="profile-menu">
       <span id="username-display">Bienvenue !</span>
       <div id="profile-icon" onclick="toggleMenu()">
@@ -667,6 +964,7 @@
       </div>
       <div id="dropdown-menu">
         <button onclick="showAccountInfo()">Informations du compte</button>
+        <button onclick="openShop()">🛒 Boutique</button>
         <button onclick="logout()">Déconnexion</button>
       </div>
     </div>
@@ -865,42 +1163,390 @@
   let userStatsCache = null;
   let leaderboardCache = null;
   let cacheExpiry = 0;
-  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+  const CACHE_DURATION = 5 * 60 * 1000;
   let statsLoaded = false;
   let lastUpdateTime = Date.now();
   let updatePending = false;
 
+  // 🪙 SYSTÈME DE PIÈCES
+  let userCoins = 0;
+  let ownedItems = { avatars: [], backgrounds: [] };
+  let activeAvatar = null;
+  let activeBackground = null;
+
+  const shopItems = {
+    avatars: [
+      { id: 'av1', emoji: '😎', name: 'Cool', price: 50 },
+      { id: 'av2', emoji: '🤓', name: 'Intello', price: 75 },
+      { id: 'av3', emoji: '🥳', name: 'Fêtard', price: 100 },
+      { id: 'av4', emoji: '🤩', name: 'Star', price: 150 },
+      { id: 'av5', emoji: '👑', name: 'Roi', price: 200 },
+      { id: 'av6', emoji: '🦸', name: 'Héros', price: 250 },
+      { id: 'av7', emoji: '🧙', name: 'Mage', price: 300 },
+      { id: 'av8', emoji: '🤖', name: 'Robot', price: 500 }
+    ],
+    backgrounds: [
+      { id: 'bg1', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', name: 'Violet', price: 100 },
+      { id: 'bg2', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', name: 'Rose', price: 150 },
+      { id: 'bg3', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', name: 'Cyan', price: 150 },
+      { id: 'bg4', gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', name: 'Vert', price: 200 },
+      { id: 'bg5', gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', name: 'Sunset', price: 250 },
+      { id: 'bg6', gradient: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)', name: 'Ocean', price: 300 },
+      { id: 'bg7', gradient: 'linear-gradient(135deg, #ffd89b 0%, #19547b 100%)', name: 'Gold', price: 400 },
+      { id: 'bg8', gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', name: 'Pastel', price: 500 }
+    ]
+  };
+
+  // 🪙 CHARGER LES PIÈCES
+  async function loadCoins() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+      const coinsRef = doc(db, "coins", user.uid);
+      const coinsDoc = await getDoc(coinsRef);
+
+      if (coinsDoc.exists()) {
+        const data = coinsDoc.data();
+        userCoins = data.amount || 0;
+        ownedItems = data.ownedItems || { avatars: [], backgrounds: [] };
+        activeAvatar = data.activeAvatar || null;
+        activeBackground = data.activeBackground || null;
+        
+        updateCoinsDisplay();
+        checkDailyBonus();
+        
+        // Appliquer le fond d'écran actif
+        if (activeBackground) {
+          const bg = shopItems.backgrounds.find(b => b.id === activeBackground);
+          if (bg) document.body.style.background = bg.gradient;
+        }
+        
+        console.log(`✅ Pièces chargées: ${userCoins}`);
+      } else {
+        // Initialiser avec 100 pièces de départ
+        await setDoc(coinsRef, {
+          amount: 100,
+          ownedItems: { avatars: [], backgrounds: [] },
+          activeAvatar: null,
+          activeBackground: null,
+          lastDailyBonus: null,
+          lastBadgeCount: 0
+        });
+        userCoins = 100;
+        updateCoinsDisplay();
+        checkDailyBonus();
+        console.log("✅ Nouveau compte: 100 pièces de départ");
+      }
+    } catch (error) {
+      console.error("❌ Erreur chargement coins:", error);
+    }
+  }
+
+  function updateCoinsDisplay() {
+    document.getElementById('coins-count').textContent = userCoins;
+    document.getElementById('coins-count').classList.add('coin-animation');
+    setTimeout(() => {
+      document.getElementById('coins-count').classList.remove('coin-animation');
+    }, 600);
+  }
+
+  // 🎁 BONUS QUOTIDIEN
+  async function checkDailyBonus() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+      const coinsRef = doc(db, "coins", user.uid);
+      const coinsDoc = await getDoc(coinsRef);
+      
+      const btn = document.getElementById('daily-bonus-btn');
+      const timer = document.getElementById('bonus-timer');
+
+      if (!btn || !timer) return;
+
+      if (coinsDoc.exists()) {
+        const data = coinsDoc.data();
+        const lastBonus = data.lastDailyBonus?.toDate();
+        const now = new Date();
+
+        if (lastBonus) {
+          const hoursSince = (now - lastBonus) / (1000 * 60 * 60);
+          
+          if (hoursSince >= 24) {
+            btn.disabled = false;
+            btn.textContent = 'Récupérer 50 pièces 🎁';
+            timer.textContent = '';
+          } else {
+            btn.disabled = true;
+            const hoursLeft = Math.ceil(24 - hoursSince);
+            btn.textContent = 'Bonus récupéré !';
+            timer.textContent = `Prochain bonus dans ${hoursLeft}h`;
+          }
+        } else {
+          btn.disabled = false;
+          btn.textContent = 'Récupérer 50 pièces 🎁';
+          timer.textContent = '';
+        }
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Récupérer 50 pièces 🎁';
+        timer.textContent = '';
+      }
+    } catch (error) {
+      console.error("❌ Erreur bonus:", error);
+    }
+  }
+
+  window.claimDailyBonus = async function() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+      const coinsRef = doc(db, "coins", user.uid);
+      const coinsDoc = await getDoc(coinsRef);
+
+      if (coinsDoc.exists()) {
+        await updateDoc(coinsRef, {
+          amount: increment(50),
+          lastDailyBonus: serverTimestamp()
+        });
+      } else {
+        // Créer le document s'il n'existe pas
+        await setDoc(coinsRef, {
+          amount: 150, // 100 de base + 50 bonus
+          ownedItems: { avatars: [], backgrounds: [] },
+          activeAvatar: null,
+          activeBackground: null,
+          lastDailyBonus: serverTimestamp(),
+          lastBadgeCount: 0
+        });
+      }
+
+      userCoins += 50;
+      updateCoinsDisplay();
+      showNotification('🎁 +50 pièces ! Bonus quotidien récupéré !');
+      checkDailyBonus();
+    } catch (error) {
+      console.error("❌ Erreur bonus:", error);
+      showNotification('❌ Erreur lors de la récupération du bonus');
+    }
+  };
+
+  // 🏆 RÉCOMPENSES PAR BADGES
+  let lastCheckedBadgeCount = 0;
+
+  async function checkBadgeRewards(unlockedCount) {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+      const coinsRef = doc(db, "coins", user.uid);
+      const coinsDoc = await getDoc(coinsRef);
+      
+      let lastBadgeCount = 0;
+      
+      if (coinsDoc.exists()) {
+        lastBadgeCount = coinsDoc.data().lastBadgeCount || 0;
+      }
+
+      // Si on a débloqué de nouveaux badges
+      if (unlockedCount > lastBadgeCount) {
+        const newBadges = unlockedCount - lastBadgeCount;
+        const reward = newBadges * 25; // 25 pièces par badge
+        
+        if (coinsDoc.exists()) {
+          await updateDoc(coinsRef, {
+            amount: increment(reward),
+            lastBadgeCount: unlockedCount
+          });
+        } else {
+          // Créer le document avec les récompenses
+          await setDoc(coinsRef, {
+            amount: 100 + reward,
+            ownedItems: { avatars: [], backgrounds: [] },
+            activeAvatar: null,
+            activeBackground: null,
+            lastDailyBonus: null,
+            lastBadgeCount: unlockedCount
+          });
+        }
+
+        userCoins += reward;
+        updateCoinsDisplay();
+        showNotification(`🏆 +${reward} pièces ! ${newBadges} nouveau${newBadges > 1 ? 'x' : ''} badge${newBadges > 1 ? 's' : ''} débloqué${newBadges > 1 ? 's' : ''} !`);
+        
+        console.log(`✅ Badge rewards: ${newBadges} badges = +${reward} pièces`);
+      }
+    } catch (error) {
+      console.error("❌ Erreur récompense badges:", error);
+    }
+  }
+
+  function showNotification(message) {
+    const notif = document.getElementById('notification');
+    notif.textContent = message;
+    notif.classList.add('show');
+    
+    setTimeout(() => {
+      notif.classList.remove('show');
+    }, 3000);
+  }
+
+  // 🛒 BOUTIQUE
+  window.openShop = function() {
+    document.getElementById('shop-modal').classList.add('active');
+    renderShop();
+  };
+
+  window.closeShop = function() {
+    document.getElementById('shop-modal').classList.remove('active');
+  };
+
+  function renderShop() {
+    // Avatars
+    const avatarsGrid = document.getElementById('avatars-grid');
+    avatarsGrid.innerHTML = '';
+    
+    shopItems.avatars.forEach(item => {
+      const owned = ownedItems.avatars.includes(item.id);
+      const active = activeAvatar === item.id;
+      
+      const div = document.createElement('div');
+      div.className = `shop-item ${owned ? 'owned' : ''} ${active ? 'active' : ''}`;
+      div.innerHTML = `
+        <div class="item-preview" style="background: #f0f4f8;">${item.emoji}</div>
+        <div class="item-name">${item.name}</div>
+        ${!owned ? `<div class="item-price"><i class="fa-solid fa-coins"></i> ${item.price}</div>` : ''}
+        ${!owned ? `<button class="item-button" onclick="buyItem('avatar', '${item.id}', ${item.price})">Acheter</button>` : 
+          (!active ? `<button class="item-button" onclick="activateItem('avatar', '${item.id}')">Équiper</button>` : 
+          `<button class="item-button" disabled>Équipé ✓</button>`)}
+      `;
+      avatarsGrid.appendChild(div);
+    });
+
+    // Backgrounds
+    const backgroundsGrid = document.getElementById('backgrounds-grid');
+    backgroundsGrid.innerHTML = '';
+    
+    shopItems.backgrounds.forEach(item => {
+      const owned = ownedItems.backgrounds.includes(item.id);
+      const active = activeBackground === item.id;
+      
+      const div = document.createElement('div');
+      div.className = `shop-item ${owned ? 'owned' : ''} ${active ? 'active' : ''}`;
+      div.innerHTML = `
+        <div class="item-preview" style="background: ${item.gradient};"></div>
+        <div class="item-name">${item.name}</div>
+        ${!owned ? `<div class="item-price"><i class="fa-solid fa-coins"></i> ${item.price}</div>` : ''}
+        ${!owned ? `<button class="item-button" onclick="buyItem('background', '${item.id}', ${item.price})">Acheter</button>` : 
+          (!active ? `<button class="item-button" onclick="activateItem('background', '${item.id}')">Équiper</button>` : 
+          `<button class="item-button" disabled>Équipé ✓</button>`)}
+      `;
+      backgroundsGrid.appendChild(div);
+    });
+  }
+
+  window.buyItem = async function(type, id, price) {
+    if (userCoins < price) {
+      showNotification('❌ Pas assez de pièces !');
+      return;
+    }
+
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+      const coinsRef = doc(db, "coins", user.uid);
+      const coinsDoc = await getDoc(coinsRef);
+      
+      if (type === 'avatar') {
+        ownedItems.avatars.push(id);
+      } else {
+        ownedItems.backgrounds.push(id);
+      }
+
+      if (coinsDoc.exists()) {
+        await updateDoc(coinsRef, {
+          amount: increment(-price),
+          ownedItems: ownedItems
+        });
+      } else {
+        // Créer le document si nécessaire
+        await setDoc(coinsRef, {
+          amount: userCoins - price,
+          ownedItems: ownedItems,
+          activeAvatar: null,
+          activeBackground: null,
+          lastDailyBonus: null,
+          lastBadgeCount: 0
+        });
+      }
+
+      userCoins -= price;
+      updateCoinsDisplay();
+      showNotification(`✅ Acheté pour ${price} pièces !`);
+      renderShop();
+      
+      console.log(`✅ Achat: ${type} ${id} pour ${price} pièces. Reste: ${userCoins}`);
+    } catch (error) {
+      console.error("❌ Erreur achat:", error);
+      showNotification('❌ Erreur lors de l\'achat');
+    }
+  };
+
+  window.activateItem = async function(type, id) {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+      const coinsRef = doc(db, "coins", user.uid);
+      
+      if (type === 'avatar') {
+        activeAvatar = id;
+        await updateDoc(coinsRef, { activeAvatar: id });
+        
+        // IMPORTANT: Sauvegarder aussi dans stats pour le leaderboard
+        const statsRef = doc(db, "stats", user.uid);
+        await updateDoc(statsRef, { activeAvatar: id });
+        
+      } else {
+        activeBackground = id;
+        await updateDoc(coinsRef, { activeBackground: id });
+        
+        const bg = shopItems.backgrounds.find(b => b.id === id);
+        if (bg) document.body.style.background = bg.gradient;
+      }
+
+      showNotification('✅ Équipé !');
+      renderShop();
+    } catch (error) {
+      console.error("❌ Erreur activation:", error);
+    }
+  };
+
   // ✅ BADGES ÉTENDUS (25 badges!)
   const achievements = [
-    // Temps de connexion
     { id: 'first-visit', icon: 'fa-rocket', name: 'Nouveau', desc: 'Première visite', check: (d) => true },
     { id: 'time-1h', icon: 'fa-clock', name: 'Curieux', desc: '1h sur le site', check: (d) => d.totalTime >= 60 },
     { id: 'time-5h', icon: 'fa-hourglass-start', name: 'Assidu', desc: '5h sur le site', check: (d) => d.totalTime >= 300 },
     { id: 'time-10h', icon: 'fa-hourglass-half', name: 'Dévoué', desc: '10h sur le site', check: (d) => d.totalTime >= 600 },
     { id: 'time-20h', icon: 'fa-hourglass-end', name: 'Accro', desc: '20h sur le site', check: (d) => d.totalTime >= 1200 },
     { id: 'time-50h', icon: 'fa-infinity', name: 'Légendaire', desc: '50h sur le site', check: (d) => d.totalTime >= 3000 },
-    
-    // Messages
     { id: 'messages-1', icon: 'fa-comment-dots', name: 'Timide', desc: '1er message', check: (d) => d.messagesCount >= 1 },
     { id: 'messages-10', icon: 'fa-comment', name: 'Bavard', desc: '10 messages', check: (d) => d.messagesCount >= 10 },
     { id: 'messages-50', icon: 'fa-comments', name: 'Communicateur', desc: '50 messages', check: (d) => d.messagesCount >= 50 },
     { id: 'messages-100', icon: 'fa-comment-medical', name: 'Orateur', desc: '100 messages', check: (d) => d.messagesCount >= 100 },
     { id: 'messages-500', icon: 'fa-bullhorn', name: 'Influenceur', desc: '500 messages', check: (d) => d.messagesCount >= 500 },
-    
-    // Streak
     { id: 'streak-3', icon: 'fa-fire', name: 'Débutant', desc: '3 jours', check: (d) => d.streak >= 3 },
     { id: 'streak-7', icon: 'fa-fire-flame-curved', name: 'Régulier', desc: '7 jours', check: (d) => d.streak >= 7 },
     { id: 'streak-14', icon: 'fa-fire-flame-simple', name: 'Constant', desc: '14 jours', check: (d) => d.streak >= 14 },
     { id: 'streak-30', icon: 'fa-bolt', name: 'Implacable', desc: '30 jours', check: (d) => d.streak >= 30 },
     { id: 'streak-100', icon: 'fa-bolt-lightning', name: 'Increvable', desc: '100 jours', check: (d) => d.streak >= 100 },
-    
-    // Classement
     { id: 'top-10', icon: 'fa-star', name: 'Top 10', desc: 'Top 10', check: (d, rank) => rank <= 10 },
     { id: 'top-5', icon: 'fa-star-half-stroke', name: 'Top 5', desc: 'Top 5', check: (d, rank) => rank <= 5 },
     { id: 'top-3', icon: 'fa-medal', name: 'Podium', desc: 'Top 3', check: (d, rank) => rank <= 3 },
     { id: 'top-1', icon: 'fa-crown', name: 'Champion', desc: '1er place', check: (d, rank) => rank === 1 },
-    
-    // Spéciaux
     { id: 'night-owl', icon: 'fa-moon', name: 'Noctambule', desc: 'Connecté après minuit', check: (d) => (d.nightVisits || 0) >= 1 },
     { id: 'early-bird', icon: 'fa-sun', name: 'Lève-tôt', desc: 'Connecté avant 6h', check: (d) => (d.earlyVisits || 0) >= 1 },
     { id: 'weekend-warrior', icon: 'fa-calendar-week', name: 'Week-end', desc: '5 visites le week-end', check: (d) => (d.weekendVisits || 0) >= 5 },
@@ -908,7 +1554,6 @@
     { id: 'collector', icon: 'fa-coins', name: 'Collectionneur', desc: '10 badges débloqués', check: (d, rank, unlockedBadges) => unlockedBadges >= 10 }
   ];
 
-  // ✅ UPDATE OPTIMISÉ - UNE SEULE ÉCRITURE PAR SESSION
   async function updateTimeSpent() {
     const user = auth.currentUser;
     if (!user || updatePending) return;
@@ -916,7 +1561,7 @@
     const now = Date.now();
     const sessionTime = Math.floor((now - lastUpdateTime) / (1000 * 60));
     
-    if (sessionTime >= 5) { // Update toutes les 5 minutes
+    if (sessionTime >= 5) {
       updatePending = true;
       try {
         const statsRef = doc(db, "stats", user.uid);
@@ -929,7 +1574,6 @@
           lastVisit: serverTimestamp()
         };
         
-        // Track spécial
         if (hour >= 0 && hour < 6) updateData.earlyVisits = increment(1);
         if (hour >= 23 || hour < 2) updateData.nightVisits = increment(1);
         if (day === 0 || day === 6) updateData.weekendVisits = increment(1);
@@ -967,7 +1611,6 @@
     }
   }
 
-  // Update toutes les 5 minutes
   setInterval(updateTimeSpent, 5 * 60 * 1000);
   window.addEventListener('beforeunload', updateTimeSpent);
 
@@ -1009,7 +1652,6 @@
   }
 
   async function loadLeaderboard() {
-    // Check cache
     if (leaderboardCache && Date.now() < cacheExpiry) {
       displayLeaderboard(leaderboardCache);
       return;
@@ -1057,9 +1699,19 @@
       else if (rank === 2) medalIcon = '<i class="fa-solid fa-medal medal-icon" style="color: #c0c0c0;"></i>';
       else if (rank === 3) medalIcon = '<i class="fa-solid fa-medal medal-icon" style="color: #cd7f32;"></i>';
 
+      // Avatar de l'utilisateur
+      let avatarDisplay = '<i class="fa-solid fa-user-circle" style="font-size: 2rem; color: #667eea;"></i>';
+      if (user.activeAvatar) {
+        const avatar = shopItems.avatars.find(a => a.id === user.activeAvatar);
+        if (avatar) {
+          avatarDisplay = `<span style="font-size: 2rem;">${avatar.emoji}</span>`;
+        }
+      }
+
       li.innerHTML = `
         <div class="rank-badge">${rank}</div>
-        <div class="user-info">
+        ${avatarDisplay}
+        <div class="user-info" style="margin-left: 10px;">
           <div class="user-name">${user.username || 'Utilisateur'}</div>
           <div class="user-stats">${user.messagesCount || 0} msg • ${user.streak || 0}j 🔥</div>
         </div>
@@ -1078,7 +1730,6 @@
     const user = auth.currentUser;
     if (!user) return;
 
-    // Check cache
     if (userStatsCache && Date.now() < cacheExpiry) {
       displayUserStats(userStatsCache);
       return;
@@ -1113,15 +1764,16 @@
 
     const userRank = parseInt(document.getElementById('user-rank').textContent.replace('#', '')) || 999;
     
-    // Premier passage pour compter les badges débloqués (sans Collectionneur)
     let unlockedCount = 0;
     achievements.forEach(achievement => {
-      if (achievement.id === 'collector') return; // Skip pour le comptage
+      if (achievement.id === 'collector') return;
       const unlocked = achievement.check(userData, userRank, 0);
       if (unlocked) unlockedCount++;
     });
 
-    // Deuxième passage pour afficher tous les badges (avec le bon compteur)
+    // Check récompenses badges
+    checkBadgeRewards(unlockedCount);
+
     achievements.forEach(achievement => {
       const unlocked = achievement.check(userData, userRank, unlockedCount);
       
@@ -1139,7 +1791,6 @@
     document.getElementById('badge-total').textContent = achievements.length;
   }
 
-  // Charger SEULEMENT au clic
   document.querySelector('[data-target="statistiques"]').addEventListener('click', () => {
     if (!statsLoaded) {
       loadUserStats();
@@ -1194,6 +1845,7 @@
         window.profilesData[userData.username] = userData;
 
         await initializeUserStats(user.uid, userData.username);
+        await loadCoins(); // Charger les pièces
 
         const defaultNotes = [
           { matiere: "Mathématiques", note: "4/20 - Travail insuffisant" },
@@ -1228,7 +1880,7 @@
   });
 
   window.logout = async function() {
-    await updateTimeSpent(); // Save avant logout
+    await updateTimeSpent();
     await signOut(auth);
     sessionStorage.clear();
     window.location.href = "index.html";
@@ -1237,25 +1889,20 @@
 
 <script>
   let profilesData = {};
-
+  let visitedTabs = new Set();
+  
   const buttons = document.querySelectorAll("nav button");
   const sections = document.querySelectorAll(".tab-content");
 
-  // Track visites d'onglets pour badge Perfectionniste
-  let visitedTabs = new Set();
-  
   buttons.forEach(btn => {
     btn.addEventListener("click", async () => {
       const targetId = btn.getAttribute("data-target");
       if (!targetId) return;
       
-      // Track onglet visité
       visitedTabs.add(targetId);
       
-      // Update Firebase si on atteint 10 onglets (avec try/catch pour éviter blocage)
       if (visitedTabs.size >= 10) {
         try {
-          // Import dynamique depuis le module Firebase
           const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
           const { getFirestore, doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
           
@@ -1265,11 +1912,9 @@
           if (auth.currentUser) {
             const statsRef = doc(db, "stats", auth.currentUser.uid);
             await updateDoc(statsRef, { tabsVisited: visitedTabs.size });
-            console.log("✅ Onglets trackés:", visitedTabs.size);
           }
         } catch (e) {
           console.log("⚠️ Erreur tracking onglets:", e);
-          // Continue même en cas d'erreur
         }
       }
       
@@ -1300,7 +1945,8 @@
 
   document.addEventListener("click", function (e) {
     const profile = document.getElementById("profile-menu");
-    if (!profile.contains(e.target)) {
+    const modal = document.getElementById("shop-modal");
+    if (!profile.contains(e.target) && !modal.contains(e.target)) {
       document.getElementById("dropdown-menu").style.display = "none";
     }
   });
