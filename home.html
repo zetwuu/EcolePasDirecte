@@ -736,7 +736,7 @@
   </div>
 
   <div class="achievement-section">
-    <h3>🎖️ Succès & Badges</h3>
+    <h3>🎖️ Succès & Badges (Total: <span id="badge-count">0</span>/<span id="badge-total">25</span>)</h3>
     <div class="achievements-grid" id="achievements-grid"></div>
   </div>
 </section>
@@ -861,81 +861,115 @@
 
   window.profilesData = {};
 
-  // CACHE SYSTÈME
-  let statsCache = null;
+  // ✅ CACHE SYSTÈME OPTIMISÉ
+  let userStatsCache = null;
   let leaderboardCache = null;
+  let cacheExpiry = 0;
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
   let statsLoaded = false;
   let lastUpdateTime = Date.now();
+  let updatePending = false;
 
-  // ✅ TRACKING DU TEMPS - 1 MINUTE POUR TESTER
+  // ✅ BADGES ÉTENDUS (25 badges!)
+  const achievements = [
+    // Temps de connexion
+    { id: 'first-visit', icon: 'fa-rocket', name: 'Nouveau', desc: 'Première visite', check: (d) => true },
+    { id: 'time-1h', icon: 'fa-clock', name: 'Curieux', desc: '1h sur le site', check: (d) => d.totalTime >= 60 },
+    { id: 'time-5h', icon: 'fa-hourglass-start', name: 'Assidu', desc: '5h sur le site', check: (d) => d.totalTime >= 300 },
+    { id: 'time-10h', icon: 'fa-hourglass-half', name: 'Dévoué', desc: '10h sur le site', check: (d) => d.totalTime >= 600 },
+    { id: 'time-20h', icon: 'fa-hourglass-end', name: 'Accro', desc: '20h sur le site', check: (d) => d.totalTime >= 1200 },
+    { id: 'time-50h', icon: 'fa-infinity', name: 'Légendaire', desc: '50h sur le site', check: (d) => d.totalTime >= 3000 },
+    
+    // Messages
+    { id: 'messages-1', icon: 'fa-comment-dots', name: 'Timide', desc: '1er message', check: (d) => d.messagesCount >= 1 },
+    { id: 'messages-10', icon: 'fa-comment', name: 'Bavard', desc: '10 messages', check: (d) => d.messagesCount >= 10 },
+    { id: 'messages-50', icon: 'fa-comments', name: 'Communicateur', desc: '50 messages', check: (d) => d.messagesCount >= 50 },
+    { id: 'messages-100', icon: 'fa-comment-medical', name: 'Orateur', desc: '100 messages', check: (d) => d.messagesCount >= 100 },
+    { id: 'messages-500', icon: 'fa-bullhorn', name: 'Influenceur', desc: '500 messages', check: (d) => d.messagesCount >= 500 },
+    
+    // Streak
+    { id: 'streak-3', icon: 'fa-fire', name: 'Débutant', desc: '3 jours', check: (d) => d.streak >= 3 },
+    { id: 'streak-7', icon: 'fa-fire-flame-curved', name: 'Régulier', desc: '7 jours', check: (d) => d.streak >= 7 },
+    { id: 'streak-14', icon: 'fa-fire-flame-simple', name: 'Constant', desc: '14 jours', check: (d) => d.streak >= 14 },
+    { id: 'streak-30', icon: 'fa-bolt', name: 'Implacable', desc: '30 jours', check: (d) => d.streak >= 30 },
+    { id: 'streak-100', icon: 'fa-bolt-lightning', name: 'Increvable', desc: '100 jours', check: (d) => d.streak >= 100 },
+    
+    // Classement
+    { id: 'top-10', icon: 'fa-star', name: 'Top 10', desc: 'Top 10', check: (d, rank) => rank <= 10 },
+    { id: 'top-5', icon: 'fa-star-half-stroke', name: 'Top 5', desc: 'Top 5', check: (d, rank) => rank <= 5 },
+    { id: 'top-3', icon: 'fa-medal', name: 'Podium', desc: 'Top 3', check: (d, rank) => rank <= 3 },
+    { id: 'top-1', icon: 'fa-crown', name: 'Champion', desc: '1er place', check: (d, rank) => rank === 1 },
+    
+    // Spéciaux
+    { id: 'night-owl', icon: 'fa-moon', name: 'Noctambule', desc: 'Connecté après minuit', check: (d) => (d.nightVisits || 0) >= 1 },
+    { id: 'early-bird', icon: 'fa-sun', name: 'Lève-tôt', desc: 'Connecté avant 6h', check: (d) => (d.earlyVisits || 0) >= 1 },
+    { id: 'weekend-warrior', icon: 'fa-calendar-week', name: 'Week-end', desc: '5 visites le week-end', check: (d) => (d.weekendVisits || 0) >= 5 },
+    { id: 'perfectionist', icon: 'fa-gem', name: 'Perfectionniste', desc: 'Tous les onglets visités', check: (d, rank, unlockedBadges) => (d.tabsVisited || 0) >= 10 },
+    { id: 'collector', icon: 'fa-coins', name: 'Collectionneur', desc: '10 badges débloqués', check: (d, rank, unlockedBadges) => unlockedBadges >= 10 }
+  ];
+
+  // ✅ UPDATE OPTIMISÉ - UNE SEULE ÉCRITURE PAR SESSION
   async function updateTimeSpent() {
     const user = auth.currentUser;
-    if (!user) return;
+    if (!user || updatePending) return;
 
     const now = Date.now();
     const sessionTime = Math.floor((now - lastUpdateTime) / (1000 * 60));
     
-    if (sessionTime >= 1) { // ✅ Toutes les 1 minute pour tester
+    if (sessionTime >= 5) { // Update toutes les 5 minutes
+      updatePending = true;
       try {
         const statsRef = doc(db, "stats", user.uid);
-        
-        // Vérifier si le doc existe
         const statsDoc = await getDoc(statsRef);
         
+        const hour = new Date().getHours();
+        const day = new Date().getDay();
+        const updateData = {
+          totalTime: increment(sessionTime),
+          lastVisit: serverTimestamp()
+        };
+        
+        // Track spécial
+        if (hour >= 0 && hour < 6) updateData.earlyVisits = increment(1);
+        if (hour >= 23 || hour < 2) updateData.nightVisits = increment(1);
+        if (day === 0 || day === 6) updateData.weekendVisits = increment(1);
+        
         if (statsDoc.exists()) {
-          await updateDoc(statsRef, {
-            totalTime: increment(sessionTime),
-            lastVisit: serverTimestamp()
-          });
+          await updateDoc(statsRef, updateData);
           console.log(`✅ +${sessionTime}min ajouté`);
         } else {
-          // Créer le document s'il n'existe pas
           const userDoc = await getDoc(doc(db, "users", user.uid));
-          const username = userDoc.exists() ? userDoc.data().username : "Utilisateur";
-          
           await setDoc(statsRef, {
-            username: username,
+            username: userDoc.exists() ? userDoc.data().username : "Utilisateur",
             totalTime: sessionTime,
             messagesCount: 0,
             streak: 1,
             lastVisit: serverTimestamp(),
             createdAt: serverTimestamp(),
-            achievements: []
+            earlyVisits: hour >= 0 && hour < 6 ? 1 : 0,
+            nightVisits: (hour >= 23 || hour < 2) ? 1 : 0,
+            weekendVisits: (day === 0 || day === 6) ? 1 : 0,
+            tabsVisited: 0,
+            unlockedCount: 0
           });
-          console.log(`✅ Stats créées avec ${sessionTime}min`);
         }
         
         lastUpdateTime = now;
-        
-        // ✅ Rafraîchir les stats affichées
-        if (statsCache) {
-          statsCache.totalTime = (statsCache.totalTime || 0) + sessionTime;
-          document.getElementById('user-time').textContent = formatTime(statsCache.totalTime);
+        if (userStatsCache) {
+          userStatsCache.totalTime = (userStatsCache.totalTime || 0) + sessionTime;
+          document.getElementById('user-time').textContent = formatTime(userStatsCache.totalTime);
         }
-        
       } catch (error) {
-        console.error("❌ Erreur update temps:", error);
+        console.error("❌ Erreur update:", error);
+      } finally {
+        updatePending = false;
       }
     }
   }
 
-  // ✅ Update toutes les 1 minute (pour tester)
-  setInterval(updateTimeSpent, 1 * 60 * 1000);
+  // Update toutes les 5 minutes
+  setInterval(updateTimeSpent, 5 * 60 * 1000);
   window.addEventListener('beforeunload', updateTimeSpent);
-  
-  // ✅ Premier update après 10 secondes
-  setTimeout(updateTimeSpent, 10000);
-
-  const achievements = [
-    { id: 'first-visit', icon: 'fa-rocket', name: 'Premier Pas', desc: 'Première visite', threshold: 1 },
-    { id: 'time-5h', icon: 'fa-clock', name: 'Assidu', desc: '5h sur le site', threshold: 5 * 60 },
-    { id: 'time-10h', icon: 'fa-hourglass-half', name: 'Dévoué', desc: '10h sur le site', threshold: 10 * 60 },
-    { id: 'messages-10', icon: 'fa-comment', name: 'Bavard', desc: '10 messages', threshold: 10 },
-    { id: 'messages-50', icon: 'fa-comments', name: 'Communicateur', desc: '50 messages', threshold: 50 },
-    { id: 'streak-7', icon: 'fa-fire', name: 'Régulier', desc: '7 jours', threshold: 7 },
-    { id: 'top-3', icon: 'fa-medal', name: 'Podium', desc: 'Top 3', threshold: 0 },
-    { id: 'top-1', icon: 'fa-crown', name: 'Champion', desc: '1er', threshold: 0 }
-  ];
 
   async function initializeUserStats(userId, username) {
     const statsRef = doc(db, "stats", userId);
@@ -949,22 +983,20 @@
         streak: 1,
         lastVisit: serverTimestamp(),
         createdAt: serverTimestamp(),
-        achievements: []
+        earlyVisits: 0,
+        nightVisits: 0,
+        weekendVisits: 0,
+        tabsVisited: 0,
+        unlockedCount: 0
       });
-      console.log("✅ Stats initialisées");
     } else {
       const lastVisit = statsDoc.data().lastVisit?.toDate();
-      const now = new Date();
-      
       if (lastVisit) {
-        const daysDiff = Math.floor((now - lastVisit) / (1000 * 60 * 60 * 24));
-        
+        const daysDiff = Math.floor((Date.now() - lastVisit) / (1000 * 60 * 60 * 24));
         if (daysDiff === 1) {
           await updateDoc(statsRef, { streak: increment(1), lastVisit: serverTimestamp() });
-          console.log("✅ Streak incrémenté");
         } else if (daysDiff > 1) {
           await updateDoc(statsRef, { streak: 1, lastVisit: serverTimestamp() });
-          console.log("✅ Streak réinitialisé");
         }
       }
     }
@@ -977,13 +1009,11 @@
   }
 
   async function loadLeaderboard() {
-    if (leaderboardCache) {
+    // Check cache
+    if (leaderboardCache && Date.now() < cacheExpiry) {
       displayLeaderboard(leaderboardCache);
       return;
     }
-
-    const leaderboardList = document.getElementById('leaderboard-list');
-    const loading = document.getElementById('loading-stats');
 
     try {
       const statsQuery = query(collection(db, "stats"), orderBy("totalTime", "desc"), limit(10));
@@ -995,14 +1025,15 @@
       });
 
       leaderboardCache = users;
+      cacheExpiry = Date.now() + CACHE_DURATION;
       displayLeaderboard(users);
       
-      loading.style.display = 'none';
+      document.getElementById('loading-stats').style.display = 'none';
       document.getElementById('refresh-btn').style.display = 'block';
 
     } catch (error) {
       console.error("Erreur leaderboard:", error);
-      loading.innerHTML = '<p style="color: white;">Erreur: ' + error.message + '</p>';
+      document.getElementById('loading-stats').innerHTML = '<p style="color: white;">Erreur de chargement</p>';
     }
   }
 
@@ -1012,14 +1043,14 @@
     leaderboardList.innerHTML = '';
 
     if (users.length === 0) {
-      leaderboardList.innerHTML = '<li style="text-align: center; padding: 20px;">Aucune donnée disponible</li>';
+      leaderboardList.innerHTML = '<li style="text-align: center; padding: 20px;">Aucune donnée</li>';
       return;
     }
 
     users.forEach((user, index) => {
       const rank = index + 1;
       const li = document.createElement('li');
-      li.className = `leaderboard-item rank-${rank <= 3 ? rank : ''}`;
+      li.className = `leaderboard-item ${rank <= 3 ? 'rank-' + rank : ''}`;
 
       let medalIcon = '';
       if (rank === 1) medalIcon = '<i class="fa-solid fa-trophy medal-icon" style="color: #ffd700;"></i>';
@@ -1047,59 +1078,54 @@
     const user = auth.currentUser;
     if (!user) return;
 
+    // Check cache
+    if (userStatsCache && Date.now() < cacheExpiry) {
+      displayUserStats(userStatsCache);
+      return;
+    }
+
     try {
       const statsRef = doc(db, "stats", user.uid);
       const statsDoc = await getDoc(statsRef);
 
       if (statsDoc.exists()) {
-        const data = statsDoc.data();
-        statsCache = data;
-        
-        document.getElementById('user-time').textContent = formatTime(data.totalTime || 0);
-        document.getElementById('user-messages').textContent = data.messagesCount || 0;
-        document.getElementById('user-streak').textContent = data.streak || 0;
-
-        loadAchievements(data);
-        console.log("✅ Stats chargées:", data);
+        userStatsCache = statsDoc.data();
+        cacheExpiry = Date.now() + CACHE_DURATION;
+        displayUserStats(userStatsCache);
       } else {
-        console.log("⚠️ Pas de stats trouvées");
-        document.getElementById('user-time').textContent = '0h 0m';
-        document.getElementById('user-messages').textContent = '0';
-        document.getElementById('user-streak').textContent = '0';
-        loadAchievements({});
+        displayUserStats({});
       }
     } catch (error) {
-      console.error("❌ Erreur chargement stats:", error);
+      console.error("❌ Erreur stats:", error);
     }
+  }
+
+  function displayUserStats(data) {
+    document.getElementById('user-time').textContent = formatTime(data.totalTime || 0);
+    document.getElementById('user-messages').textContent = data.messagesCount || 0;
+    document.getElementById('user-streak').textContent = data.streak || 0;
+    loadAchievements(data);
   }
 
   function loadAchievements(userData) {
     const achievementsGrid = document.getElementById('achievements-grid');
     achievementsGrid.innerHTML = '';
 
-    const userAchievements = userData.achievements || [];
-    const totalTime = userData.totalTime || 0;
-    const messagesCount = userData.messagesCount || 0;
-    const streak = userData.streak || 0;
-
-    console.log("🎖️ Chargement badges - Temps:", totalTime, "Messages:", messagesCount, "Streak:", streak);
-
+    const userRank = parseInt(document.getElementById('user-rank').textContent.replace('#', '')) || 999;
+    
+    // Premier passage pour compter les badges débloqués (sans Collectionneur)
+    let unlockedCount = 0;
     achievements.forEach(achievement => {
+      if (achievement.id === 'collector') return; // Skip pour le comptage
+      const unlocked = achievement.check(userData, userRank, 0);
+      if (unlocked) unlockedCount++;
+    });
+
+    // Deuxième passage pour afficher tous les badges (avec le bon compteur)
+    achievements.forEach(achievement => {
+      const unlocked = achievement.check(userData, userRank, unlockedCount);
+      
       const div = document.createElement('div');
-      let unlocked = false;
-
-      if (achievement.id === 'first-visit') {
-        unlocked = true;
-      } else if (achievement.id.startsWith('time-')) {
-        unlocked = totalTime >= achievement.threshold;
-      } else if (achievement.id.startsWith('messages-')) {
-        unlocked = messagesCount >= achievement.threshold;
-      } else if (achievement.id.startsWith('streak-')) {
-        unlocked = streak >= achievement.threshold;
-      } else if (userAchievements.includes(achievement.id)) {
-        unlocked = true;
-      }
-
       div.className = `achievement-badge ${unlocked ? 'unlocked' : 'locked'}`;
       div.innerHTML = `
         <i class="fa-solid ${achievement.icon}"></i>
@@ -1108,12 +1134,14 @@
       `;
       achievementsGrid.appendChild(div);
     });
+
+    document.getElementById('badge-count').textContent = unlockedCount;
+    document.getElementById('badge-total').textContent = achievements.length;
   }
 
-  // Charger au clic sur l'onglet statistiques
+  // Charger SEULEMENT au clic
   document.querySelector('[data-target="statistiques"]').addEventListener('click', () => {
     if (!statsLoaded) {
-      console.log("📊 Chargement des statistiques...");
       loadUserStats();
       loadLeaderboard();
       statsLoaded = true;
@@ -1121,12 +1149,12 @@
   });
 
   window.refreshStats = async function() {
-    statsCache = null;
+    userStatsCache = null;
     leaderboardCache = null;
+    cacheExpiry = 0;
     statsLoaded = false;
     document.getElementById('loading-stats').style.display = 'block';
     document.getElementById('leaderboard-list').style.display = 'none';
-    console.log("🔄 Rafraîchissement des stats...");
     await loadUserStats();
     await loadLeaderboard();
   };
@@ -1177,19 +1205,17 @@
         ];
 
         const defaultCarnet = [
-          { date: "15/01/2026", type: "⚠️ AVERTISSEMENT", description: "Comportement inacceptable en classe. Perturbation constante du cours. Manque total de respect envers l'enseignant." },
-          { date: "20/01/2026", type: "❌ RETENUE", description: "Devoirs non faits pour la 5ème fois consécutive. Attitude désinvolte et méprisante. Retenue samedi matin de 8h à 12h." },
-          { date: "23/01/2026", type: "🚫 EXCLUSION", description: "Violence verbale envers un camarade. Langage grossier et inapproprié. Exclusion de cours immédiate." },
-          { date: "27/01/2026", type: "⛔ CONVOCATION", description: "Parents convoqués d'urgence. Résultats catastrophiques et attitude déplorable. Risque de redoublement." },
-          { date: "29/01/2026", type: "📵 CONFISCATION", description: "Téléphone confisqué en classe pour la 3ème fois. Refus d'obéir aux consignes. À récupérer par les parents uniquement." }
+          { date: "15/01/2026", type: "⚠️ AVERTISSEMENT", description: "Comportement inacceptable en classe." },
+          { date: "20/01/2026", type: "❌ RETENUE", description: "Devoirs non faits pour la 5ème fois." },
+          { date: "23/01/2026", type: "🚫 EXCLUSION", description: "Violence verbale envers un camarade." },
+          { date: "27/01/2026", type: "⛔ CONVOCATION", description: "Parents convoqués d'urgence." },
+          { date: "29/01/2026", type: "📵 CONFISCATION", description: "Téléphone confisqué en classe." }
         ];
 
         const defaultDevoirs = [
-          { matiere: "Mathématiques", description: "Pour demain : Faire tous les exercices du chapitre 12 pages 145 à 167 (soit 87 exercices), rédiger une dissertation de 10 pages sur l'histoire des mathématiques de l'Antiquité à nos jours, apprendre par cœur les 50 formules du polycopié, créer un exposé PowerPoint de 30 slides sur les fractales, et résoudre les 25 problèmes bonus en fin de manuel. Aucun retard toléré." },
-          { matiere: "Français", description: "Pour vendredi : Lire les 3 œuvres intégrales (soit 1200 pages au total), faire une analyse détaillée de chaque personnage (minimum 5 pages par personnage), apprendre les 200 figures de style avec exemples, rédiger une dissertation comparative de 15 pages, préparer un exposé oral de 45 minutes, et compléter les 15 fiches de lecture. Évaluation surprise possible." },
-          { matiere: "Histoire-Géo", description: "Pour lundi : Apprendre l'intégralité des chapitres 1 à 15 (150 pages), créer 50 cartes annotées à la main avec tous les détails géographiques et historiques, rédiger un dossier de 20 pages sur les guerres mondiales, préparer une présentation de 1 heure avec maquettes, et mémoriser toutes les dates de 1789 à 2025. Contrôle noté coefficient 5." },
-          { matiere: "Anglais", description: "Pour jeudi : Apprendre par cœur les 500 verbes irréguliers avec leurs 3 formes, lire et résumer 5 romans en anglais (minimum 2000 pages), rédiger 10 lettres de motivation en anglais parfait, préparer un débat argumenté de 2 heures sur un sujet politique complexe, traduire 50 pages de textes techniques, et créer un journal audio de 30 minutes. Accent britannique exigé." },
-          { matiere: "Sciences", description: "Pour demain : Réaliser 25 expériences complètes avec compte-rendus détaillés de 10 pages chacune, apprendre tous les éléments du tableau périodique avec leurs propriétés, construire 15 maquettes scientifiques fonctionnelles, rédiger une thèse de 50 pages sur la physique quantique, résoudre 100 équations chimiques complexes, et préparer une démonstration pratique. Matériel à fournir." }
+          { matiere: "Mathématiques", description: "Pour demain : Exercices p.145-167" },
+          { matiere: "Français", description: "Pour vendredi : Lire 3 œuvres" },
+          { matiere: "Histoire-Géo", description: "Pour lundi : Chapitres 1-15" }
         ];
 
         populateList("notes-list", defaultNotes, i => `<strong>${i.matiere}</strong> : ${i.note}`);
@@ -1202,6 +1228,7 @@
   });
 
   window.logout = async function() {
+    await updateTimeSpent(); // Save avant logout
     await signOut(auth);
     sessionStorage.clear();
     window.location.href = "index.html";
@@ -1214,10 +1241,37 @@
   const buttons = document.querySelectorAll("nav button");
   const sections = document.querySelectorAll(".tab-content");
 
+  // Track visites d'onglets pour badge Perfectionniste
+  let visitedTabs = new Set();
+  
   buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
       const targetId = btn.getAttribute("data-target");
       if (!targetId) return;
+      
+      // Track onglet visité
+      visitedTabs.add(targetId);
+      
+      // Update Firebase si on atteint 10 onglets (avec try/catch pour éviter blocage)
+      if (visitedTabs.size >= 10) {
+        try {
+          // Import dynamique depuis le module Firebase
+          const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
+          const { getFirestore, doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+          
+          const auth = getAuth();
+          const db = getFirestore();
+          
+          if (auth.currentUser) {
+            const statsRef = doc(db, "stats", auth.currentUser.uid);
+            await updateDoc(statsRef, { tabsVisited: visitedTabs.size });
+            console.log("✅ Onglets trackés:", visitedTabs.size);
+          }
+        } catch (e) {
+          console.log("⚠️ Erreur tracking onglets:", e);
+          // Continue même en cas d'erreur
+        }
+      }
       
       buttons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
