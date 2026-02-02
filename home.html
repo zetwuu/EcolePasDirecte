@@ -196,6 +196,11 @@
       box-shadow: 0 0 15px rgba(255,215,0,0.5);
     }
 
+    .shop-item.free {
+      border-color: #28a745;
+      background: #e8f5e9;
+    }
+
     .item-preview {
       width: 80px;
       height: 80px;
@@ -218,6 +223,10 @@
       font-weight: 700;
       font-size: 1.1rem;
       margin: 5px 0;
+    }
+
+    .item-price.free-tag {
+      color: #28a745;
     }
 
     .item-button {
@@ -928,7 +937,7 @@
       <h3 style="margin: 0 0 10px 0;">🎁 Bonus Quotidien</h3>
       <p style="margin: 0;">Reviens chaque jour pour gagner des pièces !</p>
       <button id="daily-bonus-btn" class="bonus-btn" onclick="claimDailyBonus()">
-        Récupérer 50 pièces
+        Récupérer 10 pièces
       </button>
       <p id="bonus-timer" style="margin-top: 10px; font-size: 0.9rem;"></p>
     </div>
@@ -1176,6 +1185,7 @@
 
   const shopItems = {
     avatars: [
+      { id: 'av0', emoji: '👤', name: 'Par défaut', price: 0, free: true },
       { id: 'av1', emoji: '😎', name: 'Cool', price: 50 },
       { id: 'av2', emoji: '🤓', name: 'Intello', price: 75 },
       { id: 'av3', emoji: '🥳', name: 'Fêtard', price: 100 },
@@ -1183,9 +1193,11 @@
       { id: 'av5', emoji: '👑', name: 'Roi', price: 200 },
       { id: 'av6', emoji: '🦸', name: 'Héros', price: 250 },
       { id: 'av7', emoji: '🧙', name: 'Mage', price: 300 },
-      { id: 'av8', emoji: '🤖', name: 'Robot', price: 500 }
+      { id: 'av8', emoji: '🤖', name: 'Robot', price: 500 },
+      { id: 'av9', emoji: '🧟', name: 'Zombie', price: 2000 }
     ],
     backgrounds: [
+      { id: 'bg0', gradient: '#f0f4f8', name: 'Par défaut', price: 0, free: true },
       { id: 'bg1', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', name: 'Violet', price: 100 },
       { id: 'bg2', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', name: 'Rose', price: 150 },
       { id: 'bg3', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', name: 'Cyan', price: 150 },
@@ -1209,9 +1221,9 @@
       if (coinsDoc.exists()) {
         const data = coinsDoc.data();
         userCoins = data.amount || 0;
-        ownedItems = data.ownedItems || { avatars: [], backgrounds: [] };
-        activeAvatar = data.activeAvatar || null;
-        activeBackground = data.activeBackground || null;
+        ownedItems = data.ownedItems || { avatars: ['av0'], backgrounds: ['bg0'] };
+        activeAvatar = data.activeAvatar || 'av0';
+        activeBackground = data.activeBackground || 'bg0';
         
         updateCoinsDisplay();
         checkDailyBonus();
@@ -1219,24 +1231,33 @@
         // Appliquer le fond d'écran actif
         if (activeBackground) {
           const bg = shopItems.backgrounds.find(b => b.id === activeBackground);
-          if (bg) document.body.style.background = bg.gradient;
+          if (bg) {
+            if (bg.gradient.includes('gradient')) {
+              document.body.style.background = bg.gradient;
+            } else {
+              document.body.style.backgroundColor = bg.gradient;
+            }
+          }
         }
         
         console.log(`✅ Pièces chargées: ${userCoins}`);
       } else {
-        // Initialiser avec 100 pièces de départ
+        // Initialiser avec 100 pièces de départ et items gratuits
         await setDoc(coinsRef, {
           amount: 100,
-          ownedItems: { avatars: [], backgrounds: [] },
-          activeAvatar: null,
-          activeBackground: null,
+          ownedItems: { avatars: ['av0'], backgrounds: ['bg0'] },
+          activeAvatar: 'av0',
+          activeBackground: 'bg0',
           lastDailyBonus: null,
           lastBadgeCount: 0
         });
         userCoins = 100;
+        ownedItems = { avatars: ['av0'], backgrounds: ['bg0'] };
+        activeAvatar = 'av0';
+        activeBackground = 'bg0';
         updateCoinsDisplay();
         checkDailyBonus();
-        console.log("✅ Nouveau compte: 100 pièces de départ");
+        console.log("✅ Nouveau compte: 100 pièces + items gratuits");
       }
     } catch (error) {
       console.error("❌ Erreur chargement coins:", error);
@@ -1251,7 +1272,7 @@
     }, 600);
   }
 
-  // 🎁 BONUS QUOTIDIEN
+  // 🎁 BONUS QUOTIDIEN (réduit à 10 pièces)
   async function checkDailyBonus() {
     const user = auth.currentUser;
     if (!user) return;
@@ -1275,7 +1296,7 @@
           
           if (hoursSince >= 24) {
             btn.disabled = false;
-            btn.textContent = 'Récupérer 50 pièces 🎁';
+            btn.textContent = 'Récupérer 10 pièces 🎁';
             timer.textContent = '';
           } else {
             btn.disabled = true;
@@ -1285,12 +1306,12 @@
           }
         } else {
           btn.disabled = false;
-          btn.textContent = 'Récupérer 50 pièces 🎁';
+          btn.textContent = 'Récupérer 10 pièces 🎁';
           timer.textContent = '';
         }
       } else {
         btn.disabled = false;
-        btn.textContent = 'Récupérer 50 pièces 🎁';
+        btn.textContent = 'Récupérer 10 pièces 🎁';
         timer.textContent = '';
       }
     } catch (error) {
@@ -1308,24 +1329,24 @@
 
       if (coinsDoc.exists()) {
         await updateDoc(coinsRef, {
-          amount: increment(50),
+          amount: increment(10),
           lastDailyBonus: serverTimestamp()
         });
       } else {
         // Créer le document s'il n'existe pas
         await setDoc(coinsRef, {
-          amount: 150, // 100 de base + 50 bonus
-          ownedItems: { avatars: [], backgrounds: [] },
-          activeAvatar: null,
-          activeBackground: null,
+          amount: 110, // 100 de base + 10 bonus
+          ownedItems: { avatars: ['av0'], backgrounds: ['bg0'] },
+          activeAvatar: 'av0',
+          activeBackground: 'bg0',
           lastDailyBonus: serverTimestamp(),
           lastBadgeCount: 0
         });
       }
 
-      userCoins += 50;
+      userCoins += 10;
       updateCoinsDisplay();
-      showNotification('🎁 +50 pièces ! Bonus quotidien récupéré !');
+      showNotification('🎁 +10 pièces ! Bonus quotidien récupéré !');
       checkDailyBonus();
     } catch (error) {
       console.error("❌ Erreur bonus:", error);
@@ -1364,9 +1385,9 @@
           // Créer le document avec les récompenses
           await setDoc(coinsRef, {
             amount: 100 + reward,
-            ownedItems: { avatars: [], backgrounds: [] },
-            activeAvatar: null,
-            activeBackground: null,
+            ownedItems: { avatars: ['av0'], backgrounds: ['bg0'] },
+            activeAvatar: 'av0',
+            activeBackground: 'bg0',
             lastDailyBonus: null,
             lastBadgeCount: unlockedCount
           });
@@ -1409,16 +1430,17 @@
     avatarsGrid.innerHTML = '';
     
     shopItems.avatars.forEach(item => {
-      const owned = ownedItems.avatars.includes(item.id);
+      const owned = ownedItems.avatars.includes(item.id) || item.free;
       const active = activeAvatar === item.id;
       
       const div = document.createElement('div');
-      div.className = `shop-item ${owned ? 'owned' : ''} ${active ? 'active' : ''}`;
+      div.className = `shop-item ${owned ? 'owned' : ''} ${active ? 'active' : ''} ${item.free ? 'free' : ''}`;
       div.innerHTML = `
         <div class="item-preview" style="background: #f0f4f8;">${item.emoji}</div>
         <div class="item-name">${item.name}</div>
-        ${!owned ? `<div class="item-price"><i class="fa-solid fa-coins"></i> ${item.price}</div>` : ''}
-        ${!owned ? `<button class="item-button" onclick="buyItem('avatar', '${item.id}', ${item.price})">Acheter</button>` : 
+        ${item.free ? `<div class="item-price free-tag">✨ GRATUIT</div>` : 
+          (!owned ? `<div class="item-price"><i class="fa-solid fa-coins"></i> ${item.price}</div>` : '')}
+        ${!owned && !item.free ? `<button class="item-button" onclick="buyItem('avatar', '${item.id}', ${item.price})">Acheter</button>` : 
           (!active ? `<button class="item-button" onclick="activateItem('avatar', '${item.id}')">Équiper</button>` : 
           `<button class="item-button" disabled>Équipé ✓</button>`)}
       `;
@@ -1430,16 +1452,20 @@
     backgroundsGrid.innerHTML = '';
     
     shopItems.backgrounds.forEach(item => {
-      const owned = ownedItems.backgrounds.includes(item.id);
+      const owned = ownedItems.backgrounds.includes(item.id) || item.free;
       const active = activeBackground === item.id;
       
       const div = document.createElement('div');
-      div.className = `shop-item ${owned ? 'owned' : ''} ${active ? 'active' : ''}`;
+      div.className = `shop-item ${owned ? 'owned' : ''} ${active ? 'active' : ''} ${item.free ? 'free' : ''}`;
+      
+      const bgStyle = item.gradient.includes('gradient') ? item.gradient : item.gradient;
+      
       div.innerHTML = `
-        <div class="item-preview" style="background: ${item.gradient};"></div>
+        <div class="item-preview" style="background: ${bgStyle};"></div>
         <div class="item-name">${item.name}</div>
-        ${!owned ? `<div class="item-price"><i class="fa-solid fa-coins"></i> ${item.price}</div>` : ''}
-        ${!owned ? `<button class="item-button" onclick="buyItem('background', '${item.id}', ${item.price})">Acheter</button>` : 
+        ${item.free ? `<div class="item-price free-tag">✨ GRATUIT</div>` : 
+          (!owned ? `<div class="item-price"><i class="fa-solid fa-coins"></i> ${item.price}</div>` : '')}
+        ${!owned && !item.free ? `<button class="item-button" onclick="buyItem('background', '${item.id}', ${item.price})">Acheter</button>` : 
           (!active ? `<button class="item-button" onclick="activateItem('background', '${item.id}')">Équiper</button>` : 
           `<button class="item-button" disabled>Équipé ✓</button>`)}
       `;
@@ -1476,8 +1502,8 @@
         await setDoc(coinsRef, {
           amount: userCoins - price,
           ownedItems: ownedItems,
-          activeAvatar: null,
-          activeBackground: null,
+          activeAvatar: 'av0',
+          activeBackground: 'bg0',
           lastDailyBonus: null,
           lastBadgeCount: 0
         });
@@ -1515,7 +1541,13 @@
         await updateDoc(coinsRef, { activeBackground: id });
         
         const bg = shopItems.backgrounds.find(b => b.id === id);
-        if (bg) document.body.style.background = bg.gradient;
+        if (bg) {
+          if (bg.gradient.includes('gradient')) {
+            document.body.style.background = bg.gradient;
+          } else {
+            document.body.style.backgroundColor = bg.gradient;
+          }
+        }
       }
 
       showNotification('✅ Équipé !');
@@ -1594,7 +1626,8 @@
             nightVisits: (hour >= 23 || hour < 2) ? 1 : 0,
             weekendVisits: (day === 0 || day === 6) ? 1 : 0,
             tabsVisited: 0,
-            unlockedCount: 0
+            unlockedCount: 0,
+            activeAvatar: 'av0'
           });
         }
         
@@ -1630,7 +1663,8 @@
         nightVisits: 0,
         weekendVisits: 0,
         tabsVisited: 0,
-        unlockedCount: 0
+        unlockedCount: 0,
+        activeAvatar: 'av0'
       });
     } else {
       const lastVisit = statsDoc.data().lastVisit?.toDate();
