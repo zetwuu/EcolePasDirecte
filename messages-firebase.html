@@ -974,7 +974,6 @@
   </div>
 
 <script>
-  //eee
     // Configuration Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAJRxSO6NDTAhAoUX-uqmTJT68cJjog1bw",
@@ -1007,88 +1006,37 @@
     }
 
     console.log("✅ Firebase initialisé!");
-    console.log("✅ connecté au autre boite message");
-    console.log("📌vous êtes connecté en tant que:", currentUser);
-    console.log("📩vous pouvez maintenant envoyer et recevoir des messages",currentUser);
+    console.log("📌 Connecté en tant que:", currentUser);
+
+    // ✅ SYNCHRONISER LE USERID DEPUIS home.html
+    const userId = sessionStorage.getItem("userId");
+    if (userId) {
+      console.log("✅ UserID trouvé:", userId);
+      
+      // Initialiser les stats si elles n'existent pas (1 LECTURE MAX)
+      db.collection("stats").doc(userId).get()
+        .then((doc) => {
+          if (!doc.exists) {
+            return db.collection("stats").doc(userId).set({
+              username: currentUser,
+              totalTime: 0,
+              messagesCount: 0,
+              streak: 1,
+              lastVisit: firebase.firestore.FieldValue.serverTimestamp(),
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              achievements: []
+            });
+          }
+        })
+        .catch(err => console.log("Info stats:", err));
+    } else {
+      console.warn("⚠️ Pas de UserID - Stats désactivées");
+    }
 
     let currentConversation = null;
     let currentConversationData = null;
     let groupParticipants = [];
     let currentMessagesListener = null;
-
-    // ⚠️ GROUPE GÉNÉRAL DÉSACTIVÉ - Consomme trop de ressources avec 100+ personnes
-    // Décommentez seulement si vous passez au forfait payant
-    /*
-    async function joinGeneralGroup() {
-      const generalGroupId = "general_group_ecole";
-      
-      try {
-        const groupRef = db.collection("conversations").doc(generalGroupId);
-        const groupDoc = await groupRef.get();
-
-        if (!groupDoc.exists) {
-          // Créer le groupe général s'il n'existe pas
-          console.log("📢 Création du groupe général...");
-          await groupRef.set({
-            participants: [currentUser],
-            isGroup: true,
-            groupName: "🌍 Groupe Général",
-            createdBy: "Système",
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            lastMessage: "Bienvenue dans le groupe général!",
-            lastSender: "Système",
-            lastTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            isGeneralGroup: true
-          });
-
-          // Message de bienvenue
-          await groupRef.collection("messages").add({
-            sender: "Système",
-            content: `🎉 Bienvenue dans le groupe général! Tous les membres de l'école sont ici.`,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            reactions: {},
-            readBy: [],
-            isSystemMessage: true
-          });
-
-          console.log("✅ Groupe général créé!");
-        } else {
-          // Vérifier si l'utilisateur est déjà dans le groupe
-          const groupData = groupDoc.data();
-          const participants = groupData.participants || [];
-
-          if (!participants.includes(currentUser)) {
-            // Ajouter l'utilisateur au groupe
-            await groupRef.update({
-              participants: firebase.firestore.FieldValue.arrayUnion(currentUser),
-              lastMessage: `${currentUser} a rejoint le groupe`,
-              lastSender: "Système",
-              lastTimestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            // Message système
-            await groupRef.collection("messages").add({
-              sender: "Système",
-              content: `👋 ${currentUser} a rejoint le groupe général!`,
-              timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-              reactions: {},
-              readBy: [],
-              isSystemMessage: true
-            });
-
-            console.log("✅ Ajouté au groupe général!");
-          } else {
-            console.log("✅ Déjà membre du groupe général");
-          }
-        }
-      } catch (error) {
-        console.error("❌ Erreur groupe général:", error);
-      }
-    }
-
-    // Rejoindre le groupe général au démarrage
-    // joinGeneralGroup(); // ← DÉSACTIVÉ pour économiser
-    */
 
     // EMOJIS POPULAIRES
     const emojis = ['😊','😂','❤️','👍','😍','🎉','🔥','✨','😎','🤔','😢','😮','🙏','💪','🎈','🌟','🎊','🎁','🌈','⭐','💯','✅','❌','⚡','💫','🌺','🌸','🌼','🍕','🍔','🍟','🍦','☕','🎵','🎮','⚽','🏀','🎯','🎪','🎭','🎬'];
@@ -1181,6 +1129,14 @@
               readBy: [currentUser]
             });
 
+            // ✅ INCRÉMENTER LE COMPTEUR DE MESSAGES
+            const userId = sessionStorage.getItem("userId");
+            if (userId) {
+              db.collection("stats").doc(userId).update({
+                messagesCount: firebase.firestore.FieldValue.increment(1)
+              }).catch(err => console.log("Erreur stats:", err));
+            }
+
             progressDiv.style.display = 'none';
             document.getElementById('photo-input').value = '';
             console.log('✅ Photo envoyée!');
@@ -1235,7 +1191,6 @@
         displayName = convData.groupName || "Groupe sans nom";
         document.getElementById("chat-title").innerHTML = `👥 ${displayName}`;
         
-        // Afficher le bouton d'ajout SEULEMENT pour les groupes normaux (pas le groupe général)
         if (isGeneralGroup) {
           document.getElementById("add-member-btn").style.display = "none";
         } else {
@@ -1250,7 +1205,6 @@
         document.getElementById("group-info-btn").style.display = "none";
       }
 
-      // Ne pas afficher le bouton supprimer pour le groupe général
       if (isGeneralGroup) {
         document.getElementById("delete-btn").style.display = "none";
       } else {
@@ -1262,15 +1216,15 @@
       loadMessages(convId, isGroup);
     }
 
-    // ⚡ OPTIMISATION MAXIMALE: Charger les messages (LIMITE À 30)
+    // ⚡ OPTIMISATION: Charger les messages (ORDRE CORRIGÉ + LIMITE 20)
     function loadMessages(convId, isGroup = false) {
       const chatMessages = document.getElementById("chat-messages");
       chatMessages.innerHTML = '<div class="loading">Chargement...</div>';
 
-      // ⚡ LIMITE À 30 MESSAGES SEULEMENT (économie maximale)
+      // ✅ ORDRE CROISSANT + limitToLast = moins de lectures
       currentMessagesListener = db.collection("conversations").doc(convId).collection("messages")
-        .orderBy("timestamp", "desc")
-        .limit(30)  // ← SEULEMENT 30 MESSAGES
+        .orderBy("timestamp", "asc")  // ✅ Ordre croissant
+        .limitToLast(20)  // ✅ Seulement les 20 derniers
         .onSnapshot((snapshot) => {
           chatMessages.innerHTML = "";
           
@@ -1279,15 +1233,11 @@
             return;
           }
 
-          // ⚡ Inverser l'ordre pour afficher correctement
-          const messages = [];
+          // ✅ Affichage direct (plus besoin de reverse)
           snapshot.forEach((doc) => {
-            messages.push({ id: doc.id, data: doc.data() });
-          });
-          messages.reverse();
+            const id = doc.id;
+            const msg = doc.data();
 
-          // Boucler sur les messages inversés
-          messages.forEach(({ id, data: msg }) => {
             if (msg.isSystemMessage) {
               const systemDiv = document.createElement("div");
               systemDiv.className = "system-message";
@@ -1301,16 +1251,6 @@
             
             if (msg.sender === currentUser) {
               msgDiv.classList.add("own");
-            } else {
-              const readBy = msg.readBy || [];
-              // ⚡ Attendre 5 secondes avant de marquer comme lu (économie d'écritures)
-              if (!readBy.includes(currentUser)) {
-                setTimeout(() => {
-                  db.collection("conversations").doc(convId).collection("messages").doc(id).update({
-                    readBy: firebase.firestore.FieldValue.arrayUnion(currentUser)
-                  }).catch(err => console.log('Erreur lecture:', err));
-                }, 5000); // 5 secondes
-              }
             }
 
             const time = msg.timestamp ? formatTime(msg.timestamp) : "";
@@ -1323,8 +1263,6 @@
               
               if (readBy.length === 1 && readBy[0] === currentUser) {
                 readStatus = '<span style="color: #999; font-size: 0.9rem;">✓</span>';
-              } else if (readBy.length >= participants.length) {
-                readStatus = '<span style="color: #4CAF50; font-size: 0.9rem;">✓✓</span>';
               } else {
                 readStatus = '<span style="color: #4CAF50; font-size: 0.9rem;">✓✓</span>';
               }
@@ -1502,6 +1440,14 @@
           readBy: [currentUser]
         });
 
+        // ✅ INCRÉMENTER LE COMPTEUR DE MESSAGES
+        const userId = sessionStorage.getItem("userId");
+        if (userId) {
+          db.collection("stats").doc(userId).update({
+            messagesCount: firebase.firestore.FieldValue.increment(1)
+          }).catch(err => console.log("Erreur stats:", err));
+        }
+
         input.value = "";
         input.style.height = 'auto';
         input.focus();
@@ -1515,7 +1461,6 @@
     document.getElementById("delete-btn").addEventListener("click", async () => {
       if (!currentConversation) return;
 
-      // Empêcher la suppression du groupe général
       if (currentConversationData && currentConversationData.isGeneralGroup) {
         alert("🚫 Le groupe général ne peut pas être supprimé!");
         return;
@@ -1579,7 +1524,7 @@
       }
     });
 
-    // NOUVEAU: Afficher les informations du groupe
+    // Afficher les informations du groupe
     document.getElementById("group-info-btn").addEventListener("click", async () => {
       if (!currentConversation || !currentConversationData) return;
       if (!currentConversationData.isGroup) return;
@@ -1683,7 +1628,7 @@
       }
     });
 
-    // NOUVEAU: Retirer un membre du groupe
+    // Retirer un membre du groupe
     window.removeMember = async function(memberName) {
       if (!currentConversation || !currentConversationData) return;
       
@@ -1765,7 +1710,7 @@
       });
     }
 
-    // Écouter les conversations en temps réel
+    // Écouter les conversations en temps réel (1 LISTENER)
     function listenToConversations() {
       db.collection("conversations")
         .where("participants", "array-contains", currentUser)
@@ -1919,3 +1864,5 @@
       }
     });
   </script>
+</body>
+</html>

@@ -96,6 +96,15 @@
       color: white;
     }
 
+    nav button.stats-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin-top: 10px;
+    }
+
+    nav button.stats-btn:hover {
+      background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+    }
+
     .container {
       margin-left: 70px; 
       margin-top: 60px;
@@ -204,7 +213,6 @@
       background-color: #00497d;
     }
 
-    /* Styles pour la messagerie */
     .conversation-item {
       padding: 12px 15px;
       border-bottom: 1px solid #eee;
@@ -332,7 +340,6 @@
       background-color: #f0f4f8;
     }
 
-    /* Styles améliorés pour les sections */
     #carnet-list li,
     #notes-list li,
     #devoirs-list li {
@@ -345,7 +352,6 @@
       font-size: 1rem;
     }
 
-    /* Styles pour les images */
     .image-container {
       text-align: center;
       margin: 20px 0;
@@ -358,7 +364,6 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    /* Sidebar styling */
     #sidebar-right {
       background: #f0f4f8;
       padding: 20px;
@@ -397,7 +402,6 @@
       text-decoration: underline;
     }
 
-    /* Styling des formulaires */
     form input[type="file"] {
       padding: 10px;
       margin-bottom: 10px;
@@ -421,7 +425,6 @@
       background-color: #00497d;
     }
 
-    /* Styling pour les boutons de navigation emploi du temps */
     #btn-prev, #btn-next {
       background-color: #005fa3;
       color: white;
@@ -438,7 +441,6 @@
       background-color: #00497d;
     }
 
-    /* Bulletins */
     #bulletin-list li a {
       color: #005fa3;
       text-decoration: none;
@@ -449,7 +451,6 @@
       text-decoration: underline;
     }
 
-    /* Messages container */
     #messages-container {
       background: white;
       padding: 15px;
@@ -460,7 +461,6 @@
       border: 1px solid #dee2e6;
     }
 
-    /* Progress bar styling */
     .progress-bar {
       background: #eee;
       border-radius: 6px;
@@ -479,6 +479,299 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    /* STYLES STATISTIQUES */
+    #statistiques {
+      max-width: 1200px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px;
+      border-radius: 15px;
+    }
+
+    #statistiques h2 {
+      color: white;
+      text-align: center;
+      border-bottom: 3px solid white;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .leaderboard-section {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin: 20px 0;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .leaderboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 3px solid #667eea;
+    }
+
+    .leaderboard-header h3 {
+      font-size: 1.8rem;
+      color: #333;
+      margin: 0;
+    }
+
+    .leaderboard-header i {
+      font-size: 2rem;
+      color: #ffd700;
+    }
+
+    .leaderboard-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      transition: transform 0.3s ease;
+    }
+
+    .leaderboard-item:hover {
+      transform: translateX(5px);
+    }
+
+    .leaderboard-item.rank-1 {
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    }
+
+    .leaderboard-item.rank-2 {
+      background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+    }
+
+    .leaderboard-item.rank-3 {
+      background: linear-gradient(135deg, #cd7f32 0%, #e6a157 100%);
+    }
+
+    .rank-badge {
+      font-size: 1.2rem;
+      font-weight: 700;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: white;
+      margin-right: 15px;
+      color: #667eea;
+    }
+
+    .rank-1 .rank-badge {
+      color: #ffd700;
+      border: 2px solid #ffd700;
+    }
+
+    .rank-2 .rank-badge {
+      color: #c0c0c0;
+      border: 2px solid #c0c0c0;
+    }
+
+    .rank-3 .rank-badge {
+      color: #cd7f32;
+      border: 2px solid #cd7f32;
+    }
+
+    .user-info {
+      flex-grow: 1;
+    }
+
+    .user-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 3px;
+    }
+
+    .user-stats {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .user-time {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #667eea;
+      margin-right: 10px;
+    }
+
+    .medal-icon {
+      font-size: 1.5rem;
+    }
+
+    .achievement-section {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin: 20px 0;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .achievement-section h3 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 15px;
+    }
+
+    .achievement-badge {
+      text-align: center;
+      padding: 15px;
+      border-radius: 10px;
+      background: #f5f7fa;
+      transition: transform 0.3s ease;
+    }
+
+    .achievement-badge:hover {
+      transform: scale(1.05);
+    }
+
+    .achievement-badge.unlocked {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .achievement-badge i {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+    }
+
+    .achievement-badge.unlocked i {
+      color: #ffd700;
+    }
+
+    .achievement-badge.locked i {
+      color: #ccc;
+    }
+
+    .achievement-name {
+      font-weight: 600;
+      margin-bottom: 3px;
+      font-size: 0.9rem;
+    }
+
+    .achievement-desc {
+      font-size: 0.75rem;
+      opacity: 0.8;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px;
+      color: white;
+    }
+
+    .loading i {
+      font-size: 2.5rem;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .refresh-btn {
+      background: white;
+      color: #667eea;
+      border: 2px solid white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 20px auto;
+      display: block;
+      transition: all 0.3s;
+    }
+
+    .refresh-btn:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      #statistiques {
+        padding: 20px;
+      }
     }
   </style>
 </head>
@@ -514,10 +807,63 @@
   <button data-target="bulletin"><i class="fa-solid fa-file-lines"></i><span> Bulletin</span></button>
   <button data-target="document"><i class="fa-solid fa-file"></i><span> Document</span></button>
   <button data-target="vie-classe"><i class="fa-solid fa-people-group"></i><span> Vie de classe</span></button>
+  <button class="stats-btn" data-target="statistiques"><i class="fa-solid fa-chart-line"></i><span> 🏆 Statistiques</span></button>
 </nav>
 
-
 <div class="container">
+
+<section id="statistiques" class="tab-content">
+  <h2>🏆 Statistiques & Classement</h2>
+  <p style="text-align: center; color: white; margin-bottom: 20px;">Suivez vos performances et comparez-vous aux autres élèves !</p>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+      <div class="stat-value" id="user-time">0h 0m</div>
+      <div class="stat-label">Temps sur le site</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-envelope"></i></div>
+      <div class="stat-value" id="user-messages">0</div>
+      <div class="stat-label">Messages envoyés</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-fire"></i></div>
+      <div class="stat-value" id="user-streak">0</div>
+      <div class="stat-label">Jours consécutifs</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-trophy"></i></div>
+      <div class="stat-value" id="user-rank">-</div>
+      <div class="stat-label">Classement</div>
+    </div>
+  </div>
+
+  <div class="leaderboard-section">
+    <div class="leaderboard-header">
+      <i class="fa-solid fa-crown"></i>
+      <h3>Classement Général</h3>
+      <i class="fa-solid fa-crown"></i>
+    </div>
+    
+    <div id="loading-stats" class="loading">
+      <i class="fa-solid fa-spinner"></i>
+      <p>Chargement...</p>
+    </div>
+
+    <ul id="leaderboard-list" class="leaderboard-list" style="display: none;"></ul>
+    
+    <button class="refresh-btn" onclick="refreshStats()" style="display: none;" id="refresh-btn">
+      <i class="fa-solid fa-rotate"></i> Actualiser
+    </button>
+  </div>
+
+  <div class="achievement-section">
+    <h3>🎖️ Succès & Badges</h3>
+    <div class="achievements-grid" id="achievements-grid"></div>
+  </div>
+</section>
+
 <section id="vie-classe" class="tab-content">
   <h2>Vote pour le délégué de classe</h2>
   <p>Pour voter, cliquez ici :</p>
@@ -527,37 +873,29 @@
 <section id="accueil" class="tab-content active">
   <h2>Bienvenue sur École Pas Directe</h2>
   <p>Accède à toutes les informations scolaires ici. Retrouve ton emploi du temps, tes notes, tes devoirs et bien plus encore ! 📚</p>
-
   <div class="image-container">
-
     <img src="telechargement.png" alt="Bienvenue à l'école" />
   </div>
-
   <ul>
     <li><strong>📅 Dernière mise à jour :</strong> 4 juin 2025</li>
     <li><strong>📢 Événement à venir :</strong> Conseil de classe – 12 juin</li>
     <li><strong>🎽 Rappel :</strong> Apporte ton matériel de sport jeudi</li>
   </ul>
-
-
-
 </section>
 
- <section id="vie-scolaire" class="tab-content">
+<section id="vie-scolaire" class="tab-content">
   <h2>Liens utiles</h2>
   <p>Accède rapidement à des ressources pour t'aider dans tes études. 🔗</p>
-  
   <div class="image-container">
     <img src="telechargement.png" alt="Vie scolaire" />
   </div>
   <div id="sidebar-right">
-  <h3>🔗 Ressources pédagogiques</h3>
-  <ul>
-    <li><a href="https://www.chunkbase.com/" target="_blank">lagrandelbrairie - Ressources littéraires</a></li>
-    <li><a href="https://tompousse.fr/livre/nul-en-maths-pourquoi-moi/" target="_blank">maths c'est facile - Tutoriels mathématiques</a></li>
-  </ul>
-</div>
-
+    <h3>🔗 Ressources pédagogiques</h3>
+    <ul>
+      <li><a href="https://www.chunkbase.com/" target="_blank">lagrandelbrairie - Ressources littéraires</a></li>
+      <li><a href="https://tompousse.fr/livre/nul-en-maths-pourquoi-moi/" target="_blank">maths c'est facile - Tutoriels mathématiques</a></li>
+    </ul>
+  </div>
 </section>
 
 <section id="bulletin" class="tab-content">
@@ -570,84 +908,66 @@
   </ul>
 </section>
 
-  <section id="notes" class="tab-content">
-    <h2>Mes notes</h2>
-    <div id="sidebar-right">
-  <h3>📊 Progression</h3>
-  <p>Moyenne générale</p>
-  <div class="progress-bar">
-    <div style="width: 25%;">
-      5/20
+<section id="notes" class="tab-content">
+  <h2>Mes notes</h2>
+  <div id="sidebar-right">
+    <h3>📊 Progression</h3>
+    <p>Moyenne générale</p>
+    <div class="progress-bar">
+      <div style="width: 25%;">5/20</div>
     </div>
   </div>
-</div>
+  <ul id="notes-list"></ul>
+</section>
 
-    <ul id="notes-list"></ul>
-  </section>
-  <section id="devoirs" class="tab-content">
-    <h2>Mes devoirs</h2>
-    <p>Voici les devoirs qui t'attendent. N'oublie pas de les faire! 📝</p>
-    <ul id="devoirs-list"></ul>
-  </section>
- <section id="messages" class="tab-content">
+<section id="devoirs" class="tab-content">
+  <h2>Mes devoirs</h2>
+  <p>Voici les devoirs qui t'attendent. N'oublie pas de les faire! 📝</p>
+  <ul id="devoirs-list"></ul>
+</section>
+
+<section id="messages" class="tab-content">
   <h2>Messagerie</h2>
   <p>Accédez à votre messagerie complète:</p>
   <a href="messages-firebase.html" style="display: inline-block; font-weight:bold; color:white; background-color:#005fa3; padding:12px 24px; border-radius:6px; text-decoration:none; margin-top:10px; transition:background-color 0.3s;">📧 Ouvrir la messagerie</a>
 </section>
 
-  <section id="carnet" class="tab-content">
-    <h2>Carnet de correspondance</h2>
-    <p>Retrouve les observations et remarques de tes professeurs. 📖</p>
-    <ul id="carnet-list"></ul>
-  </section>
- 
+<section id="carnet" class="tab-content">
+  <h2>Carnet de correspondance</h2>
+  <p>Retrouve les observations et remarques de tes professeurs. 📖</p>
+  <ul id="carnet-list"></ul>
+</section>
 
- <section id="emploi" class="tab-content">
+<section id="emploi" class="tab-content">
   <h2>Mon emploi du temps</h2>
   <p>Utilise les boutons pour naviguer entre les semaines de l'année scolaire. 📅</p>
-
   <div style="text-align: center; margin-bottom: 20px;">
     <button id="btn-prev">⬅️ Semaine précédente</button>
     <span id="semaine-label" style="margin: 0 20px; font-weight: bold; font-size: 1.2rem;">Semaine 1</span>
     <button id="btn-next">Semaine suivante ➡️</button>
   </div>
-
   <div class="image-container">
     <img id="img-emploi" src="emploidutemps_page-0001.jpg" alt="Emploi du temps semaine 1" />
   </div>
-
 </section>
 
-  
- <section id="document" class="tab-content">
+<section id="document" class="tab-content">
   <h2>Déposer un document</h2>
   <p>Choisis un fichier à envoyer :</p>
-  
   <form id="upload-form">
     <input type="file" id="fileInput" />
     <button type="submit">📤 Envoyer le document</button>
   </form>
   <p id="upload-status" style="color: #005fa3; font-weight: 600;"></p>
   <ul id="uploaded-files-list" style="margin-top: 20px;"></ul>
-
-
-  
 </section>
 
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { 
-    getAuth, 
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-  import { 
-    getFirestore,
-    doc,
-    getDoc
-  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAJRxSO6NDTAhAoUX-uqmTJT68cJjog1bw",
@@ -664,7 +984,236 @@
 
   window.profilesData = {};
 
-  // Fonction pour peupler les listes
+  // CACHE SYSTÈME - Pour éviter les lectures multiples
+  let statsCache = null;
+  let leaderboardCache = null;
+  let statsLoaded = false;
+  let lastUpdateTime = Date.now();
+
+  // TRACKING DU TEMPS - 1 mise à jour toutes les 5 MINUTES (au lieu d'1 minute)
+  async function updateTimeSpent() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const now = Date.now();
+    const sessionTime = Math.floor((now - lastUpdateTime) / (1000 * 60));
+    
+    if (sessionTime >= 5) { // Seulement si 5+ minutes écoulées
+      try {
+        const statsRef = doc(db, "stats", user.uid);
+        await updateDoc(statsRef, {
+          totalTime: increment(sessionTime)
+        });
+        
+        lastUpdateTime = now;
+        console.log(`✅ +${sessionTime}min`);
+      } catch (error) {
+        if (error.code === 'not-found') {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          const username = userDoc.exists() ? userDoc.data().username : "Utilisateur";
+          
+          await setDoc(statsRef, {
+            username: username,
+            totalTime: sessionTime,
+            messagesCount: 0,
+            streak: 1,
+            lastVisit: serverTimestamp(),
+            createdAt: serverTimestamp(),
+            achievements: []
+          });
+        }
+      }
+    }
+  }
+
+  // Update toutes les 5 minutes (au lieu d'1)
+  setInterval(updateTimeSpent, 5 * 60 * 1000);
+  window.addEventListener('beforeunload', updateTimeSpent);
+
+  const achievements = [
+    { id: 'first-visit', icon: 'fa-rocket', name: 'Premier Pas', desc: 'Première visite', threshold: 1 },
+    { id: 'time-5h', icon: 'fa-clock', name: 'Assidu', desc: '5h sur le site', threshold: 5 * 60 },
+    { id: 'time-10h', icon: 'fa-hourglass-half', name: 'Dévoué', desc: '10h sur le site', threshold: 10 * 60 },
+    { id: 'messages-10', icon: 'fa-comment', name: 'Bavard', desc: '10 messages', threshold: 10 },
+    { id: 'messages-50', icon: 'fa-comments', name: 'Communicateur', desc: '50 messages', threshold: 50 },
+    { id: 'streak-7', icon: 'fa-fire', name: 'Régulier', desc: '7 jours', threshold: 7 },
+    { id: 'top-3', icon: 'fa-medal', name: 'Podium', desc: 'Top 3', threshold: 0 },
+    { id: 'top-1', icon: 'fa-crown', name: 'Champion', desc: '1er', threshold: 0 }
+  ];
+
+  async function initializeUserStats(userId, username) {
+    const statsRef = doc(db, "stats", userId);
+    const statsDoc = await getDoc(statsRef);
+
+    if (!statsDoc.exists()) {
+      await setDoc(statsRef, {
+        username: username,
+        totalTime: 0,
+        messagesCount: 0,
+        streak: 1,
+        lastVisit: serverTimestamp(),
+        createdAt: serverTimestamp(),
+        achievements: []
+      });
+    } else {
+      const lastVisit = statsDoc.data().lastVisit?.toDate();
+      const now = new Date();
+      
+      if (lastVisit) {
+        const daysDiff = Math.floor((now - lastVisit) / (1000 * 60 * 60 * 24));
+        
+        if (daysDiff === 1) {
+          await updateDoc(statsRef, { streak: increment(1), lastVisit: serverTimestamp() });
+        } else if (daysDiff > 1) {
+          await updateDoc(statsRef, { streak: 1, lastVisit: serverTimestamp() });
+        }
+      }
+    }
+  }
+
+  function formatTime(minutes) {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}m`;
+  }
+
+  async function loadLeaderboard() {
+    // Si déjà chargé, utiliser le cache
+    if (leaderboardCache) {
+      displayLeaderboard(leaderboardCache);
+      return;
+    }
+
+    const leaderboardList = document.getElementById('leaderboard-list');
+    const loading = document.getElementById('loading-stats');
+
+    try {
+      const statsQuery = query(collection(db, "stats"), orderBy("totalTime", "desc"), limit(10));
+      const querySnapshot = await getDocs(statsQuery);
+      const users = [];
+
+      querySnapshot.forEach((doc) => {
+        users.push({ id: doc.id, ...doc.data() });
+      });
+
+      leaderboardCache = users; // Mettre en cache
+      displayLeaderboard(users);
+      
+      loading.style.display = 'none';
+      document.getElementById('refresh-btn').style.display = 'block';
+
+    } catch (error) {
+      console.error("Erreur:", error);
+      loading.innerHTML = '<p style="color: white;">Erreur de chargement</p>';
+    }
+  }
+
+  function displayLeaderboard(users) {
+    const leaderboardList = document.getElementById('leaderboard-list');
+    leaderboardList.style.display = 'block';
+    leaderboardList.innerHTML = '';
+
+    users.forEach((user, index) => {
+      const rank = index + 1;
+      const li = document.createElement('li');
+      li.className = `leaderboard-item rank-${rank <= 3 ? rank : ''}`;
+
+      let medalIcon = '';
+      if (rank === 1) medalIcon = '<i class="fa-solid fa-trophy medal-icon" style="color: #ffd700;"></i>';
+      else if (rank === 2) medalIcon = '<i class="fa-solid fa-medal medal-icon" style="color: #c0c0c0;"></i>';
+      else if (rank === 3) medalIcon = '<i class="fa-solid fa-medal medal-icon" style="color: #cd7f32;"></i>';
+
+      li.innerHTML = `
+        <div class="rank-badge">${rank}</div>
+        <div class="user-info">
+          <div class="user-name">${user.username}</div>
+          <div class="user-stats">${user.messagesCount || 0} msg • ${user.streak || 0}j 🔥</div>
+        </div>
+        <div class="user-time">${formatTime(user.totalTime || 0)}</div>
+        ${medalIcon}
+      `;
+      leaderboardList.appendChild(li);
+
+      if (auth.currentUser && user.id === auth.currentUser.uid) {
+        document.getElementById('user-rank').textContent = `#${rank}`;
+      }
+    });
+  }
+
+  async function loadUserStats() {
+    const user = auth.currentUser;
+    if (!user || statsCache) return; // Si cache existe, ne pas recharger
+
+    const statsRef = doc(db, "stats", user.uid);
+    const statsDoc = await getDoc(statsRef);
+
+    if (statsDoc.exists()) {
+      const data = statsDoc.data();
+      statsCache = data; // Mettre en cache
+      
+      document.getElementById('user-time').textContent = formatTime(data.totalTime || 0);
+      document.getElementById('user-messages').textContent = data.messagesCount || 0;
+      document.getElementById('user-streak').textContent = data.streak || 0;
+
+      loadAchievements(data);
+    }
+  }
+
+  function loadAchievements(userData) {
+    const achievementsGrid = document.getElementById('achievements-grid');
+    achievementsGrid.innerHTML = '';
+
+    const userAchievements = userData.achievements || [];
+    const totalTime = userData.totalTime || 0;
+    const messagesCount = userData.messagesCount || 0;
+    const streak = userData.streak || 0;
+
+    achievements.forEach(achievement => {
+      const div = document.createElement('div');
+      let unlocked = false;
+
+      if (achievement.id === 'first-visit') {
+        unlocked = true;
+      } else if (achievement.id.startsWith('time-')) {
+        unlocked = totalTime >= achievement.threshold;
+      } else if (achievement.id.startsWith('messages-')) {
+        unlocked = messagesCount >= achievement.threshold;
+      } else if (achievement.id.startsWith('streak-')) {
+        unlocked = streak >= achievement.threshold;
+      } else if (userAchievements.includes(achievement.id)) {
+        unlocked = true;
+      }
+
+      div.className = `achievement-badge ${unlocked ? 'unlocked' : 'locked'}`;
+      div.innerHTML = `
+        <i class="fa-solid ${achievement.icon}"></i>
+        <div class="achievement-name">${achievement.name}</div>
+        <div class="achievement-desc">${achievement.desc}</div>
+      `;
+      achievementsGrid.appendChild(div);
+    });
+  }
+
+  // NE CHARGE QU'UNE SEULE FOIS au clic sur l'onglet
+  document.querySelector('[data-target="statistiques"]').addEventListener('click', () => {
+    if (!statsLoaded) {
+      loadUserStats();
+      loadLeaderboard();
+      statsLoaded = true;
+    }
+  });
+
+  // Fonction pour actualiser manuellement
+  window.refreshStats = async function() {
+    statsCache = null;
+    leaderboardCache = null;
+    statsLoaded = false;
+    document.getElementById('loading-stats').style.display = 'block';
+    document.getElementById('leaderboard-list').style.display = 'none';
+    await loadUserStats();
+    await loadLeaderboard();
+  };
+
   function populateList(listId, data, formatter) {
     const list = document.getElementById(listId);
     if (list) {
@@ -697,10 +1246,10 @@
         sessionStorage.setItem("userId", user.uid);
 
         document.getElementById("username-display").textContent = "Bienvenue, " + userData.username + " !";
-
         window.profilesData[userData.username] = userData;
 
-        // Données par défaut négatives pour TOUS les utilisateurs
+        await initializeUserStats(user.uid, userData.username);
+
         const defaultNotes = [
           { matiere: "Mathématiques", note: "4/20 - Travail insuffisant" },
           { matiere: "Français", note: "5/20 - Nombreuses fautes" },
@@ -726,7 +1275,6 @@
           { matiere: "Sciences", description: "Pour demain : Réaliser 25 expériences complètes avec compte-rendus détaillés de 10 pages chacune, apprendre tous les éléments du tableau périodique avec leurs propriétés, construire 15 maquettes scientifiques fonctionnelles, rédiger une thèse de 50 pages sur la physique quantique, résoudre 100 équations chimiques complexes, et préparer une démonstration pratique. Matériel à fournir." }
         ];
 
-        // Utiliser TOUJOURS les données par défaut négatives (ignorer les données Firebase)
         populateList("notes-list", defaultNotes, i => `<strong>${i.matiere}</strong> : ${i.note}`);
         populateList("devoirs-list", defaultDevoirs, i => `<strong>${i.matiere}</strong> : ${i.description}`);
         populateList("carnet-list", defaultCarnet, i => `<strong>${i.date} - ${i.type}</strong> : ${i.description}`);
@@ -744,9 +1292,7 @@
 </script>
 
 <script>
-
- let profilesData = {};
-
+  let profilesData = {};
 
   const buttons = document.querySelectorAll("nav button");
   const sections = document.querySelectorAll(".tab-content");
@@ -754,6 +1300,8 @@
   buttons.forEach(btn => {
     btn.addEventListener("click", () => {
       const targetId = btn.getAttribute("data-target");
+      if (!targetId) return;
+      
       buttons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       sections.forEach(sec => {
@@ -763,15 +1311,10 @@
     });
   });
 
-  // Initialiser la messagerie
-  setTimeout(() => {
-    if (document.getElementById("conversations")) {
-      initializeMessaging();
-    }
-  }, 100);
-
   function showAccountInfo() {
-    alert("Nom d'utilisateur : " + currentUser + "\nAdresse e-mail : exemple@email.com\nStatut : Élève");
+    const currentUser = sessionStorage.getItem("currentUser") || "Utilisateur";
+    const userEmail = sessionStorage.getItem("userEmail") || "exemple@email.com";
+    alert("Nom d'utilisateur : " + currentUser + "\nAdresse e-mail : " + userEmail + "\nStatut : Élève");
   }
 
   function logout() {
@@ -804,64 +1347,37 @@
 
     const file = fileInput.files[0];
     const li = document.createElement("li");
-    li.textContent = file.name + "";
+    li.textContent = file.name;
     list.appendChild(li);
 
     status.textContent = "Fichier sélectionné : " + file.name;
     fileInput.value = ""; 
   });
 
-  window.addEventListener("load", () => {
-    const nav = document.querySelector("nav");
-    setTimeout(() => {
-      nav.classList.add("show");
-    }, 100); 
+  let semaineActuelle = 1;
+  const maxSemaines = 6; 
+
+  function mettreAJourEmploiDuTemps() {
+    const img = document.getElementById("img-emploi");
+    const label = document.getElementById("semaine-label");
+    img.src = `emploidutemps_page-0001.jpg`;
+    img.alt = `Emploi du temps semaine ${semaineActuelle}`;
+    label.textContent = `Semaine ${semaineActuelle}`;
+  }
+
+  document.getElementById("btn-prev").addEventListener("click", () => {
+    if (semaineActuelle > 1) {
+      semaineActuelle--;
+      mettreAJourEmploiDuTemps();
+    }
   });
 
-  document.getElementById("vote-form").addEventListener("submit", function(e) {
-  e.preventDefault();
-  const choix = document.querySelector('input[name="candidat"]:checked');
-  const result = document.getElementById("vote-result");
-
-  if (!choix) {
-    result.textContent = "Veuillez sélectionner un candidat avant de voter.";
-    return;
-  }
-
-  
-  result.textContent = "Merci pour votre vote ! Vous avez choisi : " + choix.value + ".";
-});
-
-
-// Code du calendrier de l'emploi du temps
-let semaineActuelle = 1;
-const maxSemaines = 6; 
-
-function mettreAJourEmploiDuTemps() {
-  const img = document.getElementById("img-emploi");
-  const label = document.getElementById("semaine-label");
-
-  img.src = `emploidutemps_page-0001.jpg`;
-  img.alt = `Emploi du temps semaine ${semaineActuelle}`;
-  label.textContent = `Semaine ${semaineActuelle}`;
-}
-
-document.getElementById("btn-prev").addEventListener("click", () => {
-  if (semaineActuelle > 1) {
-    semaineActuelle--;
-    mettreAJourEmploiDuTemps();
-  }
-});
-
-document.getElementById("btn-next").addEventListener("click", () => {
-  if (semaineActuelle < maxSemaines) {
-    semaineActuelle++;
-    mettreAJourEmploiDuTemps();
-  }
-});
-
-// Messagerie déplacée dans messages.html
-
+  document.getElementById("btn-next").addEventListener("click", () => {
+    if (semaineActuelle < maxSemaines) {
+      semaineActuelle++;
+      mettreAJourEmploiDuTemps();
+    }
+  });
 </script>
 
 </body>
