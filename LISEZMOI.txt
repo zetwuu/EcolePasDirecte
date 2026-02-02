@@ -9,7 +9,7 @@ avec Firebase qui va vous permettre de discuter avec Alex même si
 vous êtes sur des ordinateurs différents!
 
 ---
-
+cccc
 ⚡ DÉMARRAGE RAPIDE (3 ÉTAPES)
 
 1. Ouvrez: firebase-quick-start.html (dans votre navigateur)
