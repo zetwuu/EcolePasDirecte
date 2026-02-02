@@ -171,119 +171,6 @@
       color: #005fa3;
     }
 
-    #messages-list {
-      list-style: none;
-      padding: 0;
-    }
-
-    #messages-list li {
-      background: #f9f9f9;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-left: 4px solid #005fa3;
-      border-radius: 4px;
-      font-size: 1rem;
-      line-height: 1.5;
-    }
-
-    #message-form textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-family: 'Poppins', sans-serif;
-      font-size: 1rem;
-      resize: vertical;
-    }
-
-    #message-form button {
-      background-color: #005fa3;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      margin-top: 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.3s;
-      width: 100%;
-    }
-
-    #message-form button:hover {
-      background-color: #00497d;
-    }
-
-    .conversation-item {
-      padding: 12px 15px;
-      border-bottom: 1px solid #eee;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      border-left: 4px solid transparent;
-    }
-
-    .conversation-item:hover {
-      background-color: #e8f1f8;
-    }
-
-    .conversation-item.active {
-      background-color: #e3f2fd;
-      border-left-color: #005fa3;
-      font-weight: 600;
-    }
-
-    .conversation-item-name {
-      font-weight: 600;
-      color: #005fa3;
-      margin-bottom: 3px;
-    }
-
-    .conversation-item-preview {
-      font-size: 0.9rem;
-      color: #666;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .chat-message {
-      padding: 10px 15px;
-      border-radius: 8px;
-      max-width: 70%;
-      word-wrap: break-word;
-      animation: slideIn 0.3s ease;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .chat-message.sent {
-      background-color: #005fa3;
-      color: white;
-      align-self: flex-end;
-      margin-left: auto;
-    }
-
-    .chat-message.received {
-      background-color: #f0f4f8;
-      color: #333;
-      align-self: flex-start;
-      margin-right: auto;
-    }
-
-    .message-time {
-      font-size: 0.8rem;
-      opacity: 0.7;
-      margin-top: 4px;
-    }
-
     #brand {
       display: flex;
       align-items: center;
@@ -449,16 +336,6 @@
 
     #bulletin-list li a:hover {
       text-decoration: underline;
-    }
-
-    #messages-container {
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      max-height: 400px;
-      overflow-y: auto;
-      border: 1px solid #dee2e6;
     }
 
     .progress-bar {
@@ -984,13 +861,13 @@
 
   window.profilesData = {};
 
-  // CACHE SYSTÈME - Pour éviter les lectures multiples
+  // CACHE SYSTÈME
   let statsCache = null;
   let leaderboardCache = null;
   let statsLoaded = false;
   let lastUpdateTime = Date.now();
 
-  // TRACKING DU TEMPS - 1 mise à jour toutes les 5 MINUTES (au lieu d'1 minute)
+  // ✅ TRACKING DU TEMPS - 1 MINUTE POUR TESTER
   async function updateTimeSpent() {
     const user = auth.currentUser;
     if (!user) return;
@@ -998,17 +875,21 @@
     const now = Date.now();
     const sessionTime = Math.floor((now - lastUpdateTime) / (1000 * 60));
     
-    if (sessionTime >= 5) { // Seulement si 5+ minutes écoulées
+    if (sessionTime >= 1) { // ✅ Toutes les 1 minute pour tester
       try {
         const statsRef = doc(db, "stats", user.uid);
-        await updateDoc(statsRef, {
-          totalTime: increment(sessionTime)
-        });
         
-        lastUpdateTime = now;
-        console.log(`✅ +${sessionTime}min`);
-      } catch (error) {
-        if (error.code === 'not-found') {
+        // Vérifier si le doc existe
+        const statsDoc = await getDoc(statsRef);
+        
+        if (statsDoc.exists()) {
+          await updateDoc(statsRef, {
+            totalTime: increment(sessionTime),
+            lastVisit: serverTimestamp()
+          });
+          console.log(`✅ +${sessionTime}min ajouté`);
+        } else {
+          // Créer le document s'il n'existe pas
           const userDoc = await getDoc(doc(db, "users", user.uid));
           const username = userDoc.exists() ? userDoc.data().username : "Utilisateur";
           
@@ -1021,14 +902,29 @@
             createdAt: serverTimestamp(),
             achievements: []
           });
+          console.log(`✅ Stats créées avec ${sessionTime}min`);
         }
+        
+        lastUpdateTime = now;
+        
+        // ✅ Rafraîchir les stats affichées
+        if (statsCache) {
+          statsCache.totalTime = (statsCache.totalTime || 0) + sessionTime;
+          document.getElementById('user-time').textContent = formatTime(statsCache.totalTime);
+        }
+        
+      } catch (error) {
+        console.error("❌ Erreur update temps:", error);
       }
     }
   }
 
-  // Update toutes les 5 minutes (au lieu d'1)
-  setInterval(updateTimeSpent, 5 * 60 * 1000);
+  // ✅ Update toutes les 1 minute (pour tester)
+  setInterval(updateTimeSpent, 1 * 60 * 1000);
   window.addEventListener('beforeunload', updateTimeSpent);
+  
+  // ✅ Premier update après 10 secondes
+  setTimeout(updateTimeSpent, 10000);
 
   const achievements = [
     { id: 'first-visit', icon: 'fa-rocket', name: 'Premier Pas', desc: 'Première visite', threshold: 1 },
@@ -1055,6 +951,7 @@
         createdAt: serverTimestamp(),
         achievements: []
       });
+      console.log("✅ Stats initialisées");
     } else {
       const lastVisit = statsDoc.data().lastVisit?.toDate();
       const now = new Date();
@@ -1064,8 +961,10 @@
         
         if (daysDiff === 1) {
           await updateDoc(statsRef, { streak: increment(1), lastVisit: serverTimestamp() });
+          console.log("✅ Streak incrémenté");
         } else if (daysDiff > 1) {
           await updateDoc(statsRef, { streak: 1, lastVisit: serverTimestamp() });
+          console.log("✅ Streak réinitialisé");
         }
       }
     }
@@ -1078,7 +977,6 @@
   }
 
   async function loadLeaderboard() {
-    // Si déjà chargé, utiliser le cache
     if (leaderboardCache) {
       displayLeaderboard(leaderboardCache);
       return;
@@ -1096,15 +994,15 @@
         users.push({ id: doc.id, ...doc.data() });
       });
 
-      leaderboardCache = users; // Mettre en cache
+      leaderboardCache = users;
       displayLeaderboard(users);
       
       loading.style.display = 'none';
       document.getElementById('refresh-btn').style.display = 'block';
 
     } catch (error) {
-      console.error("Erreur:", error);
-      loading.innerHTML = '<p style="color: white;">Erreur de chargement</p>';
+      console.error("Erreur leaderboard:", error);
+      loading.innerHTML = '<p style="color: white;">Erreur: ' + error.message + '</p>';
     }
   }
 
@@ -1112,6 +1010,11 @@
     const leaderboardList = document.getElementById('leaderboard-list');
     leaderboardList.style.display = 'block';
     leaderboardList.innerHTML = '';
+
+    if (users.length === 0) {
+      leaderboardList.innerHTML = '<li style="text-align: center; padding: 20px;">Aucune donnée disponible</li>';
+      return;
+    }
 
     users.forEach((user, index) => {
       const rank = index + 1;
@@ -1126,7 +1029,7 @@
       li.innerHTML = `
         <div class="rank-badge">${rank}</div>
         <div class="user-info">
-          <div class="user-name">${user.username}</div>
+          <div class="user-name">${user.username || 'Utilisateur'}</div>
           <div class="user-stats">${user.messagesCount || 0} msg • ${user.streak || 0}j 🔥</div>
         </div>
         <div class="user-time">${formatTime(user.totalTime || 0)}</div>
@@ -1142,20 +1045,31 @@
 
   async function loadUserStats() {
     const user = auth.currentUser;
-    if (!user || statsCache) return; // Si cache existe, ne pas recharger
+    if (!user) return;
 
-    const statsRef = doc(db, "stats", user.uid);
-    const statsDoc = await getDoc(statsRef);
+    try {
+      const statsRef = doc(db, "stats", user.uid);
+      const statsDoc = await getDoc(statsRef);
 
-    if (statsDoc.exists()) {
-      const data = statsDoc.data();
-      statsCache = data; // Mettre en cache
-      
-      document.getElementById('user-time').textContent = formatTime(data.totalTime || 0);
-      document.getElementById('user-messages').textContent = data.messagesCount || 0;
-      document.getElementById('user-streak').textContent = data.streak || 0;
+      if (statsDoc.exists()) {
+        const data = statsDoc.data();
+        statsCache = data;
+        
+        document.getElementById('user-time').textContent = formatTime(data.totalTime || 0);
+        document.getElementById('user-messages').textContent = data.messagesCount || 0;
+        document.getElementById('user-streak').textContent = data.streak || 0;
 
-      loadAchievements(data);
+        loadAchievements(data);
+        console.log("✅ Stats chargées:", data);
+      } else {
+        console.log("⚠️ Pas de stats trouvées");
+        document.getElementById('user-time').textContent = '0h 0m';
+        document.getElementById('user-messages').textContent = '0';
+        document.getElementById('user-streak').textContent = '0';
+        loadAchievements({});
+      }
+    } catch (error) {
+      console.error("❌ Erreur chargement stats:", error);
     }
   }
 
@@ -1167,6 +1081,8 @@
     const totalTime = userData.totalTime || 0;
     const messagesCount = userData.messagesCount || 0;
     const streak = userData.streak || 0;
+
+    console.log("🎖️ Chargement badges - Temps:", totalTime, "Messages:", messagesCount, "Streak:", streak);
 
     achievements.forEach(achievement => {
       const div = document.createElement('div');
@@ -1194,22 +1110,23 @@
     });
   }
 
-  // NE CHARGE QU'UNE SEULE FOIS au clic sur l'onglet
+  // Charger au clic sur l'onglet statistiques
   document.querySelector('[data-target="statistiques"]').addEventListener('click', () => {
     if (!statsLoaded) {
+      console.log("📊 Chargement des statistiques...");
       loadUserStats();
       loadLeaderboard();
       statsLoaded = true;
     }
   });
 
-  // Fonction pour actualiser manuellement
   window.refreshStats = async function() {
     statsCache = null;
     leaderboardCache = null;
     statsLoaded = false;
     document.getElementById('loading-stats').style.display = 'block';
     document.getElementById('leaderboard-list').style.display = 'none';
+    console.log("🔄 Rafraîchissement des stats...");
     await loadUserStats();
     await loadLeaderboard();
   };
