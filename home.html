@@ -54,39 +54,7 @@
       margin-left: 10px;
     }
 
-    /* SYSTÈME DE PIÈCES */
-    #coins-display {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255,255,255,0.2);
-      padding: 8px 15px;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    #coins-display:hover {
-      background: rgba(255,255,255,0.3);
-      transform: scale(1.05);
-    }
-
-    #coins-count {
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: white;
-    }
-
-    .coin-animation {
-      animation: coinBounce 0.6s ease;
-    }
-
-    @keyframes coinBounce {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.3); }
-    }
-
-    /* MODAL BOUTIQUE */
+    /* MODAL THÈMES */
     .modal {
       display: none;
       position: fixed;
@@ -153,11 +121,11 @@
       color: #005fa3;
     }
 
-    .shop-section {
+    .settings-section {
       margin: 25px 0;
     }
 
-    .shop-section h3 {
+    .settings-section h3 {
       color: #005fa3;
       margin-bottom: 15px;
       font-size: 1.5rem;
@@ -169,7 +137,7 @@
       gap: 15px;
     }
 
-    .shop-item {
+    .settings-item {
       background: #f9f9f9;
       border: 2px solid #ddd;
       border-radius: 10px;
@@ -179,26 +147,16 @@
       transition: all 0.3s;
     }
 
-    .shop-item:hover {
+    .settings-item:hover {
       transform: translateY(-5px);
       border-color: #005fa3;
       box-shadow: 0 5px 15px rgba(0,95,163,0.2);
     }
 
-    .shop-item.owned {
-      border-color: #28a745;
-      background: #e8f5e9;
-    }
-
-    .shop-item.active {
-      border-color: #ffd700;
-      background: #fff9e6;
-      box-shadow: 0 0 15px rgba(255,215,0,0.5);
-    }
-
-    .shop-item.free {
-      border-color: #28a745;
-      background: #e8f5e9;
+    .settings-item.active {
+      border-color: #005fa3;
+      background: #e3f2fd;
+      box-shadow: 0 0 15px rgba(0,95,163,0.3);
     }
 
     .item-preview {
@@ -216,17 +174,6 @@
       font-weight: 600;
       margin-bottom: 5px;
       font-size: 0.9rem;
-    }
-
-    .item-price {
-      color: #ffd700;
-      font-weight: 700;
-      font-size: 1.1rem;
-      margin: 5px 0;
-    }
-
-    .item-price.free-tag {
-      color: #28a745;
     }
 
     .item-button {
@@ -250,43 +197,11 @@
       cursor: not-allowed;
     }
 
-    .daily-bonus-section {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 20px;
-      border-radius: 10px;
-      color: white;
-      text-align: center;
-      margin-bottom: 25px;
-    }
-
-    .bonus-btn {
-      background: white;
-      color: #667eea;
-      border: none;
-      padding: 12px 30px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 1.1rem;
-      margin-top: 10px;
-      transition: all 0.3s;
-    }
-
-    .bonus-btn:hover:not(:disabled) {
-      transform: scale(1.05);
-      box-shadow: 0 5px 15px rgba(255,255,255,0.3);
-    }
-
-    .bonus-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
     .notification {
       position: fixed;
       top: 80px;
       right: 20px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #005fa3;
       color: white;
       padding: 15px 25px;
       border-radius: 10px;
@@ -321,10 +236,22 @@
       position: fixed;
       overflow: hidden;
       transition: width 0.3s ease;
+      display: flex;
+      flex-direction: column;
     }
 
     nav:hover {
       width: 220px;
+    }
+
+    .nav-main {
+      flex: 1;
+    }
+
+    .nav-bottom {
+      border-top: 2px solid rgba(255,255,255,0.2);
+      padding-top: 10px;
+      margin-top: auto;
     }
 
     nav button {
@@ -357,15 +284,6 @@
     nav button:hover {
       background: #00497d; 
       color: white;
-    }
-
-    nav button.stats-btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      margin-top: 10px;
-    }
-
-    nav button.stats-btn:hover {
-      background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
     }
 
     .container {
@@ -624,16 +542,25 @@
     /* STYLES STATISTIQUES */
     #statistiques {
       max-width: 1200px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 40px;
-      border-radius: 15px;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.05);
     }
 
     #statistiques h2 {
-      color: white;
+      color: #003d66;
       text-align: center;
-      border-bottom: 3px solid white;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      border-bottom: 3px solid #005fa3;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    #statistiques > p {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 1.1rem;
     }
 
     .stats-grid {
@@ -644,43 +571,30 @@
     }
 
     .stat-card {
-      background: white;
-      border-radius: 15px;
+      background: #f9f9f9;
+      border-radius: 10px;
       padding: 25px;
       text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background: linear-gradient(90deg, #667eea, #764ba2);
+      border: 2px solid #ddd;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .stat-card:hover {
       transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,95,163,0.2);
+      border-color: #005fa3;
     }
 
     .stat-icon {
       font-size: 2.5rem;
       margin-bottom: 10px;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #005fa3;
     }
 
     .stat-value {
       font-size: 2rem;
       font-weight: 700;
-      color: #333;
+      color: #003d66;
       margin-bottom: 5px;
     }
 
@@ -692,11 +606,11 @@
     }
 
     .leaderboard-section {
-      background: white;
-      border-radius: 15px;
+      background: #f9f9f9;
+      border-radius: 10px;
       padding: 30px;
       margin: 20px 0;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      border: 2px solid #ddd;
     }
 
     .leaderboard-header {
@@ -706,12 +620,12 @@
       gap: 15px;
       margin-bottom: 25px;
       padding-bottom: 15px;
-      border-bottom: 3px solid #667eea;
+      border-bottom: 3px solid #005fa3;
     }
 
     .leaderboard-header h3 {
       font-size: 1.8rem;
-      color: #333;
+      color: #003d66;
       margin: 0;
     }
 
@@ -731,25 +645,30 @@
       padding: 15px;
       margin-bottom: 10px;
       border-radius: 10px;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      background: #ffffff;
+      border: 2px solid #e0e0e0;
       transition: transform 0.3s ease;
     }
 
     .leaderboard-item:hover {
       transform: translateX(5px);
+      border-color: #005fa3;
     }
 
     .leaderboard-item.rank-1 {
-      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+      background: #fff9e6;
+      border-color: #ffd700;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
     }
 
     .leaderboard-item.rank-2 {
-      background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+      background: #f5f5f5;
+      border-color: #c0c0c0;
     }
 
     .leaderboard-item.rank-3 {
-      background: linear-gradient(135deg, #cd7f32 0%, #e6a157 100%);
+      background: #fff4e6;
+      border-color: #cd7f32;
     }
 
     .rank-badge {
@@ -763,7 +682,8 @@
       border-radius: 50%;
       background: white;
       margin-right: 15px;
-      color: #667eea;
+      color: #005fa3;
+      border: 2px solid #005fa3;
     }
 
     .rank-1 .rank-badge {
@@ -788,7 +708,7 @@
     .user-name {
       font-size: 1.1rem;
       font-weight: 600;
-      color: #333;
+      color: #003d66;
       margin-bottom: 3px;
     }
 
@@ -800,7 +720,7 @@
     .user-time {
       font-size: 1.3rem;
       font-weight: 700;
-      color: #667eea;
+      color: #005fa3;
       margin-right: 10px;
     }
 
@@ -809,16 +729,16 @@
     }
 
     .achievement-section {
-      background: white;
-      border-radius: 15px;
+      background: #f9f9f9;
+      border-radius: 10px;
       padding: 30px;
       margin: 20px 0;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      border: 2px solid #ddd;
     }
 
     .achievement-section h3 {
       text-align: center;
-      color: #333;
+      color: #003d66;
       margin-bottom: 20px;
       font-size: 1.8rem;
     }
@@ -833,7 +753,8 @@
       text-align: center;
       padding: 15px;
       border-radius: 10px;
-      background: #f5f7fa;
+      background: #ffffff;
+      border: 2px solid #e0e0e0;
       transition: transform 0.3s ease;
     }
 
@@ -842,8 +763,8 @@
     }
 
     .achievement-badge.unlocked {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
+      background: #e3f2fd;
+      border-color: #005fa3;
     }
 
     .achievement-badge i {
@@ -863,22 +784,24 @@
       font-weight: 600;
       margin-bottom: 3px;
       font-size: 0.9rem;
+      color: #003d66;
     }
 
     .achievement-desc {
       font-size: 0.75rem;
-      opacity: 0.8;
+      color: #666;
     }
 
     .loading {
       text-align: center;
       padding: 30px;
-      color: white;
+      color: #666;
     }
 
     .loading i {
       font-size: 2.5rem;
       animation: spin 1s linear infinite;
+      color: #005fa3;
     }
 
     @keyframes spin {
@@ -887,9 +810,9 @@
     }
 
     .refresh-btn {
-      background: white;
-      color: #667eea;
-      border: 2px solid white;
+      background: #005fa3;
+      color: white;
+      border: 2px solid #005fa3;
       padding: 10px 20px;
       border-radius: 8px;
       cursor: pointer;
@@ -900,8 +823,124 @@
     }
 
     .refresh-btn:hover {
-      background: #667eea;
+      background: #00497d;
+      border-color: #00497d;
+    }
+
+    /* STYLES PARAMÈTRES */
+    .param-card {
+      background: #f9f9f9;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+
+    .param-card:hover {
+      border-color: #005fa3;
+      box-shadow: 0 5px 15px rgba(0,95,163,0.1);
+    }
+
+    .param-card h3 {
+      color: #005fa3;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .param-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .param-option:last-child {
+      border-bottom: none;
+    }
+
+    .param-label {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .param-value {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #005fa3;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .action-btn {
+      background: #005fa3;
       color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-btn:hover {
+      background: #00497d;
+    }
+
+    .action-btn.danger {
+      background: #dc3545;
+    }
+
+    .action-btn.danger:hover {
+      background: #c82333;
     }
 
     @media (max-width: 768px) {
@@ -924,33 +963,23 @@
 <!-- NOTIFICATION -->
 <div id="notification" class="notification"></div>
 
-<!-- MODAL BOUTIQUE -->
-<div id="shop-modal" class="modal">
+<!-- MODAL THÈMES -->
+<div id="settings-modal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-      <h2>🛒 Boutique</h2>
-      <button class="close-btn" onclick="closeShop()">&times;</button>
-    </div>
-
-    <!-- BONUS QUOTIDIEN -->
-    <div class="daily-bonus-section">
-      <h3 style="margin: 0 0 10px 0;">🎁 Bonus Quotidien</h3>
-      <p style="margin: 0;">Reviens chaque jour pour gagner des pièces !</p>
-      <button id="daily-bonus-btn" class="bonus-btn" onclick="claimDailyBonus()">
-        Récupérer 10 pièces
-      </button>
-      <p id="bonus-timer" style="margin-top: 10px; font-size: 0.9rem;"></p>
+      <h2>🎨 Thèmes</h2>
+      <button class="close-btn" onclick="closeThemes()">&times;</button>
     </div>
 
     <!-- AVATARS -->
-    <div class="shop-section">
-      <h3>👤 Photos de Profil</h3>
+    <div class="settings-section">
+      <h3>👤 Photo de Profil</h3>
       <div class="items-grid" id="avatars-grid"></div>
     </div>
 
     <!-- FONDS D'ÉCRAN -->
-    <div class="shop-section">
-      <h3>🎨 Fonds d'Écran</h3>
+    <div class="settings-section">
+      <h3>🎨 Fond d'Écran</h3>
       <div class="items-grid" id="backgrounds-grid"></div>
     </div>
   </div>
@@ -962,43 +991,191 @@
     <span>École Pas Directe</span>
   </div>
   <div id="user-box">
-    <div id="coins-display" onclick="openShop()">
-      <i class="fa-solid fa-coins" style="color: #ffd700; font-size: 1.3rem;"></i>
-      <span id="coins-count">0</span>
-    </div>
     <div id="profile-menu">
       <span id="username-display">Bienvenue !</span>
       <div id="profile-icon" onclick="toggleMenu()">
         <i class="fa-solid fa-user-circle"></i>
       </div>
       <div id="dropdown-menu">
-        <button onclick="showAccountInfo()">Informations du compte</button>
-        <button onclick="openShop()">🛒 Boutique</button>
-        <button onclick="logout()">Déconnexion</button>
+        <button onclick="showAccountInfo()">Informations du compte❗</button>
+        <button onclick="openThemes()">🖌️ Thèmes</button>
+        <button onclick="logout()">⛓️‍💥Déconnexion</button>
       </div>
     </div>
   </div>
 </header>
 
 <nav>
-  <button data-target="accueil"><i class="fa-solid fa-house"></i><span> Accueil</span></button>
-  <button class="active" data-target="notes"><i class="fa-solid fa-book"></i><span> Notes</span></button>
-  <button data-target="devoirs"><i class="fa-solid fa-list-check"></i><span> Devoirs</span></button>
-  <button data-target="messages"><i class="fa-solid fa-envelope"></i><span> Messages</span></button>
-  <button data-target="carnet"><i class="fa-solid fa-clipboard"></i><span> Carnet</span></button>
-  <button data-target="emploi"><i class="fa-solid fa-calendar-days"></i><span> Emplois du temps</span></button>
-  <button data-target="vie-scolaire"><i class="fa-solid fa-user-graduate"></i><span>Liens utiles</span></button>
-  <button data-target="bulletin"><i class="fa-solid fa-file-lines"></i><span> Bulletin</span></button>
-  <button data-target="document"><i class="fa-solid fa-file"></i><span> Document</span></button>
-  <button data-target="vie-classe"><i class="fa-solid fa-people-group"></i><span> Vie de classe</span></button>
-  <button class="stats-btn" data-target="statistiques"><i class="fa-solid fa-chart-line"></i><span> 🏆 Statistiques</span></button>
+  <div class="nav-main">
+    <button data-target="accueil"><i class="fa-solid fa-house"></i><span> Accueil</span></button>
+    <button class="active" data-target="notes"><i class="fa-solid fa-book"></i><span> Notes</span></button>
+    <button data-target="devoirs"><i class="fa-solid fa-list-check"></i><span> Devoirs</span></button>
+    <button data-target="messages"><i class="fa-solid fa-envelope"></i><span> Messages</span></button>
+    <button data-target="carnet"><i class="fa-solid fa-clipboard"></i><span> Carnet</span></button>
+    <button data-target="emploi"><i class="fa-solid fa-calendar-days"></i><span> Emplois du temps</span></button>
+    <button data-target="vie-scolaire"><i class="fa-solid fa-user-graduate"></i><span> Liens utiles</span></button>
+    <button data-target="bulletin"><i class="fa-solid fa-file-lines"></i><span> Bulletin</span></button>
+    <button data-target="document"><i class="fa-solid fa-file"></i><span> Document</span></button>
+    <button data-target="vie-classe"><i class="fa-solid fa-people-group"></i><span> Vie de classe</span></button>
+  </div>
+  
+  <div class="nav-bottom">
+    <button data-target="statistiques"><i class="fa-solid fa-chart-line"></i><span> 🏆 Statistiques</span></button>
+    <button data-target="parametres"><i class="fa-solid fa-gear"></i><span> ⚙️ Paramètres</span></button>
+  </div>
 </nav>
 
 <div class="container">
 
+<!-- NOUVELLE PAGE PARAMÈTRES -->
+<section id="parametres" class="tab-content">
+  <h2>⚙️ Paramètres</h2>
+  <p style="font-size: 1rem; margin-bottom: 30px;">Personnalise ton expérience et gère tes données</p>
+
+  <!-- PRÉFÉRENCES D'AFFICHAGE -->
+  <div class="param-card">
+    <h3><i class="fa-solid fa-display"></i> Préférences d'affichage</h3>
+    
+    <div class="param-option">
+      <div>
+        <div class="param-label">Animations</div>
+        <div class="param-value">Activer les animations de transition</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="toggle-animations" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="param-option">
+      <div>
+        <div class="param-label">Notifications</div>
+        <div class="param-value">Afficher les notifications de succès</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="toggle-notifications" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="param-option">
+      <div>
+        <div class="param-label">Taille de police</div>
+        <div class="param-value" id="font-size-value">Normal (16px)</div>
+      </div>
+      <select id="font-size-select" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd;">
+        <option value="14">Petit (14px)</option>
+        <option value="16" selected>Normal (16px)</option>
+        <option value="18">Grand (18px)</option>
+        <option value="20">Très grand (20px)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- STATISTIQUES PERSONNELLES -->
+  <div class="param-card">
+    <h3><i class="fa-solid fa-chart-pie"></i> Mes statistiques détaillées</h3>
+    
+    <div class="param-option">
+      <div class="param-label">Temps total sur le site</div>
+      <div class="param-value" id="param-total-time">Chargement...</div>
+    </div>
+
+    <div class="param-option">
+      <div class="param-label">Messages envoyés</div>
+      <div class="param-value" id="param-messages">Chargement...</div>
+    </div>
+
+    <div class="param-option">
+      <div class="param-label">Jours consécutifs</div>
+      <div class="param-value" id="param-streak">Chargement...</div>
+    </div>
+
+    <div class="param-option">
+      <div class="param-label">Badges débloqués</div>
+      <div class="param-value" id="param-badges">Chargement...</div>
+    </div>
+
+    <div class="param-option">
+      <div class="param-label">Membre depuis</div>
+      <div class="param-value" id="param-member-since">Chargement...</div>
+    </div>
+  </div>
+
+  <!-- GESTION DES DONNÉES -->
+  <div class="param-card">
+    <h3><i class="fa-solid fa-database"></i> Gestion des données</h3>
+    
+    <div class="param-option">
+      <div>
+        <div class="param-label">Exporter mes données</div>
+        <div class="param-value">Télécharger toutes tes statistiques en JSON</div>
+      </div>
+      <button class="action-btn" onclick="exportUserData()">
+        <i class="fa-solid fa-download"></i> Exporter
+      </button>
+    </div>
+
+    <div class="param-option">
+      <div>
+        <div class="param-label">Cache local</div>
+        <div class="param-value" id="cache-size">Calculer...</div>
+      </div>
+      <button class="action-btn" onclick="clearLocalCache()">
+        <i class="fa-solid fa-broom"></i> Vider
+      </button>
+    </div>
+  </div>
+
+  <!-- RACCOURCIS CLAVIER -->
+  <div class="param-card">
+    <h3><i class="fa-solid fa-keyboard"></i> Raccourcis clavier</h3>
+    
+    <div class="param-option">
+      <div class="param-label"><kbd>Ctrl</kbd> + <kbd>H</kbd></div>
+      <div class="param-value">Aller à l'accueil</div>
+    </div>
+
+    <div class="param-option">
+      <div class="param-label"><kbd>Ctrl</kbd> + <kbd>N</kbd></div>
+      <div class="param-value">Voir les notes</div>
+    </div>
+
+    <div class="param-option">
+      <div class="param-label"><kbd>Ctrl</kbd> + <kbd>M</kbd></div>
+      <div class="param-value">Ouvrir la messagerie</div>
+    </div>
+
+    <div class="param-option">
+      <div class="param-label"><kbd>Ctrl</kbd> + <kbd>S</kbd></div>
+      <div class="param-value">Voir les statistiques</div>
+    </div>
+  </div>
+
+  <!-- À PROPOS -->
+  <div class="param-card">
+    <h3><i class="fa-solid fa-info-circle"></i> À propos</h3>
+    
+    <div class="param-option">
+      <div class="param-label">Version</div>
+      <div class="param-value">École Pas Directe v2.5.0</div>
+    </div>
+
+    <div class="param-option">
+      <div class="param-label">Dernière mise à jour</div>
+      <div class="param-value">Février 2026</div>
+    </div>
+
+    <div class="param-option">
+      <div class="param-label">Développeur</div>
+      <div class="param-value">Équipe École Pas Directe</div>
+    </div>
+  </div>
+</section>
+
 <section id="statistiques" class="tab-content">
   <h2>🏆 Statistiques & Classement</h2>
-  <p style="text-align: center; color: white; margin-bottom: 20px;">Suivez vos performances et comparez-vous aux autres élèves !</p>
+  <p>Suivez vos performances et comparez-vous aux autres élèves !</p>
 
   <div class="stats-grid">
     <div class="stat-card">
@@ -1177,60 +1354,52 @@
   let lastUpdateTime = Date.now();
   let updatePending = false;
 
-  // 🪙 SYSTÈME DE PIÈCES
-  let userCoins = 0;
-  let ownedItems = { avatars: [], backgrounds: [] };
-  let activeAvatar = null;
-  let activeBackground = null;
+  // 🎨 SYSTÈME DE PERSONNALISATION
+  let activeAvatar = 'av0';
+  let activeBackground = 'bg0';
 
-  const shopItems = {
+  const customizationItems = {
     avatars: [
-      { id: 'av0', emoji: '👤', name: 'Par défaut', price: 0, free: true },
-      { id: 'av1', emoji: '😎', name: 'Cool', price: 50 },
-      { id: 'av2', emoji: '🤓', name: 'Intello', price: 75 },
-      { id: 'av3', emoji: '🥳', name: 'Fêtard', price: 100 },
-      { id: 'av4', emoji: '🤩', name: 'Star', price: 150 },
-      { id: 'av5', emoji: '👑', name: 'Roi', price: 200 },
-      { id: 'av6', emoji: '🦸', name: 'Héros', price: 250 },
-      { id: 'av7', emoji: '🧙', name: 'Mage', price: 300 },
-      { id: 'av8', emoji: '🤖', name: 'Robot', price: 500 },
-      { id: 'av9', emoji: '🧟', name: 'Zombie', price: 2000 }
+      { id: 'av0', emoji: '👤', name: 'Par défaut' },
+      { id: 'av1', emoji: '😎', name: 'Cool' },
+      { id: 'av2', emoji: '🤓', name: 'Intello' },
+      { id: 'av3', emoji: '🥳', name: 'Fêtard' },
+      { id: 'av4', emoji: '🤩', name: 'Star' },
+      { id: 'av5', emoji: '👑', name: 'Roi' },
+      { id: 'av6', emoji: '🦸', name: 'Héros' },
+      { id: 'av7', emoji: '🧙', name: 'Mage' },
+      { id: 'av8', emoji: '🤖', name: 'Robot' },
+      { id: 'av9', emoji: '🧟', name: 'Zombie' }
     ],
     backgrounds: [
-      { id: 'bg0', gradient: '#f0f4f8', name: 'Par défaut', price: 0, free: true },
-      { id: 'bg1', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', name: 'Violet', price: 100 },
-      { id: 'bg2', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', name: 'Rose', price: 150 },
-      { id: 'bg3', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', name: 'Cyan', price: 150 },
-      { id: 'bg4', gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', name: 'Vert', price: 200 },
-      { id: 'bg5', gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', name: 'Sunset', price: 250 },
-      { id: 'bg6', gradient: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)', name: 'Ocean', price: 300 },
-      { id: 'bg7', gradient: 'linear-gradient(135deg, #ffd89b 0%, #19547b 100%)', name: 'Gold', price: 400 },
-      { id: 'bg8', gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', name: 'Pastel', price: 500 }
+      { id: 'bg0', gradient: '#f0f4f8', name: 'Par défaut' },
+      { id: 'bg1', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', name: 'Violet' },
+      { id: 'bg2', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', name: 'Rose' },
+      { id: 'bg3', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', name: 'Cyan' },
+      { id: 'bg4', gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', name: 'Vert' },
+      { id: 'bg5', gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', name: 'Sunset' },
+      { id: 'bg6', gradient: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)', name: 'Ocean' },
+      { id: 'bg7', gradient: 'linear-gradient(135deg, #ffd89b 0%, #19547b 100%)', name: 'Gold' },
+      { id: 'bg8', gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', name: 'Pastel' }
     ]
   };
 
-  // 🪙 CHARGER LES PIÈCES
-  async function loadCoins() {
+  // 🎨 CHARGER LES PARAMÈTRES
+  async function loadSettings() {
     const user = auth.currentUser;
     if (!user) return;
 
     try {
-      const coinsRef = doc(db, "coins", user.uid);
-      const coinsDoc = await getDoc(coinsRef);
+      const settingsRef = doc(db, "settings", user.uid);
+      const settingsDoc = await getDoc(settingsRef);
 
-      if (coinsDoc.exists()) {
-        const data = coinsDoc.data();
-        userCoins = data.amount || 0;
-        ownedItems = data.ownedItems || { avatars: ['av0'], backgrounds: ['bg0'] };
+      if (settingsDoc.exists()) {
+        const data = settingsDoc.data();
         activeAvatar = data.activeAvatar || 'av0';
         activeBackground = data.activeBackground || 'bg0';
         
-        updateCoinsDisplay();
-        checkDailyBonus();
-        
-        // Appliquer le fond d'écran actif
         if (activeBackground) {
-          const bg = shopItems.backgrounds.find(b => b.id === activeBackground);
+          const bg = customizationItems.backgrounds.find(b => b.id === activeBackground);
           if (bg) {
             if (bg.gradient.includes('gradient')) {
               document.body.style.background = bg.gradient;
@@ -1240,172 +1409,38 @@
           }
         }
         
-        console.log(`✅ Pièces chargées: ${userCoins}`);
+        // Charger préférences interface
+        if (data.animations !== undefined) {
+          document.getElementById('toggle-animations').checked = data.animations;
+        }
+        if (data.notifications !== undefined) {
+          document.getElementById('toggle-notifications').checked = data.notifications;
+        }
+        if (data.fontSize) {
+          document.getElementById('font-size-select').value = data.fontSize;
+          applyFontSize(data.fontSize);
+        }
+        
+        console.log(`✅ Paramètres chargés`);
       } else {
-        // Initialiser avec 100 pièces de départ et items gratuits
-        await setDoc(coinsRef, {
-          amount: 100,
-          ownedItems: { avatars: ['av0'], backgrounds: ['bg0'] },
+        await setDoc(settingsRef, {
           activeAvatar: 'av0',
           activeBackground: 'bg0',
-          lastDailyBonus: null,
-          lastBadgeCount: 0
-        });
-        userCoins = 100;
-        ownedItems = { avatars: ['av0'], backgrounds: ['bg0'] };
-        activeAvatar = 'av0';
-        activeBackground = 'bg0';
-        updateCoinsDisplay();
-        checkDailyBonus();
-        console.log("✅ Nouveau compte: 100 pièces + items gratuits");
-      }
-    } catch (error) {
-      console.error("❌ Erreur chargement coins:", error);
-    }
-  }
-
-  function updateCoinsDisplay() {
-    document.getElementById('coins-count').textContent = userCoins;
-    document.getElementById('coins-count').classList.add('coin-animation');
-    setTimeout(() => {
-      document.getElementById('coins-count').classList.remove('coin-animation');
-    }, 600);
-  }
-
-  // 🎁 BONUS QUOTIDIEN (réduit à 10 pièces)
-  async function checkDailyBonus() {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    try {
-      const coinsRef = doc(db, "coins", user.uid);
-      const coinsDoc = await getDoc(coinsRef);
-      
-      const btn = document.getElementById('daily-bonus-btn');
-      const timer = document.getElementById('bonus-timer');
-
-      if (!btn || !timer) return;
-
-      if (coinsDoc.exists()) {
-        const data = coinsDoc.data();
-        const lastBonus = data.lastDailyBonus?.toDate();
-        const now = new Date();
-
-        if (lastBonus) {
-          const hoursSince = (now - lastBonus) / (1000 * 60 * 60);
-          
-          if (hoursSince >= 24) {
-            btn.disabled = false;
-            btn.textContent = 'Récupérer 10 pièces 🎁';
-            timer.textContent = '';
-          } else {
-            btn.disabled = true;
-            const hoursLeft = Math.ceil(24 - hoursSince);
-            btn.textContent = 'Bonus récupéré !';
-            timer.textContent = `Prochain bonus dans ${hoursLeft}h`;
-          }
-        } else {
-          btn.disabled = false;
-          btn.textContent = 'Récupérer 10 pièces 🎁';
-          timer.textContent = '';
-        }
-      } else {
-        btn.disabled = false;
-        btn.textContent = 'Récupérer 10 pièces 🎁';
-        timer.textContent = '';
-      }
-    } catch (error) {
-      console.error("❌ Erreur bonus:", error);
-    }
-  }
-
-  window.claimDailyBonus = async function() {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    try {
-      const coinsRef = doc(db, "coins", user.uid);
-      const coinsDoc = await getDoc(coinsRef);
-
-      if (coinsDoc.exists()) {
-        await updateDoc(coinsRef, {
-          amount: increment(10),
-          lastDailyBonus: serverTimestamp()
-        });
-      } else {
-        // Créer le document s'il n'existe pas
-        await setDoc(coinsRef, {
-          amount: 110, // 100 de base + 10 bonus
-          ownedItems: { avatars: ['av0'], backgrounds: ['bg0'] },
-          activeAvatar: 'av0',
-          activeBackground: 'bg0',
-          lastDailyBonus: serverTimestamp(),
-          lastBadgeCount: 0
+          animations: true,
+          notifications: true,
+          fontSize: 16
         });
       }
-
-      userCoins += 10;
-      updateCoinsDisplay();
-      showNotification('🎁 +10 pièces ! Bonus quotidien récupéré !');
-      checkDailyBonus();
     } catch (error) {
-      console.error("❌ Erreur bonus:", error);
-      showNotification('❌ Erreur lors de la récupération du bonus');
-    }
-  };
-
-  // 🏆 RÉCOMPENSES PAR BADGES
-  let lastCheckedBadgeCount = 0;
-
-  async function checkBadgeRewards(unlockedCount) {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    try {
-      const coinsRef = doc(db, "coins", user.uid);
-      const coinsDoc = await getDoc(coinsRef);
-      
-      let lastBadgeCount = 0;
-      
-      if (coinsDoc.exists()) {
-        lastBadgeCount = coinsDoc.data().lastBadgeCount || 0;
-      }
-
-      // Si on a débloqué de nouveaux badges
-      if (unlockedCount > lastBadgeCount) {
-        const newBadges = unlockedCount - lastBadgeCount;
-        const reward = newBadges * 25; // 25 pièces par badge
-        
-        if (coinsDoc.exists()) {
-          await updateDoc(coinsRef, {
-            amount: increment(reward),
-            lastBadgeCount: unlockedCount
-          });
-        } else {
-          // Créer le document avec les récompenses
-          await setDoc(coinsRef, {
-            amount: 100 + reward,
-            ownedItems: { avatars: ['av0'], backgrounds: ['bg0'] },
-            activeAvatar: 'av0',
-            activeBackground: 'bg0',
-            lastDailyBonus: null,
-            lastBadgeCount: unlockedCount
-          });
-        }
-
-        userCoins += reward;
-        updateCoinsDisplay();
-        showNotification(`🏆 +${reward} pièces ! ${newBadges} nouveau${newBadges > 1 ? 'x' : ''} badge${newBadges > 1 ? 's' : ''} débloqué${newBadges > 1 ? 's' : ''} !`);
-        
-        console.log(`✅ Badge rewards: ${newBadges} badges = +${reward} pièces`);
-      }
-    } catch (error) {
-      console.error("❌ Erreur récompense badges:", error);
+      console.error("❌ Erreur chargement paramètres:", error);
     }
   }
 
   function showNotification(message) {
     const notif = document.getElementById('notification');
+    const notificationsEnabled = document.getElementById('toggle-notifications')?.checked;
+    if (notificationsEnabled === false) return;
+    
     notif.textContent = message;
     notif.classList.add('show');
     
@@ -1414,133 +1449,74 @@
     }, 3000);
   }
 
-  // 🛒 BOUTIQUE
-  window.openShop = function() {
-    document.getElementById('shop-modal').classList.add('active');
-    renderShop();
+  // ⚙️ MODAL THÈMES
+  window.openThemes = function() {
+    document.getElementById('settings-modal').classList.add('active');
+    renderThemes();
   };
 
-  window.closeShop = function() {
-    document.getElementById('shop-modal').classList.remove('active');
+  window.closeThemes = function() {
+    document.getElementById('settings-modal').classList.remove('active');
   };
 
-  function renderShop() {
-    // Avatars
+  function renderThemes() {
     const avatarsGrid = document.getElementById('avatars-grid');
     avatarsGrid.innerHTML = '';
     
-    shopItems.avatars.forEach(item => {
-      const owned = ownedItems.avatars.includes(item.id) || item.free;
+    customizationItems.avatars.forEach(item => {
       const active = activeAvatar === item.id;
       
       const div = document.createElement('div');
-      div.className = `shop-item ${owned ? 'owned' : ''} ${active ? 'active' : ''} ${item.free ? 'free' : ''}`;
+      div.className = `settings-item ${active ? 'active' : ''}`;
       div.innerHTML = `
         <div class="item-preview" style="background: #f0f4f8;">${item.emoji}</div>
         <div class="item-name">${item.name}</div>
-        ${item.free ? `<div class="item-price free-tag">✨ GRATUIT</div>` : 
-          (!owned ? `<div class="item-price"><i class="fa-solid fa-coins"></i> ${item.price}</div>` : '')}
-        ${!owned && !item.free ? `<button class="item-button" onclick="buyItem('avatar', '${item.id}', ${item.price})">Acheter</button>` : 
-          (!active ? `<button class="item-button" onclick="activateItem('avatar', '${item.id}')">Équiper</button>` : 
-          `<button class="item-button" disabled>Équipé ✓</button>`)}
+        ${!active ? `<button class="item-button" onclick="activateItem('avatar', '${item.id}')">Choisir</button>` : 
+          `<button class="item-button" disabled>Actif ✓</button>`}
       `;
       avatarsGrid.appendChild(div);
     });
 
-    // Backgrounds
     const backgroundsGrid = document.getElementById('backgrounds-grid');
     backgroundsGrid.innerHTML = '';
     
-    shopItems.backgrounds.forEach(item => {
-      const owned = ownedItems.backgrounds.includes(item.id) || item.free;
+    customizationItems.backgrounds.forEach(item => {
       const active = activeBackground === item.id;
       
       const div = document.createElement('div');
-      div.className = `shop-item ${owned ? 'owned' : ''} ${active ? 'active' : ''} ${item.free ? 'free' : ''}`;
+      div.className = `settings-item ${active ? 'active' : ''}`;
       
       const bgStyle = item.gradient.includes('gradient') ? item.gradient : item.gradient;
       
       div.innerHTML = `
         <div class="item-preview" style="background: ${bgStyle};"></div>
         <div class="item-name">${item.name}</div>
-        ${item.free ? `<div class="item-price free-tag">✨ GRATUIT</div>` : 
-          (!owned ? `<div class="item-price"><i class="fa-solid fa-coins"></i> ${item.price}</div>` : '')}
-        ${!owned && !item.free ? `<button class="item-button" onclick="buyItem('background', '${item.id}', ${item.price})">Acheter</button>` : 
-          (!active ? `<button class="item-button" onclick="activateItem('background', '${item.id}')">Équiper</button>` : 
-          `<button class="item-button" disabled>Équipé ✓</button>`)}
+        ${!active ? `<button class="item-button" onclick="activateItem('background', '${item.id}')">Choisir</button>` : 
+          `<button class="item-button" disabled>Actif ✓</button>`}
       `;
       backgroundsGrid.appendChild(div);
     });
   }
-
-  window.buyItem = async function(type, id, price) {
-    if (userCoins < price) {
-      showNotification('❌ Pas assez de pièces !');
-      return;
-    }
-
-    const user = auth.currentUser;
-    if (!user) return;
-
-    try {
-      const coinsRef = doc(db, "coins", user.uid);
-      const coinsDoc = await getDoc(coinsRef);
-      
-      if (type === 'avatar') {
-        ownedItems.avatars.push(id);
-      } else {
-        ownedItems.backgrounds.push(id);
-      }
-
-      if (coinsDoc.exists()) {
-        await updateDoc(coinsRef, {
-          amount: increment(-price),
-          ownedItems: ownedItems
-        });
-      } else {
-        // Créer le document si nécessaire
-        await setDoc(coinsRef, {
-          amount: userCoins - price,
-          ownedItems: ownedItems,
-          activeAvatar: 'av0',
-          activeBackground: 'bg0',
-          lastDailyBonus: null,
-          lastBadgeCount: 0
-        });
-      }
-
-      userCoins -= price;
-      updateCoinsDisplay();
-      showNotification(`✅ Acheté pour ${price} pièces !`);
-      renderShop();
-      
-      console.log(`✅ Achat: ${type} ${id} pour ${price} pièces. Reste: ${userCoins}`);
-    } catch (error) {
-      console.error("❌ Erreur achat:", error);
-      showNotification('❌ Erreur lors de l\'achat');
-    }
-  };
 
   window.activateItem = async function(type, id) {
     const user = auth.currentUser;
     if (!user) return;
 
     try {
-      const coinsRef = doc(db, "coins", user.uid);
+      const settingsRef = doc(db, "settings", user.uid);
       
       if (type === 'avatar') {
         activeAvatar = id;
-        await updateDoc(coinsRef, { activeAvatar: id });
+        await updateDoc(settingsRef, { activeAvatar: id });
         
-        // IMPORTANT: Sauvegarder aussi dans stats pour le leaderboard
         const statsRef = doc(db, "stats", user.uid);
         await updateDoc(statsRef, { activeAvatar: id });
         
       } else {
         activeBackground = id;
-        await updateDoc(coinsRef, { activeBackground: id });
+        await updateDoc(settingsRef, { activeBackground: id });
         
-        const bg = shopItems.backgrounds.find(b => b.id === id);
+        const bg = customizationItems.backgrounds.find(b => b.id === id);
         if (bg) {
           if (bg.gradient.includes('gradient')) {
             document.body.style.background = bg.gradient;
@@ -1550,14 +1526,146 @@
         }
       }
 
-      showNotification('✅ Équipé !');
-      renderShop();
+      showNotification('✅ Thème mis à jour !');
+      renderThemes();
     } catch (error) {
       console.error("❌ Erreur activation:", error);
     }
   };
 
-  // ✅ BADGES ÉTENDUS (25 badges!)
+  // ⚙️ PARAMÈTRES INTERFACE
+  document.getElementById('toggle-animations')?.addEventListener('change', async (e) => {
+    const user = auth.currentUser;
+    if (!user) return;
+    
+    try {
+      const settingsRef = doc(db, "settings", user.uid);
+      await updateDoc(settingsRef, { animations: e.target.checked });
+      
+      if (!e.target.checked) {
+        document.body.style.setProperty('--animation-duration', '0s');
+      } else {
+        document.body.style.setProperty('--animation-duration', '0.3s');
+      }
+      
+      showNotification(e.target.checked ? '✅ Animations activées' : '❌ Animations désactivées');
+    } catch (error) {
+      console.error("Erreur:", error);
+    }
+  });
+
+  document.getElementById('toggle-notifications')?.addEventListener('change', async (e) => {
+    const user = auth.currentUser;
+    if (!user) return;
+    
+    try {
+      const settingsRef = doc(db, "settings", user.uid);
+      await updateDoc(settingsRef, { notifications: e.target.checked });
+    } catch (error) {
+      console.error("Erreur:", error);
+    }
+  });
+
+  function applyFontSize(size) {
+    document.body.style.fontSize = size + 'px';
+    document.getElementById('font-size-value').textContent = 
+      size == 14 ? 'Petit (14px)' :
+      size == 16 ? 'Normal (16px)' :
+      size == 18 ? 'Grand (18px)' : 'Très grand (20px)';
+  }
+
+  document.getElementById('font-size-select')?.addEventListener('change', async (e) => {
+    const user = auth.currentUser;
+    if (!user) return;
+    
+    const size = parseInt(e.target.value);
+    applyFontSize(size);
+    
+    try {
+      const settingsRef = doc(db, "settings", user.uid);
+      await updateDoc(settingsRef, { fontSize: size });
+      showNotification('✅ Taille de police mise à jour');
+    } catch (error) {
+      console.error("Erreur:", error);
+    }
+  });
+
+  // EXPORT DE DONNÉES
+  window.exportUserData = async function() {
+    const user = auth.currentUser;
+    if (!user) return;
+    
+    try {
+      const statsRef = doc(db, "stats", user.uid);
+      const statsDoc = await getDoc(statsRef);
+      
+      if (statsDoc.exists()) {
+        const data = {
+          username: statsDoc.data().username,
+          stats: statsDoc.data(),
+          exportDate: new Date().toISOString()
+        };
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `mes-donnees-${Date.now()}.json`;
+        a.click();
+        
+        showNotification('✅ Données exportées !');
+      }
+    } catch (error) {
+      console.error("Erreur export:", error);
+      showNotification('❌ Erreur lors de l\'export');
+    }
+  };
+
+  // VIDER LE CACHE
+  window.clearLocalCache = function() {
+    const cacheKeys = Object.keys(localStorage).filter(k => k.startsWith('epd_'));
+    cacheKeys.forEach(k => localStorage.removeItem(k));
+    
+    userStatsCache = null;
+    leaderboardCache = null;
+    cacheExpiry = 0;
+    
+    const size = cacheKeys.length;
+    document.getElementById('cache-size').textContent = '0 éléments en cache';
+    showNotification(`✅ ${size} éléments supprimés`);
+  };
+
+  // Calculer taille cache
+  function calculateCacheSize() {
+    const cacheKeys = Object.keys(localStorage).filter(k => k.startsWith('epd_'));
+    document.getElementById('cache-size').textContent = `${cacheKeys.length} éléments en cache`;
+  }
+
+  // RACCOURCIS CLAVIER
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey) {
+      switch(e.key.toLowerCase()) {
+        case 'h':
+          e.preventDefault();
+          document.querySelector('[data-target="accueil"]').click();
+          break;
+        case 'n':
+          e.preventDefault();
+          document.querySelector('[data-target="notes"]').click();
+          break;
+        case 'm':
+          e.preventDefault();
+          document.querySelector('[data-target="messages"]').click();
+          break;
+        case 's':
+          e.preventDefault();
+          document.querySelector('[data-target="statistiques"]').click();
+          break;
+      }
+    }
+  });
+
+  // ✅ BADGES (25 badges)
   const achievements = [
     { id: 'first-visit', icon: 'fa-rocket', name: 'Nouveau', desc: 'Première visite', check: (d) => true },
     { id: 'time-1h', icon: 'fa-clock', name: 'Curieux', desc: '1h sur le site', check: (d) => d.totalTime >= 60 },
@@ -1709,7 +1817,7 @@
 
     } catch (error) {
       console.error("Erreur leaderboard:", error);
-      document.getElementById('loading-stats').innerHTML = '<p style="color: white;">Erreur de chargement</p>';
+      document.getElementById('loading-stats').innerHTML = '<p style="color: #666;">Erreur de chargement</p>';
     }
   }
 
@@ -1733,10 +1841,9 @@
       else if (rank === 2) medalIcon = '<i class="fa-solid fa-medal medal-icon" style="color: #c0c0c0;"></i>';
       else if (rank === 3) medalIcon = '<i class="fa-solid fa-medal medal-icon" style="color: #cd7f32;"></i>';
 
-      // Avatar de l'utilisateur
-      let avatarDisplay = '<i class="fa-solid fa-user-circle" style="font-size: 2rem; color: #667eea;"></i>';
+      let avatarDisplay = '<i class="fa-solid fa-user-circle" style="font-size: 2rem; color: #005fa3;"></i>';
       if (user.activeAvatar) {
-        const avatar = shopItems.avatars.find(a => a.id === user.activeAvatar);
+        const avatar = customizationItems.avatars.find(a => a.id === user.activeAvatar);
         if (avatar) {
           avatarDisplay = `<span style="font-size: 2rem;">${avatar.emoji}</span>`;
         }
@@ -1789,6 +1896,17 @@
     document.getElementById('user-time').textContent = formatTime(data.totalTime || 0);
     document.getElementById('user-messages').textContent = data.messagesCount || 0;
     document.getElementById('user-streak').textContent = data.streak || 0;
+    
+    // Stats dans paramètres
+    document.getElementById('param-total-time').textContent = formatTime(data.totalTime || 0);
+    document.getElementById('param-messages').textContent = data.messagesCount || 0;
+    document.getElementById('param-streak').textContent = `${data.streak || 0} jours 🔥`;
+    
+    if (data.createdAt) {
+      const date = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+      document.getElementById('param-member-since').textContent = date.toLocaleDateString('fr-FR');
+    }
+    
     loadAchievements(data);
   }
 
@@ -1805,9 +1923,6 @@
       if (unlocked) unlockedCount++;
     });
 
-    // Check récompenses badges
-    checkBadgeRewards(unlockedCount);
-
     achievements.forEach(achievement => {
       const unlocked = achievement.check(userData, userRank, unlockedCount);
       
@@ -1823,6 +1938,7 @@
 
     document.getElementById('badge-count').textContent = unlockedCount;
     document.getElementById('badge-total').textContent = achievements.length;
+    document.getElementById('param-badges').textContent = `${unlockedCount}/${achievements.length} 🎖️`;
   }
 
   document.querySelector('[data-target="statistiques"]').addEventListener('click', () => {
@@ -1831,6 +1947,10 @@
       loadLeaderboard();
       statsLoaded = true;
     }
+  });
+
+  document.querySelector('[data-target="parametres"]')?.addEventListener('click', () => {
+    calculateCacheSize();
   });
 
   window.refreshStats = async function() {
@@ -1879,7 +1999,7 @@
         window.profilesData[userData.username] = userData;
 
         await initializeUserStats(user.uid, userData.username);
-        await loadCoins(); // Charger les pièces
+        await loadSettings();
 
         const defaultNotes = [
           { matiere: "Mathématiques", note: "4/20 - Travail insuffisant" },
@@ -1979,7 +2099,7 @@
 
   document.addEventListener("click", function (e) {
     const profile = document.getElementById("profile-menu");
-    const modal = document.getElementById("shop-modal");
+    const modal = document.getElementById("settings-modal");
     if (!profile.contains(e.target) && !modal.contains(e.target)) {
       document.getElementById("dropdown-menu").style.display = "none";
     }
