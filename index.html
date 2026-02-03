@@ -93,10 +93,24 @@
     const loadingMessage = document.getElementById("loading-message");
     const rememberCheckbox = document.getElementById("remember");
 
+    // Auto-complétion @gmail.com
+    const emailInput = document.getElementById("email");
+    emailInput.addEventListener("blur", function() {
+      const value = this.value.trim();
+      if (value && !value.includes('@')) {
+        this.value = value + '@gmail.com';
+      }
+    });
+
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const email = document.getElementById("email").value.trim();
+      let email = document.getElementById("email").value.trim();
+      // Auto-ajouter @gmail.com si pas de @
+      if (email && !email.includes('@')) {
+        email = email + '@gmail.com';
+        document.getElementById("email").value = email;
+      }
       const password = document.getElementById("password").value.trim();
       const rememberMe = rememberCheckbox.checked;
 
