@@ -43,10 +43,6 @@ Johan : amelioration de la fausse IA prof avec un vocabulaire plus complet mise 
 
 Alexandre : Amélioration du menu "Accueil" de l'application mobile.
 
-19/01/2026 
-
-Johan : ajout site cacher ⬆️⬇️⬅️➡️⬆️
-
 27/01/2026 
 
 Johan : Suppression visuelle uniquement (non complète) de message.html, avec le site masqué.
