@@ -379,6 +379,16 @@
       font-size: 24px;
       color: white;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #profile-icon img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
     }
 
     #dropdown-menu {
@@ -977,6 +987,17 @@
       <div class="items-grid" id="avatars-grid"></div>
     </div>
 
+    <!-- PHOTO PERSONNALISÉE -->
+    <div class="settings-section">
+      <h3>📸 Photo Personnalisée</h3>
+      <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; border: 2px dashed #005fa3; text-align: center;">
+        <input type="file" id="profile-image-input" accept="image/*" style="display: none;" onchange="handleProfileImageUpload(event)" />
+        <button class="item-button" onclick="document.getElementById('profile-image-input').click(); console.log('Clic bouton Choisir');">Choisir une photo</button>
+        <p style="color: #666; margin-top: 10px; font-size: 0.9rem;">Format : JPG, PNG (max 2MB)</p>
+        <div id="custom-image-preview" style="margin-top: 15px; text-align: center;"></div>
+      </div>
+    </div>
+
     <!-- FONDS D'ÉCRAN -->
     <div class="settings-section">
       <h3>🎨 Fond d'Écran</h3>
@@ -1357,6 +1378,166 @@
   // 🎨 SYSTÈME DE PERSONNALISATION
   let activeAvatar = 'av0';
   let activeBackground = 'bg0';
+  let customImageData = null;
+
+  // 📸 GESTION IMAGE PERSONNALISÉE - Fonction globale
+  window.handleProfileImageUpload = function(event) {
+    const file = event.target.files[0];
+    if (!file) {
+      console.error('❌ Aucun fichier sélectionné');
+      return;
+    }
+
+    console.log('📸 Fichier sélectionné:', file.name, '- Taille:', file.size, 'bytes');
+
+    // Vérifier la taille (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      showNotification('❌ L\'image est trop volumineuse (max 2MB)');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const imageData = e.target.result;
+      window.saveCustomImage(imageData);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  window.saveCustomImage = async function(imageData) {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+      customImageData = imageData;
+      console.log('📸 Sauvegarde image - taille:', imageData.length, 'bytes');
+      
+      const settingsRef = doc(db, "settings", user.uid);
+      await setDoc(settingsRef, { 
+        customImage: imageData,
+        activeAvatar: 'custom'
+      }, { merge: true });
+
+      activeAvatar = 'custom';
+      console.log('✅ Image sauvegardée sur Firebase');
+      
+      // Mettre à jour les stats aussi
+      const statsRef = doc(db, "stats", user.uid);
+      await setDoc(statsRef, { activeAvatar: 'custom' }, { merge: true });
+
+      displayCustomImagePreview();
+      showNotification('✅ Photo téléchargée et activée !');
+      updateProfileIcon();
+      renderThemes();
+    } catch (error) {
+      console.error("❌ Erreur sauvegarde image:", error);
+      showNotification('❌ Erreur lors de la sauvegarde');
+    }
+  }
+
+  window.displayCustomImagePreview = function() {
+    const preview = document.getElementById('custom-image-preview');
+    if (!preview) {
+      console.error('❌ Element custom-image-preview non trouvé');
+      return;
+    }
+
+    if (!customImageData) {
+      console.log('⚠️ Pas d\'image personnalisée');
+      preview.innerHTML = '';
+      return;
+    }
+
+    console.log('✅ Affichage image - activeAvatar:', activeAvatar);
+
+    const isActive = activeAvatar === 'custom';
+    preview.innerHTML = `
+      <img src="${customImageData}" style="max-width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #005fa3; display: block; margin: 0 auto;" alt="Photo personnalisée" />
+      <div style="margin-top: 10px; display: flex; gap: 10px; justify-content: center;">
+        ${!isActive ? `<button class="item-button" onclick="activateCustomImage()">Utiliser</button>` : `<button class="item-button" disabled>Actif ✓</button>`}
+        <button class="item-button" onclick="removeCustomImage()" style="background: #dc3545;">Supprimer</button>
+      </div>
+    `;
+  }
+
+  window.activateCustomImage = async function() {
+    const user = auth.currentUser;
+    if (!user) {
+      console.error('❌ Pas d\'utilisateur connecté');
+      return;
+    }
+
+    try {
+      console.log('⏳ Activation image personnalisée...');
+      const settingsRef = doc(db, "settings", user.uid);
+      await setDoc(settingsRef, { activeAvatar: 'custom' }, { merge: true });
+      
+      const statsRef = doc(db, "stats", user.uid);
+      await setDoc(statsRef, { activeAvatar: 'custom' }, { merge: true });
+      
+      activeAvatar = 'custom';
+      console.log('✅ Image activée sur Firebase');
+      
+      showNotification('✅ Photo activée !');
+      displayCustomImagePreview();
+      renderThemes();
+      updateProfileIcon();
+    } catch (error) {
+      console.error("❌ Erreur activation photo:", error);
+      showNotification('❌ Erreur lors de l\'activation');
+    }
+  }
+
+  window.removeCustomImage = async function() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+      customImageData = null;
+      const settingsRef = doc(db, "settings", user.uid);
+      await setDoc(settingsRef, { 
+        customImage: null,
+        activeAvatar: 'av0'
+      }, { merge: true });
+
+      activeAvatar = 'av0';
+      
+      const statsRef = doc(db, "stats", user.uid);
+      await setDoc(statsRef, { activeAvatar: 'av0' }, { merge: true });
+
+      displayCustomImagePreview();
+      showNotification('✅ Photo supprimée');
+      updateProfileIcon();
+      renderThemes();
+    } catch (error) {
+      console.error("❌ Erreur suppression image:", error);
+      showNotification('❌ Erreur lors de la suppression');
+    }
+  }
+
+  function updateProfileIcon() {
+    const profileIcon = document.getElementById('profile-icon');
+    if (!profileIcon) return;
+
+    profileIcon.innerHTML = '';
+
+    // Afficher l'image personnalisée si elle existe
+    if (activeAvatar === 'custom' && customImageData) {
+      const img = document.createElement('img');
+      img.src = customImageData;
+      img.style.cssText = 'width: 28px; height: 28px; border-radius: 50%; object-fit: cover;';
+      img.alt = 'Photo profil';
+      profileIcon.appendChild(img);
+    } else {
+      // Afficher l'emoji de l'avatar
+      const avatar = customizationItems.avatars.find(a => a.id === activeAvatar);
+      if (avatar) {
+        profileIcon.innerHTML = `<span style="font-size: 1.5rem;">${avatar.emoji}</span>`;
+      } else {
+        profileIcon.innerHTML = '<i class="fa-solid fa-user-circle"></i>';
+      }
+    }
+  }
 
   const customizationItems = {
     avatars: [
@@ -1397,6 +1578,9 @@
         const data = settingsDoc.data();
         activeAvatar = data.activeAvatar || 'av0';
         activeBackground = data.activeBackground || 'bg0';
+        customImageData = data.customImage || null;
+        
+        console.log('✅ Settings chargées:', { activeAvatar, customImageData: !!customImageData });
         
         if (activeBackground) {
           const bg = customizationItems.backgrounds.find(b => b.id === activeBackground);
@@ -1421,16 +1605,25 @@
           applyFontSize(data.fontSize);
         }
         
+        displayCustomImagePreview();
         console.log(`✅ Paramètres chargés`);
       } else {
         await setDoc(settingsRef, {
           activeAvatar: 'av0',
           activeBackground: 'bg0',
+          customImage: null,
           animations: true,
           notifications: true,
           fontSize: 16
         });
+        customImageData = null;
+        displayCustomImagePreview();
       }
+      
+      // Mettre à jour l'icône de profil
+      updateProfileIcon();
+      
+      console.log(`✅ Paramètres chargés`);
     } catch (error) {
       console.error("❌ Erreur chargement paramètres:", error);
     }
@@ -1476,6 +1669,9 @@
       `;
       avatarsGrid.appendChild(div);
     });
+
+    // Afficher l'aperçu de l'image personnalisée
+    displayCustomImagePreview();
 
     const backgroundsGrid = document.getElementById('backgrounds-grid');
     backgroundsGrid.innerHTML = '';
@@ -1528,6 +1724,7 @@
 
       showNotification('✅ Thème mis à jour !');
       renderThemes();
+      updateProfileIcon();
     } catch (error) {
       console.error("❌ Erreur activation:", error);
     }
@@ -1842,7 +2039,11 @@
       else if (rank === 3) medalIcon = '<i class="fa-solid fa-medal medal-icon" style="color: #cd7f32;"></i>';
 
       let avatarDisplay = '<i class="fa-solid fa-user-circle" style="font-size: 2rem; color: #005fa3;"></i>';
-      if (user.activeAvatar) {
+      
+      // Afficher l'image personnalisée si c'est l'utilisateur actuel
+      if (auth.currentUser && user.id === auth.currentUser.uid && user.activeAvatar === 'custom' && customImageData) {
+        avatarDisplay = `<img src="${customImageData}" style="width: 2rem; height: 2rem; border-radius: 50%; object-fit: cover; border: 2px solid #005fa3;" alt="Photo" />`;
+      } else if (user.activeAvatar) {
         const avatar = customizationItems.avatars.find(a => a.id === user.activeAvatar);
         if (avatar) {
           avatarDisplay = `<span style="font-size: 2rem;">${avatar.emoji}</span>`;
