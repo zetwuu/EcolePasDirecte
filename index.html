@@ -122,7 +122,7 @@ document.getElementById('refuse-cookies').addEventListener('click', () => {
   const details = document.getElementById('cookie-details');
   let cookieList = '<h3>Liste des cookies utilisés :</h3><ul>';
   for (let i = 1; i <= newCount; i++) {
-    cookieList += `<li>cookie_tracking_${i} — Suivi publicitaire avancé</li>`;
+    cookieList += `<li>cookie_tracking — Suivi publicitaire avancé</li>`;
   }
   cookieList += '</ul>';
   details.innerHTML = cookieList;
