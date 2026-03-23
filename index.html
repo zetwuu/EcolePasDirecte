@@ -101,18 +101,38 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Cookie consent
-    if (!localStorage.getItem('cookieConsent')) {
-      document.getElementById('cookie-banner').style.display = 'flex';
-    }
-    document.getElementById('accept-cookies').addEventListener('click', () => {
-      localStorage.setItem('cookieConsent', 'accepted');
-      document.getElementById('cookie-banner').style.display = 'none';
-    });
-    document.getElementById('show-cookies').addEventListener('click', () => {
-      const details = document.getElementById('cookie-details');
-      details.style.display = details.style.display === 'none' ? 'block' : 'none';
-    });
+   // Cookie consent
+if (!localStorage.getItem('cookieConsent')) {
+  document.getElementById('cookie-banner').style.display = 'flex';
+}
+
+document.getElementById('accept-cookies').addEventListener('click', () => {
+  localStorage.setItem('cookieConsent', 'accepted');
+  document.getElementById('cookie-banner').style.display = 'none';
+});
+
+document.getElementById('refuse-cookies').addEventListener('click', () => {
+  // Récupère le nombre actuel de cookies (ou 2 par défaut)
+  const currentCount = parseInt(localStorage.getItem('fakeCookieCount') || '0');
+  const newCount = currentCount === 0 ? 2 : currentCount * 2;
+  
+  localStorage.setItem('fakeCookieCount', newCount.toString());
+
+  // Met à jour l'affichage dans les détails
+  const details = document.getElementById('cookie-details');
+  let cookieList = '<h3>Liste des cookies utilisés :</h3><ul>';
+  for (let i = 1; i <= newCount; i++) {
+    cookieList += `<li>cookie_tracking_${i} — Suivi publicitaire avancé</li>`;
+  }
+  cookieList += '</ul>';
+  details.innerHTML = cookieList;
+  details.style.display = 'block';
+});
+
+document.getElementById('show-cookies').addEventListener('click', () => {
+  const details = document.getElementById('cookie-details');
+  details.style.display = details.style.display === 'none' ? 'block' : 'none';
+});
 
     const loginForm = document.getElementById("login-form");
     const errorMessage = document.getElementById("error-message");
