@@ -9,13 +9,36 @@
 <body>
   <div id="cookie-banner" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; display: none;">
     <div style="background: white; padding: 20px; border-radius: 5px; max-width: 500px; text-align: center;">
-      <p>Ce site utilise des cookies pour améliorer votre expérience.</p>
+      <p>Ce site utilise des cookies pour detruire votre expérience.</p>
       <button id="accept-cookies" style="background: white; color: #005fa3; border: 1px solid #005fa3; padding: 10px 20px; cursor: pointer; margin: 10px;">Accepter</button>
       <button id="refuse-cookies" style="background: #005fa3; color: white; border: none; padding: 10px 20px; cursor: pointer; margin: 10px;">Refuser</button>
       <button id="show-cookies" style="background: #ccc; color: black; border: none; padding: 10px 20px; cursor: pointer; margin: 10px;">Afficher tous les cookies</button>
       <div id="cookie-details" style="display: none; margin-top: 20px; text-align: left;">
         <h3>Liste des cookies utilisés :</h3>
-        <p>Ici, vous pouvez mettre vos conditions générales sur les cookies.</p>
+       
+
+
+☑️ Accepter que l’on regarde votre caméra (juste pour vérifier votre style, promis)
+☑️ Autoriser l’accès à votre micro pour écouter si vous rigolez à nos blagues
+☑️ Vos vidéos personnelles pourront être utilisées à but lucratif (on a des factures 😌)
+☑️ Nous pouvons lire vos pensées (version bêta, parfois on se trompe)
+☑️ Autoriser le partage de vos snacks avec notre équipe (virtuellement… pour l’instant)
+☑️ Accepter que votre historique de navigation soit raconté lors de réunions internes
+☑️ Nous envoyer un cookie réel par la poste une fois par mois
+☑️ Autoriser l’apparition aléatoire de musique dramatique pendant votre navigation
+☑️ Accepter que votre prénom soit remplacé par “Utilisateur Mystérieux”
+☑️ Nous laisser prendre des décisions importantes à votre place (ex : pizza ce soir)
+
+
+
+🔘 **Tout accepter (vous n’avez pas vraiment le choix 😏)**
+🔘 **Refuser (bouton décoratif)**
+
+
+
+
+*En continuant, vous acceptez absolument tout, même ce qu’on n’a pas encore inventé.*
+</p>
         <!-- Ajoutez vos conditions ici -->
       </div>
     </div>
@@ -122,7 +145,7 @@ document.getElementById('refuse-cookies').addEventListener('click', () => {
   const details = document.getElementById('cookie-details');
   let cookieList = '<h3>Liste des cookies utilisés :</h3><ul>';
   for (let i = 1; i <= newCount; i++) {
-    cookieList += `<li>cookie_tracking — Suivi publicitaire avancé</li>`;
+    cookieList += `<li>acceptes, t'as pas le choix de toute facon</li>`;
   }
   cookieList += '</ul>';
   details.innerHTML = cookieList;
