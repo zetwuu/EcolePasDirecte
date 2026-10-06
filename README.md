@@ -4,7 +4,6 @@
 	<p><strong>L'ENT qui prend l'école très au sérieux. Enfin, presque.</strong></p>
 	<p>Un projet web parodique autour de la vie scolaire : connexion, messagerie, votes et autres grandes révolutions de couloir.</p>
 	<p>
-		<a href="https://brawlcoltdina-oss.github.io/presentationEPD/">Ouvrir le site</a> ·
 		<a href="docs/README.md">Documentation</a> ·
 	</p>
 </div>
