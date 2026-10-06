@@ -4,14 +4,9 @@
 	<p><strong>L'ENT qui prend l'école très au sérieux. Enfin, presque.</strong></p>
 	<p>Un projet web parodique autour de la vie scolaire : connexion, messagerie, votes et autres grandes révolutions de couloir.</p>
 	<p>
-<<<<<<<<< Temporary merge branch 1
-		<a href="index.html">Ouvrir le site</a> ·
-		<a href="docs/README.md">Documentation</a> ·
-		<a href="docs/START-HERE.txt">Démarrage rapide</a>
-=========
 		<a href="https://brawlcoltdina-oss.github.io/presentationEPD/">Ouvrir le site</a> ·
-		<a href="docs/README.md">Documentation</a> ·
->>>>>>>>> Temporary merge branch 2
+		<a href="index.html">Version locale</a> ·
+		<a href="src/pages/firebase-quick-start.html">Guide Firebase</a>
 	</p>
 </div>
 
@@ -35,9 +30,6 @@ Le projet a commencé par le site web en classe de seconde. Ce dépôt rassemble
 | `src/pages/messages.html` | Messagerie du site |
 | `src/pages/vote.html` | Espace de vote |
 | `src/pages/firebase-*.html` | Guides, vérifications et pages de configuration Firebase |
-| `src/js/` | Configuration Firebase et notifications |
-| `assets/images/` | Logo, visuels et éléments graphiques |
-| `docs/` | Guides et notes de mise en route |
 
 ## Répartition des rôles
 
@@ -80,7 +72,7 @@ Les entrées ci-dessous reprennent l'historique fourni avec le projet ; elles so
 
 ## Lancer le projet
 
-Le site est composé de pages HTML, CSS et JavaScript. Pour une première découverte, ouvrez [`index.html`](index.html). Les pages et notes Firebase se trouvent dans [`docs/`](docs/README.md) ; consultez leur configuration avant tout déploiement ou connexion à un vrai projet Firebase.
+Le site est composé de pages HTML, CSS et JavaScript. Pour une première découverte, ouvrez [`index.html`](index.html) ou consultez le [guide de démarrage Firebase](src/pages/firebase-quick-start.html). Vérifiez la configuration avant tout déploiement ou connexion à un vrai projet Firebase.
 
 ## Esprit du projet
 
