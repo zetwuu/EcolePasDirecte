@@ -70,7 +70,10 @@
       query,
       collection,
       where,
-      getDocs
+      getDocs,
+      limit,
+      updateDoc,
+      arrayUnion
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // Configuration Firebase - EcolePasDirecte
@@ -167,6 +170,22 @@
         await setDoc(doc(db, "users", user.uid), profileData);
 
         console.log("✅ Profil créé dans Firestore");
+
+        try {
+          const generalGroupQuery = query(
+            collection(db, "conversations"),
+            where("isGeneralGroup", "==", true),
+            limit(1)
+          );
+          const generalGroups = await getDocs(generalGroupQuery);
+          if (!generalGroups.empty) {
+            await updateDoc(generalGroups.docs[0].ref, {
+              participants: arrayUnion(username)
+            });
+          }
+        } catch (groupError) {
+          console.warn("⚠️ Ajout au groupe général reporté:", groupError);
+        }
 
         loadingMessage.style.display = "none";
         successMessage.textContent = "✅ Compte créé avec succès ! Redirection...";

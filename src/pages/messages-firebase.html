@@ -1710,6 +1710,57 @@
       });
     }
 
+    async function ensureGeneralGroup() {
+      const usersSnapshot = await db.collection("users").get();
+      const participants = [...new Set([
+        ...usersSnapshot.docs.map(doc => doc.data().username).filter(Boolean),
+        currentUser
+      ])];
+      const groupsSnapshot = await db.collection("conversations")
+        .where("isGeneralGroup", "==", true)
+        .limit(1)
+        .get();
+
+      if (!groupsSnapshot.empty) {
+        const groupDoc = groupsSnapshot.docs[0];
+        const currentParticipants = groupDoc.data().participants || [];
+        const missingParticipants = participants.filter(name => !currentParticipants.includes(name));
+        if (missingParticipants.length) {
+          await groupDoc.ref.update({
+            participants: firebase.firestore.FieldValue.arrayUnion(...missingParticipants)
+          });
+        }
+        return;
+      }
+
+      const groupRef = db.collection("conversations").doc("general_school");
+      await db.runTransaction(async transaction => {
+        const groupDoc = await transaction.get(groupRef);
+        if (groupDoc.exists) {
+          const currentParticipants = groupDoc.data().participants || [];
+          const missingParticipants = participants.filter(name => !currentParticipants.includes(name));
+          if (missingParticipants.length) {
+            transaction.update(groupRef, {
+              participants: firebase.firestore.FieldValue.arrayUnion(...missingParticipants)
+            });
+          }
+          return;
+        }
+
+        transaction.set(groupRef, {
+          participants,
+          isGroup: true,
+          isGeneralGroup: true,
+          groupName: "Général",
+          createdBy: currentUser,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          lastMessage: "Groupe général créé",
+          lastSender: "Système",
+          lastTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      });
+    }
+
     // Écouter les conversations en temps réel (1 LISTENER)
     function listenToConversations() {
       db.collection("conversations")
@@ -1746,9 +1797,13 @@
         });
     }
 
-    // Appelle la fonction UNE SEULE FOIS au démarrage
-    listenToConversations();
-    loadEmojiPicker();
+    // Synchroniser les membres avant de charger les conversations.
+    ensureGeneralGroup()
+      .catch(error => console.error("❌ Synchronisation du groupe général:", error))
+      .finally(() => {
+        listenToConversations();
+        loadEmojiPicker();
+      });
 
     // Bouton nouvelle conversation privée
     document.getElementById("new-conv-btn").addEventListener("click", () => {
