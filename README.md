@@ -1,13 +1,20 @@
 <div align="center">
-	<img src="assets/images/1747986702534.jpeg" alt="Logo EcolePasDirecte" width="150" />
+	<img src="assets/images/1747986702534.jpeg" alt="Logo EcolePasDirecte" width="96" />
 	<h1>EcolePasDirecte</h1>
 	<p><strong>L'ENT qui prend l'école très au sérieux. Enfin, presque.</strong></p>
-	<p>Un projet web parodique autour de la vie scolaire : connexion, messagerie, votes et autres grandes révolutions de couloir.</p>
+<p align="center">
+	<a href="https://brawlcoltdina-oss.github.io/presentationEPD/"><img src="https://img.shields.io/badge/site-en%20ligne-167D8D?style=flat-square&logo=googlechrome&logoColor=white" alt="Site en ligne" /></a>
+	<img src="https://img.shields.io/badge/HTML--CSS--JS-projet%20web-E76F51?style=flat-square" alt="Projet web HTML CSS JavaScript" />
+	<img src="https://img.shields.io/badge/Firebase-auth%20et%20donn%C3%A9es-F4A261?style=flat-square&logo=firebase&logoColor=222" alt="Firebase" />
+</p>
+
+	<p>La vie scolaire, avec quelques libertés créatives.</p>
 	<p>
-		<a href="https://brawlcoltdina-oss.github.io/presentationEPD/">Ouvrir le site</a> ·
-		<a href="docs/README.md">Documentation</a> ·
-	</p>
-</div>
+## Essayer
+
+[Site en ligne](https://brawlcoltdina-oss.github.io/presentationEPD/) · [Version locale](index.html) · [Guide Firebase](src/pages/firebase-quick-start.html)
+		<a href="index.html">Version locale</a> ·
+<p align="center"><em>Moins de sérieux. Un peu plus de suivi.</em></p>
 
 <p align="center">
 	<img src="image.png" alt="Aperçu de la page de connexion EcolePasDirecte" width="850" />
@@ -28,7 +35,6 @@ Le projet a commencé par le site web en classe de seconde. Ce dépôt rassemble
 | `index.html` et `home.html` | Entrée du site et espace d'accueil |
 | `src/pages/messages.html` | Messagerie du site |
 | `src/pages/vote.html` | Espace de vote |
-| `api/server.js` et `API.md` | API Node pour les profils, messages et votes, avec guide de démarrage |
 | `src/pages/firebase-*.html` | Guides, vérifications et pages de configuration Firebase |
 | `src/js/` | Configuration Firebase et notifications |
 | `assets/images/` | Logo, visuels et éléments graphiques |
@@ -45,37 +51,30 @@ Le projet a commencé par le site web en classe de seconde. Ce dépôt rassemble
 
 ### Jalons consignés
 
-Les entrées ci-dessous reprennent l'historique fourni avec le projet ; elles sont reformulées pour être plus lisibles.
-
-| Date | Contribution |
+| Date | Étape |
 | --- | --- |
-| 15 septembre 2025 | **Alexandre** — Lancement du travail sur l'application mobile : recherche, analyse du fonctionnement et premiers développements. |
-| 18 septembre 2025 | **Alexandre** — Première avancée sur l'écran de connexion mobile. |
-| 20 septembre 2025 | **Alexandre** — Développement du menu d'accueil de l'application. |
-| 22 septembre 2025 | **Alexandre** — Début du système de connexion par identifiant et mot de passe. **Johan** — Correction d'une erreur dans `index.html` et vérification de `validProfiles`. |
-| 16 janvier 2026 | **Johan** — Enrichissement du vocabulaire de l'IA parodique, mise à jour du dépôt et premiers essais de mise en ligne et de messagerie. **Alexandre** — Amélioration du menu d'accueil mobile. |
-| 27 janvier 2026 | **Johan** — Préparation des pages Firebase et création d'une messagerie web s'appuyant sur les comptes existants ; une version ultérieure devait élargir les comptes et améliorer l'interface. **Alexandre** — Intégration de Firebase Authentication à la connexion de l'application mobile. |
-| 29 janvier 2026 | **Johan** — Premières versions de la messagerie et du vote, et évolution de la connexion. |
-| 2 février 2026 | **Alexandre** — Vérifications de la base de données et recherche d'une solution d'hébergement local sur Raspberry Pi 5. |
+| Septembre 2025 | **Alexandre** — Premiers écrans mobiles : connexion et accueil. **Johan** — Corrections du site. |
+| Janvier 2026 | **Johan** — Messagerie, vote et IA parodique. **Alexandre** — Authentification Firebase sur mobile. |
+| Février 2026 | **Alexandre** — Vérification de la base de données et pistes d'hébergement local. |
 
 ### Journal parallèle — fiction
 
-**Les entrées de cette section sont inventées pour le ton du README. Elles ne décrivent pas des travaux réellement réalisés ni des résultats vérifiés.** Les dates sont choisies pour cette mise en scène.
+*Chronologie entièrement fictive, juste pour la blague.*
 
 | Date | Avancée imaginaire |
 | --- | --- |
-| 14 mars 2026 | **Johan** — Le bouton « Actualiser » est promu au rang de fonctionnalité stratégique après trois clics consécutifs. |
-| 2 avril 2026 | **Alexandre** — L'application mobile reçoit un mode « contrôle surprise » : il affiche une notification dramatique, puis se rappelle qu'il n'a pas encore de calendrier. |
-| 19 mai 2026 | **Johan** — L'IA prof passe avec succès le test du sarcasme. Échec au test « répondre simplement à la question ». |
-| 7 juin 2026 | **Alexandre** — Prototype d'un tableau de bord prédictif : il annonce les devoirs oubliés avec une précision de 100 % lorsqu'ils sont déjà en retard. |
-| 23 juillet 2026 | **Johan** — La messagerie atteint la version légendaire V12. Le numéro de version est désormais plus stable que le code. |
-| 11 août 2026 | **Alexandre** — Ajout conceptuel d'un mode hors ligne, capable de fonctionner même lorsque le téléphone est posé face contre table. |
-| 16 septembre 2026 | **Johan** — Mise en place d'un système de sauvegarde automatique des excuses : « Je l'avais pourtant envoyé » devient enfin consultable. |
-| 6 octobre 2026 | **Alexandre & Johan** — Lancement fictif d'EcolePasDirecte 2.0 : mêmes ambitions, davantage de boutons, et une IA qui promet de ne pas noter les utilisateurs. |
+| 14 mars 2026 | **Johan** — Actualiser devient stratégique. |
+| 2 avril 2026 | **Alexandre** — Alerte « contrôle surprise » en approche. |
+| 19 mai 2026 | **Johan** — L'IA apprend le sarcasme, pas les réponses courtes. |
+| 7 juin 2026 | **Alexandre** — Les devoirs oubliés prédits après l'échéance. |
+| 23 juillet 2026 | **Johan** — Messagerie : légendaire V12. |
+| 11 août 2026 | **Alexandre** — Mode hors ligne, téléphone posé. |
+| 16 septembre 2026 | **Johan** — Les excuses sont sauvegardées. |
+| 6 octobre 2026 | **Alexandre & Johan** — EcolePasDirecte 2.0, toujours fictif. |
 
 ## Lancer le projet
 
-Le site est composé de pages HTML, CSS et JavaScript. Pour une première découverte, ouvrez [`index.html`](index.html). L'API Node se lance séparément ; suivez le guide dans [`API.md`](API.md) avant de la connecter ou de la déployer.
+Le site est composé de pages HTML, CSS et JavaScript. Pour une première découverte, ouvrez [`index.html`](index.html). Les pages et notes Firebase se trouvent dans [`docs/`](docs/README.md) ; consultez leur configuration avant tout déploiement ou connexion à un vrai projet Firebase.
 
 ## Esprit du projet
 
