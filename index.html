@@ -184,6 +184,7 @@ document.getElementById('show-cookies').addEventListener('click', () => {
 
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
+        const firebaseIdToken = await user.getIdToken();
         let username = user.displayName || user.email.split('@')[0] || "Utilisateur";
 
         try {
@@ -201,6 +202,7 @@ document.getElementById('show-cookies').addEventListener('click', () => {
         sessionStorage.setItem("currentUser", username);
         sessionStorage.setItem("userEmail", user.email);
         sessionStorage.setItem("userId", user.uid);
+        sessionStorage.setItem("firebaseIdToken", firebaseIdToken);
 
         console.log("✅ Connexion réussie:", username);
 

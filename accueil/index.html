@@ -2291,6 +2291,7 @@
         authPersistenceConfigured = true;
         await setPersistence(auth, browserLocalPersistence);
       }
+      sessionStorage.setItem("firebaseIdToken", await user.getIdToken());
 
       const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
