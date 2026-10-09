@@ -65,8 +65,9 @@
     import { 
       getFirestore,
       doc,
-      setDoc,
+      getDoc,
       serverTimestamp,
+      writeBatch,
       query,
       collection,
       where,
@@ -125,12 +126,12 @@
       try {
         console.log("🔄 Vérification du nom d'utilisateur...");
 
-        // Vérifier si le nom d'utilisateur existe déjà
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, where("username", "==", username));
-        const querySnapshot = await getDocs(q);
+        // Vérifier le nom dans l'index privé plutôt que de lire tous les profils.
+        const usernameKey = encodeURIComponent(username.toLocaleLowerCase("fr-FR"));
+        const usernameRef = doc(db, "usernames", usernameKey);
+        const usernameDoc = await getDoc(usernameRef);
 
-        if (!querySnapshot.empty) {
+        if (usernameDoc.exists()) {
           loadingMessage.style.display = "none";
           errorMessage.textContent = "❌ Ce nom d'utilisateur est déjà pris.";
           errorMessage.style.display = "block";
@@ -154,6 +155,7 @@
         const profileData = {
           username: username,
           email: email,
+          role: "eleve",
           createdAt: serverTimestamp(),
           notes: [
             { matiere: "Moyenne generale", note: "Non calculée" }
@@ -166,8 +168,11 @@
           ]
         };
 
-        // Créer le document utilisateur dans Firestore
-        await setDoc(doc(db, "users", user.uid), profileData);
+        // Créer le profil et réserver le nom dans la même transaction.
+        const batch = writeBatch(db);
+        batch.set(doc(db, "users", user.uid), profileData);
+        batch.set(usernameRef, { username: username });
+        await batch.commit();
 
         console.log("✅ Profil créé dans Firestore");
 
