@@ -375,7 +375,7 @@
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { getAuth } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
     import { getFirestore, doc, getDoc, onSnapshot, runTransaction, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
     // Configuration Firebase
@@ -503,7 +503,8 @@
       resultsContainer.innerHTML = html;
     }
 
-    onAuthStateChanged(auth, (user) => {
+    auth.authStateReady().then(() => {
+      const user = auth.currentUser;
       if (!user) {
         sessionStorage.clear();
         window.location.href = '../';
@@ -526,6 +527,9 @@
           resultsContainer.innerHTML = '<p class="loading">Impossible de charger les résultats. Vérifiez les règles Firestore.</p>';
         });
       }
+    }).catch((error) => {
+      console.error('Erreur de restauration Firebase Auth:', error);
+      showMessage('❌ Impossible de restaurer la connexion Firebase.', 'error');
     });
 
   </script>
