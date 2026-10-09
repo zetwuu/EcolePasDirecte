@@ -209,6 +209,7 @@ document.getElementById('show-cookies').addEventListener('click', () => {
         sessionStorage.setItem("currentUser", username);
         sessionStorage.setItem("userEmail", user.email);
         sessionStorage.setItem("userId", user.uid);
+        sessionStorage.setItem("rememberMe", rememberMe ? "true" : "false");
 
         console.log("✅ Connexion réussie:", username);
 
