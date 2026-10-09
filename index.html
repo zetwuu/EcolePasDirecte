@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Connexion - EcolePasDirecte</title>
   <link rel="stylesheet" href="src/css/style.css" />
+  <script>
+    if (window.location.pathname.endsWith("/index.html")) {
+      const cleanPath = window.location.pathname.slice(0, -"index.html".length);
+      window.history.replaceState(null, "", `${cleanPath}${window.location.search}${window.location.hash}`);
+    }
+  </script>
 </head>
 <body>
   <div id="cookie-banner" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; display: none;">
@@ -68,7 +74,7 @@
 
         <div class="form-footer">
           <label>
-            <input type="checkbox" name="remember" id="remember" />
+            <input type="checkbox" name="remember" id="remember" checked />
             Se souvenir de moi(personne ne ce souvien de toi)
           </label>
           <a href="#" id="forgot-password">Mot de passe oublié ?</a>
@@ -78,7 +84,7 @@
       </form>
 
       <div class="extra-links">
-        <p>Pas encore de compte ? <a href="src/pages/register-open.html">Inscrivez-vous</a></p>
+        <p>Pas encore de compte ? <a href="inscription/">Inscrivez-vous</a></p>
       </div>
     </div>
 

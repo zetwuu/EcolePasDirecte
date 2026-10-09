@@ -497,7 +497,7 @@
       if (!user) {
         const savedToken = sessionStorage.getItem('firebaseIdToken');
         if (sessionStorage.getItem('isLoggedIn') !== 'true' || !savedToken) {
-          window.location.href = '../../index.html';
+          window.location.href = '../../';
           return;
         }
         currentUser = { getIdToken: async () => savedToken };
@@ -510,7 +510,7 @@
         console.error('Erreur de chargement des votes:', error);
         if (error.status === 401) {
           sessionStorage.clear();
-          window.location.href = '../../index.html';
+          window.location.href = '../../';
           return;
         }
         resultsContainer.innerHTML = '<p class="loading">Impossible de charger les résultats. Vérifiez que l’API est démarrée.</p>';
