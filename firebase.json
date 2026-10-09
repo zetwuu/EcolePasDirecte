@@ -1,0 +1,17 @@
+{
+  "functions": [
+    {
+      "source": "api",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        ".env",
+        ".env.*",
+        "service-account*.json"
+      ]
+    }
+  ]
+}

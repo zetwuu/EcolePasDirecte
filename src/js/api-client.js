@@ -1,5 +1,9 @@
 (function() {
-  const baseUrl = (window.EPD_API_URL || "http://localhost:3000").replace(/\/$/, "");
+  const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+  const defaultUrl = isLocal
+    ? "http://localhost:3000"
+    : "https://europe-west1-ecolepasdirect.cloudfunctions.net/backend";
+  const baseUrl = (window.EPD_API_URL || defaultUrl).replace(/\/$/, "");
 
   async function getToken() {
     const auth = window.firebase?.auth?.();

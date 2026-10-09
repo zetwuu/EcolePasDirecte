@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node api/server.js",
-    "check": "node --check api/server.js"
+    "check": "node --check api/server.js && node --check api/index.js"
   },
   "dependencies": {
     "dotenv": "^16.6.1",
