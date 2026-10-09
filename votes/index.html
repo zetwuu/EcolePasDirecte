@@ -372,12 +372,11 @@
     </div>
   </div>
 
-  <script src="../src/js/api-client.js"></script>
-
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
     import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { getFirestore, doc, getDoc, onSnapshot, runTransaction, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
     // Configuration Firebase
     const firebaseConfig = {
@@ -394,13 +393,16 @@
     // Initialiser Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
+    const electionRef = doc(db, 'elections', 'class-representative');
+    const candidates = ['Alex', 'Johan', 'Aucun'];
     const form = document.getElementById('vote-form');
     const voteBtn = document.getElementById('vote-btn');
     const voteMessage = document.getElementById('vote-message');
     const resultsContainer = document.getElementById('results-container');
 
     let currentUser = null;
-    let refreshTimer = null;
+    let stopWatchingResults = null;
 
     // Afficher un message
     function showMessage(message, type) {
@@ -420,12 +422,10 @@
     }
 
     async function loadVotes() {
-      const result = await window.EPD_API.request('/api/votes', {
-        token: await currentUser.getIdToken()
-      });
-      displayResults(result.counts);
-      setVoteState(result.hasVoted);
-      if (result.hasVoted) {
+      const ballotRef = doc(db, 'elections', 'class-representative', 'ballots', currentUser.uid);
+      const ballot = await getDoc(ballotRef);
+      setVoteState(ballot.exists());
+      if (ballot.exists()) {
         showMessage('ℹ️ Vous avez déjà participé au vote.', 'info');
       }
     }
@@ -445,20 +445,30 @@
       voteBtn.textContent = 'Vote en cours...';
 
       try {
-        const result = await window.EPD_API.request('/api/votes', {
-          method: 'POST',
-          token: await currentUser.getIdToken(),
-          body: { choice: choix.value }
+        await runTransaction(db, async (transaction) => {
+          const ballotRef = doc(db, 'elections', 'class-representative', 'ballots', currentUser.uid);
+          const ballot = await transaction.get(ballotRef);
+          if (ballot.exists()) {
+            const error = new Error('Vous avez déjà voté.');
+            error.code = 'already-voted';
+            throw error;
+          }
+
+          const election = await transaction.get(electionRef);
+          const counts = election.data()?.counts || Object.fromEntries(candidates.map((name) => [name, 0]));
+          counts[choix.value] = (counts[choix.value] || 0) + 1;
+          transaction.set(electionRef, { counts }, { merge: true });
+          transaction.set(ballotRef, { choice: choix.value, createdAt: serverTimestamp() });
         });
 
-        displayResults(result.counts);
         showMessage(`✅ Merci ! Votre vote pour "${choix.value}" a été enregistré.`, 'success');
         form.reset();
         setVoteState(true);
       } catch (error) {
         console.error("Erreur lors du vote:", error);
-        showMessage(error.status === 409 ? '❌ Vous avez déjà voté !' : '❌ Erreur lors de l\'enregistrement du vote. Réessayez.', 'error');
-        await loadVotes().catch(() => setVoteState(false));
+        const alreadyVoted = error.code === 'already-voted';
+        showMessage(alreadyVoted ? '❌ Vous avez déjà voté !' : '❌ Erreur lors de l\'enregistrement du vote. Vérifiez les règles Firestore.', 'error');
+        setVoteState(alreadyVoted ? true : false);
       }
     });
 
@@ -495,32 +505,26 @@
 
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-        const savedToken = sessionStorage.getItem('firebaseIdToken');
-        if (sessionStorage.getItem('isLoggedIn') !== 'true' || !savedToken) {
-          window.location.href = '../';
-          return;
-        }
-        currentUser = { getIdToken: async () => savedToken };
-      } else {
-        currentUser = user;
-        user.getIdToken().then((token) => sessionStorage.setItem('firebaseIdToken', token));
+        sessionStorage.clear();
+        window.location.href = '../';
+        return;
       }
 
+      currentUser = user;
       loadVotes().catch((error) => {
         console.error('Erreur de chargement des votes:', error);
-        if (error.status === 401) {
-          sessionStorage.clear();
-          window.location.href = '../';
-          return;
-        }
-        resultsContainer.innerHTML = '<p class="loading">Impossible de charger les résultats. Vérifiez que l’API est démarrée.</p>';
-        showMessage('❌ Impossible de contacter l’API.', 'error');
+        resultsContainer.innerHTML = '<p class="loading">Impossible de charger les résultats. Vérifiez les règles Firestore.</p>';
+        showMessage('❌ Impossible de lire les votes dans Firebase.', 'error');
       });
 
-      if (!refreshTimer) {
-        refreshTimer = window.setInterval(() => {
-          loadVotes().catch((error) => console.error('Erreur d’actualisation:', error));
-        }, 5000);
+      if (!stopWatchingResults) {
+        stopWatchingResults = onSnapshot(electionRef, (snapshot) => {
+          const counts = snapshot.data()?.counts || Object.fromEntries(candidates.map((name) => [name, 0]));
+          displayResults(counts);
+        }, (error) => {
+          console.error('Erreur d’actualisation des votes:', error);
+          resultsContainer.innerHTML = '<p class="loading">Impossible de charger les résultats. Vérifiez les règles Firestore.</p>';
+        });
       }
     });
 

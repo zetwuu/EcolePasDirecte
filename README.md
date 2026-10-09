@@ -33,7 +33,7 @@ Le projet a commencé par le site web en classe de seconde. Ce dépôt rassemble
 | Espace | Ce qu'on y trouve |
 | --- | --- |
 | `index.html`, `inscription/index.html` et `accueil/index.html` | Connexion (`/`), inscription (`/inscription/`) et accueil (`/accueil/`) |
-| `src/pages/messages.html` | Messagerie du site |
+| `src/pages/messages-firebase.html` | Messagerie du site |
 | `votes/index.html` | Espace de vote (`/votes/`) |
 | `src/pages/firebase-*.html` | Guides, vérifications et pages de configuration Firebase |
 | `src/js/` | Configuration Firebase et notifications |

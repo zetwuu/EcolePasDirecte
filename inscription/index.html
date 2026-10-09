@@ -68,11 +68,6 @@
       getDoc,
       serverTimestamp,
       writeBatch,
-      query,
-      collection,
-      where,
-      getDocs,
-      limit,
       updateDoc,
       arrayUnion
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -178,19 +173,15 @@
 
         let generalGroupSyncFailed = false;
         try {
-          const generalGroupQuery = query(
-            collection(db, "conversations"),
-            where("isGeneralGroup", "==", true),
-            limit(1)
-          );
-          const generalGroups = await getDocs(generalGroupQuery);
-          if (!generalGroups.empty) {
-            await updateDoc(generalGroups.docs[0].ref, {
+          const generalGroupRef = doc(db, "conversations", "general_school");
+          const generalGroup = await getDoc(generalGroupRef);
+          if (generalGroup.exists()) {
+            await updateDoc(generalGroupRef, {
               participants: arrayUnion(username)
             });
           } else {
-            await setDoc(doc(db, "conversations", "general_school"), {
-              participants: arrayUnion(username),
+            await setDoc(generalGroupRef, {
+              participants: [username],
               isGroup: true,
               isGeneralGroup: true,
               groupName: "Général",

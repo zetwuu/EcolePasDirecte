@@ -11,7 +11,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-  <script src="../js/api-client.js"></script>
   
   <style>
     * {
@@ -1193,11 +1192,8 @@
         displayName = convData.groupName || "Groupe sans nom";
         document.getElementById("chat-title").innerHTML = `👥 ${displayName}`;
         
-        if (isGeneralGroup) {
-          document.getElementById("add-member-btn").style.display = "none";
-        } else {
-          document.getElementById("add-member-btn").style.display = "block";
-        }
+        document.getElementById("add-member-btn").style.display =
+          !isGeneralGroup && convData.createdBy === currentUser ? "block" : "none";
         
         document.getElementById("group-info-btn").style.display = "block";
       } else {
@@ -1207,11 +1203,8 @@
         document.getElementById("group-info-btn").style.display = "none";
       }
 
-      if (isGeneralGroup) {
-        document.getElementById("delete-btn").style.display = "none";
-      } else {
-        document.getElementById("delete-btn").style.display = "block";
-      }
+      document.getElementById("delete-btn").style.display =
+        !isGeneralGroup && (!isGroup || convData.createdBy === currentUser) ? "block" : "none";
       
       document.getElementById("input-area").style.display = "block";
 
@@ -1358,10 +1351,11 @@
     // Ajouter une réaction
     window.addReaction = async function(convId, messageId, emoji) {
       try {
-        await window.EPD_API.request(`/api/chat/conversations/${encodeURIComponent(convId)}/messages/${encodeURIComponent(messageId)}/reaction`, {
-          method: "PATCH",
-          body: { emoji }
-        });
+        const messageRef = db.collection("conversations").doc(convId).collection("messages").doc(messageId);
+        const messageDoc = await messageRef.get();
+        const reactions = messageDoc.data().reactions || {};
+        reactions[currentUser] = emoji;
+        await messageRef.update({ reactions });
         document.getElementById(`picker-${messageId}`).classList.remove('show');
       } catch (error) {
         console.error('❌ Erreur:', error);
@@ -1375,10 +1369,9 @@
         const messageDoc = await messageRef.get();
         const reactions = messageDoc.data().reactions || {};
 
-        await window.EPD_API.request(`/api/chat/conversations/${encodeURIComponent(convId)}/messages/${encodeURIComponent(messageId)}/reaction`, {
-          method: "PATCH",
-          body: { emoji: reactions[currentUser] === emoji ? null : emoji }
-        });
+        if (reactions[currentUser] === emoji) delete reactions[currentUser];
+        else reactions[currentUser] = emoji;
+        await messageRef.update({ reactions });
       } catch (error) {
         console.error('❌ Erreur:', error);
       }
@@ -1401,9 +1394,7 @@
       if (!confirm("Supprimer ce message?")) return;
 
       try {
-        await window.EPD_API.request(`/api/chat/conversations/${encodeURIComponent(convId)}/messages/${encodeURIComponent(messageId)}`, {
-          method: "DELETE"
-        });
+        await db.collection("conversations").doc(convId).collection("messages").doc(messageId).delete();
         console.log("✅ Message supprimé");
       } catch (error) {
         console.error("❌ Erreur:", error);
@@ -1421,9 +1412,18 @@
       if (!message || !currentConversation) return;
 
       try {
-        await window.EPD_API.request(`/api/chat/conversations/${encodeURIComponent(currentConversation)}/messages`, {
-          method: "POST",
-          body: { content: message }
+        const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+        await db.collection("conversations").doc(currentConversation).update({
+          lastMessage: message,
+          lastSender: currentUser,
+          lastTimestamp: timestamp
+        });
+        await db.collection("conversations").doc(currentConversation).collection("messages").add({
+          sender: currentUser,
+          content: message,
+          timestamp,
+          reactions: {},
+          readBy: [currentUser]
         });
 
         // ✅ INCRÉMENTER LE COMPTEUR DE MESSAGES
@@ -1455,9 +1455,13 @@
       if (!confirm("Effacer cette conversation?")) return;
 
       try {
-        await window.EPD_API.request(`/api/chat/conversations/${encodeURIComponent(currentConversation)}`, {
-          method: "DELETE"
-        });
+        const messages = await db.collection("conversations").doc(currentConversation).collection("messages").get();
+        for (let start = 0; start < messages.docs.length; start += 450) {
+          const batch = db.batch();
+          messages.docs.slice(start, start + 450).forEach((message) => batch.delete(message.ref));
+          await batch.commit();
+        }
+        await db.collection("conversations").doc(currentConversation).delete();
 
         currentConversation = null;
         currentConversationData = null;
@@ -1696,53 +1700,29 @@
     }
 
     async function ensureGeneralGroup() {
-      const usersSnapshot = await db.collection("users").get();
-      const participants = [...new Set([
-        ...usersSnapshot.docs.map(doc => doc.data().username).filter(Boolean),
-        currentUser
-      ])];
-      const groupsSnapshot = await db.collection("conversations")
-        .where("isGeneralGroup", "==", true)
-        .limit(1)
-        .get();
+      const groupRef = db.collection("conversations").doc("general_school");
+      const groupDoc = await groupRef.get();
 
-      if (!groupsSnapshot.empty) {
-        const groupDoc = groupsSnapshot.docs[0];
-        const currentParticipants = groupDoc.data().participants || [];
-        const missingParticipants = participants.filter(name => !currentParticipants.includes(name));
-        if (missingParticipants.length) {
-          await groupDoc.ref.update({
-            participants: firebase.firestore.FieldValue.arrayUnion(...missingParticipants)
+      if (groupDoc.exists) {
+        const participants = groupDoc.data().participants || [];
+        if (!participants.includes(currentUser)) {
+          await groupRef.update({
+            participants: firebase.firestore.FieldValue.arrayUnion(currentUser)
           });
         }
         return;
       }
 
-      const groupRef = db.collection("conversations").doc("general_school");
-      await db.runTransaction(async transaction => {
-        const groupDoc = await transaction.get(groupRef);
-        if (groupDoc.exists) {
-          const currentParticipants = groupDoc.data().participants || [];
-          const missingParticipants = participants.filter(name => !currentParticipants.includes(name));
-          if (missingParticipants.length) {
-            transaction.update(groupRef, {
-              participants: firebase.firestore.FieldValue.arrayUnion(...missingParticipants)
-            });
-          }
-          return;
-        }
-
-        transaction.set(groupRef, {
-          participants,
-          isGroup: true,
-          isGeneralGroup: true,
-          groupName: "Général",
-          createdBy: currentUser,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          lastMessage: "Groupe général créé",
-          lastSender: "Système",
-          lastTimestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
+      await groupRef.set({
+        participants: [currentUser],
+        isGroup: true,
+        isGeneralGroup: true,
+        groupName: "Général",
+        createdBy: currentUser,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        lastMessage: "Groupe général créé",
+        lastSender: "Système",
+        lastTimestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
     }
 
@@ -1796,13 +1776,16 @@
       if (!name || name.trim() === "") return;
 
       const recipientName = name.trim();
-      window.EPD_API.request("/api/chat/conversations", {
-        method: "POST",
-        body: { recipientName }
-      }).then((conversation) => {
-        const convId = conversation.id;
+      const convId = [currentUser, recipientName].sort().join("_");
+      db.collection("conversations").doc(convId).set({
+        participants: [currentUser, recipientName],
+        isGroup: false,
+        lastMessage: "",
+        lastSender: currentUser,
+        lastTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).then(() => {
         currentConversation = convId;
-        currentConversationData = conversation;
+        currentConversationData = { participants: [currentUser, recipientName], isGroup: false };
         
         document.getElementById("chat-title").textContent = recipientName;
         document.getElementById("delete-btn").style.display = "block";

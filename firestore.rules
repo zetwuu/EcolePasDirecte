@@ -10,6 +10,40 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'prof';
     }
 
+    function myUsername() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username;
+    }
+
+    function isConversationMember(conversationId) {
+      return signedIn()
+        && get(/databases/$(database)/documents/conversations/$(conversationId)).data.participants
+          .hasAny([myUsername()]);
+    }
+
+    function validVoteCounts(counts) {
+      return counts is map
+        && counts.keys().hasAll(['Alex', 'Johan', 'Aucun'])
+        && counts.keys().hasOnly(['Alex', 'Johan', 'Aucun'])
+        && counts.Alex is int && counts.Alex >= 0
+        && counts.Johan is int && counts.Johan >= 0
+        && counts.Aucun is int && counts.Aucun >= 0;
+    }
+
+    function voteChangeMatchesBallot(electionId, oldCounts, newCounts) {
+      let ballotPath = /databases/$(database)/documents/elections/$(electionId)/ballots/$(request.auth.uid);
+      let choice = getAfter(ballotPath).data.choice;
+      return existsAfter(ballotPath)
+        && !exists(ballotPath)
+        && getAfter(ballotPath).data.keys().hasOnly(['choice', 'createdAt'])
+        && getAfter(ballotPath).data.createdAt == request.time
+        && choice in ['Alex', 'Johan', 'Aucun']
+        && validVoteCounts(oldCounts)
+        && validVoteCounts(newCounts)
+        && newCounts.Alex == oldCounts.Alex + (choice == 'Alex' ? 1 : 0)
+        && newCounts.Johan == oldCounts.Johan + (choice == 'Johan' ? 1 : 0)
+        && newCounts.Aucun == oldCounts.Aucun + (choice == 'Aucun' ? 1 : 0);
+    }
+
     match /users/{userId} {
       allow create: if signedIn()
         && request.auth.uid == userId
@@ -41,8 +75,97 @@ service cloud.firestore {
       allow read, write: if signedIn() && request.auth.uid == userId;
     }
 
-    match /conversations/{document=**} {
-      allow read, write: if signedIn();
+    match /conversations/{conversationId} {
+      function member() {
+        return signedIn()
+          && resource.data.participants.hasAny([myUsername()]);
+      }
+
+      function canChangeParticipants() {
+        return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['participants'])
+          || (resource.data.isGeneralGroup == true
+            && request.resource.data.participants.hasAll(resource.data.participants)
+            && request.resource.data.participants.size() <= resource.data.participants.size() + 1
+            && request.resource.data.participants.hasAny([myUsername()]))
+          || (resource.data.isGroup == true && resource.data.createdBy == myUsername());
+      }
+
+      allow get, list: if member();
+      allow create: if signedIn()
+        && request.resource.data.participants is list
+        && request.resource.data.participants.hasAny([myUsername()])
+        && request.resource.data.participants.size() <= 50
+        && (!request.resource.data.get('isGeneralGroup', false)
+          || (conversationId == 'general_school'
+            && request.resource.data.get('groupName', '') == 'Général'
+            && request.resource.data.get('createdBy', '') == myUsername()));
+      allow update: if signedIn()
+        && (member()
+          || (resource.data.isGeneralGroup == true
+            && request.resource.data.participants.hasAny([myUsername()])))
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'participants', 'lastMessage', 'lastSender', 'lastTimestamp'
+        ])
+        && canChangeParticipants();
+      allow delete: if member()
+        && resource.data.isGeneralGroup != true
+        && (resource.data.isGroup != true || resource.data.createdBy == myUsername());
+
+      match /messages/{messageId} {
+        allow get, list: if isConversationMember(conversationId);
+        allow create: if isConversationMember(conversationId)
+          && request.resource.data.keys().hasAll(['sender', 'content', 'timestamp'])
+          && request.resource.data.keys().hasOnly([
+            'sender', 'content', 'timestamp', 'reactions', 'readBy', 'imageUrl', 'isSystemMessage'
+          ])
+          && (request.resource.data.sender == myUsername()
+            || (request.resource.data.sender == 'Système'
+              && request.resource.data.get('isSystemMessage', false) == true
+              && get(/databases/$(database)/documents/conversations/$(conversationId)).data.isGroup == true))
+          && request.resource.data.content is string
+          && request.resource.data.content.size() <= 2000
+          && request.resource.data.timestamp == request.time;
+        allow update: if isConversationMember(conversationId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions'])
+          && request.resource.data.reactions is map
+          && request.resource.data.reactions.diff(resource.data.get('reactions', {}))
+            .affectedKeys().hasOnly([myUsername()]);
+        allow delete: if isConversationMember(conversationId)
+          && (resource.data.sender == myUsername()
+            || get(/databases/$(database)/documents/conversations/$(conversationId)).data.isGroup != true
+            || get(/databases/$(database)/documents/conversations/$(conversationId)).data.createdBy == myUsername());
+      }
+    }
+
+    match /elections/{electionId} {
+      allow get, list: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['counts'])
+        && voteChangeMatchesBallot(electionId, {'Alex': 0, 'Johan': 0, 'Aucun': 0}, request.resource.data.counts);
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['counts'])
+        && voteChangeMatchesBallot(electionId, resource.data.counts, request.resource.data.counts);
+      allow delete: if false;
+
+      match /ballots/{userId} {
+        function voteHasMatchingCount() {
+          let electionPath = /databases/$(database)/documents/elections/$(electionId);
+          let zeroCounts = {'Alex': 0, 'Johan': 0, 'Aucun': 0};
+          let oldCounts = exists(electionPath) ? get(electionPath).data.counts : zeroCounts;
+          return existsAfter(electionPath)
+            && voteChangeMatchesBallot(electionId, oldCounts, getAfter(electionPath).data.counts);
+        }
+
+        allow get: if signedIn() && request.auth.uid == userId;
+        allow list: if false;
+        allow create: if signedIn()
+          && request.auth.uid == userId
+          && request.resource.data.keys().hasOnly(['choice', 'createdAt'])
+          && request.resource.data.choice in ['Alex', 'Johan', 'Aucun']
+          && request.resource.data.createdAt == request.time
+          && voteHasMatchingCount();
+        allow update, delete: if false;
+      }
     }
   }
 }
