@@ -564,7 +564,8 @@
       } catch (error) {
         console.error("Erreur lors du vote:", error);
         const alreadyVoted = error.code === 'already-voted';
-        showMessage(alreadyVoted ? '❌ Vous avez déjà voté !' : '❌ Erreur lors de l\'enregistrement du vote. Vérifiez les règles Firestore.', 'error');
+        const errorCode = error.status || error.code || 'erreur inconnue';
+        showMessage(alreadyVoted ? '❌ Vous avez déjà voté !' : `❌ Firestore (${errorCode}) : ${error.message}`, 'error');
         setVoteState(alreadyVoted ? true : false);
       }
     });
