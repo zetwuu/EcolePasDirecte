@@ -70,7 +70,10 @@
       query,
       collection,
       where,
-      getDocs
+      getDocs,
+      limit,
+      updateDoc,
+      arrayUnion
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // Configuration Firebase - EcolePasDirecte
@@ -168,8 +171,40 @@
 
         console.log("✅ Profil créé dans Firestore");
 
+        let generalGroupSyncFailed = false;
+        try {
+          const generalGroupQuery = query(
+            collection(db, "conversations"),
+            where("isGeneralGroup", "==", true),
+            limit(1)
+          );
+          const generalGroups = await getDocs(generalGroupQuery);
+          if (!generalGroups.empty) {
+            await updateDoc(generalGroups.docs[0].ref, {
+              participants: arrayUnion(username)
+            });
+          } else {
+            await setDoc(doc(db, "conversations", "general_school"), {
+              participants: arrayUnion(username),
+              isGroup: true,
+              isGeneralGroup: true,
+              groupName: "Général",
+              createdBy: username,
+              createdAt: serverTimestamp(),
+              lastMessage: "Groupe général créé",
+              lastSender: "Système",
+              lastTimestamp: serverTimestamp()
+            }, { merge: true });
+          }
+        } catch (groupError) {
+          generalGroupSyncFailed = true;
+          console.error("❌ Ajout au groupe général:", groupError);
+        }
+
         loadingMessage.style.display = "none";
-        successMessage.textContent = "✅ Compte créé avec succès ! Redirection...";
+        successMessage.textContent = generalGroupSyncFailed
+          ? "✅ Compte créé, mais l'ajout au groupe général a échoué. Vérifiez les règles Firestore. Redirection..."
+          : "✅ Compte créé et ajouté au groupe général ! Redirection...";
         successMessage.style.display = "block";
 
         setTimeout(() => {
