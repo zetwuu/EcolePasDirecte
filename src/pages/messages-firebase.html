@@ -9,7 +9,9 @@
   
   <!-- FIREBASE SDK (version compat - marche vraiment!) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+  <script src="../js/api-client.js"></script>
   
   <style>
     * {
@@ -1356,14 +1358,10 @@
     // Ajouter une réaction
     window.addReaction = async function(convId, messageId, emoji) {
       try {
-        const messageRef = db.collection("conversations").doc(convId).collection("messages").doc(messageId);
-        const messageDoc = await messageRef.get();
-        const reactions = messageDoc.data().reactions || {};
-        
-        reactions[currentUser] = emoji;
-        
-        await messageRef.update({ reactions });
-        
+        await window.EPD_API.request(`/api/chat/conversations/${encodeURIComponent(convId)}/messages/${encodeURIComponent(messageId)}/reaction`, {
+          method: "PATCH",
+          body: { emoji }
+        });
         document.getElementById(`picker-${messageId}`).classList.remove('show');
       } catch (error) {
         console.error('❌ Erreur:', error);
@@ -1376,14 +1374,11 @@
         const messageRef = db.collection("conversations").doc(convId).collection("messages").doc(messageId);
         const messageDoc = await messageRef.get();
         const reactions = messageDoc.data().reactions || {};
-        
-        if (reactions[currentUser] === emoji) {
-          delete reactions[currentUser];
-        } else {
-          reactions[currentUser] = emoji;
-        }
-        
-        await messageRef.update({ reactions });
+
+        await window.EPD_API.request(`/api/chat/conversations/${encodeURIComponent(convId)}/messages/${encodeURIComponent(messageId)}/reaction`, {
+          method: "PATCH",
+          body: { emoji: reactions[currentUser] === emoji ? null : emoji }
+        });
       } catch (error) {
         console.error('❌ Erreur:', error);
       }
@@ -1406,7 +1401,9 @@
       if (!confirm("Supprimer ce message?")) return;
 
       try {
-        await db.collection("conversations").doc(convId).collection("messages").doc(messageId).delete();
+        await window.EPD_API.request(`/api/chat/conversations/${encodeURIComponent(convId)}/messages/${encodeURIComponent(messageId)}`, {
+          method: "DELETE"
+        });
         console.log("✅ Message supprimé");
       } catch (error) {
         console.error("❌ Erreur:", error);
@@ -1424,20 +1421,9 @@
       if (!message || !currentConversation) return;
 
       try {
-        const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-
-        await db.collection("conversations").doc(currentConversation).update({
-          lastMessage: message,
-          lastSender: currentUser,
-          lastTimestamp: timestamp
-        });
-
-        await db.collection("conversations").doc(currentConversation).collection("messages").add({
-          sender: currentUser,
-          content: message,
-          timestamp: timestamp,
-          reactions: {},
-          readBy: [currentUser]
+        await window.EPD_API.request(`/api/chat/conversations/${encodeURIComponent(currentConversation)}/messages`, {
+          method: "POST",
+          body: { content: message }
         });
 
         // ✅ INCRÉMENTER LE COMPTEUR DE MESSAGES
@@ -1469,10 +1455,9 @@
       if (!confirm("Effacer cette conversation?")) return;
 
       try {
-        const snapshot = await db.collection("conversations").doc(currentConversation).collection("messages").get();
-        
-        snapshot.forEach(doc => doc.ref.delete());
-        await db.collection("conversations").doc(currentConversation).delete();
+        await window.EPD_API.request(`/api/chat/conversations/${encodeURIComponent(currentConversation)}`, {
+          method: "DELETE"
+        });
 
         currentConversation = null;
         currentConversationData = null;
@@ -1811,17 +1796,13 @@
       if (!name || name.trim() === "") return;
 
       const recipientName = name.trim();
-      const convId = [currentUser, recipientName].sort().join("_");
-      
-      db.collection("conversations").doc(convId).set({
-        participants: [currentUser, recipientName],
-        isGroup: false,
-        lastMessage: "",
-        lastSender: currentUser,
-        lastTimestamp: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }).then(() => {
+      window.EPD_API.request("/api/chat/conversations", {
+        method: "POST",
+        body: { recipientName }
+      }).then((conversation) => {
+        const convId = conversation.id;
         currentConversation = convId;
-        currentConversationData = { participants: [currentUser, recipientName], isGroup: false };
+        currentConversationData = conversation;
         
         document.getElementById("chat-title").textContent = recipientName;
         document.getElementById("delete-btn").style.display = "block";
@@ -1829,7 +1810,7 @@
 
         loadMessages(convId, false);
         document.getElementById("message-input").focus();
-      });
+      }).catch((error) => alert("Impossible de créer la conversation : " + error.message));
     });
 
     // GESTION DU MODAL GROUPE

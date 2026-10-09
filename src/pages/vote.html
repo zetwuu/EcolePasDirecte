@@ -372,10 +372,12 @@
     </div>
   </div>
 
+  <script src="../js/api-client.js"></script>
+
   <!-- Firebase SDK -->
   <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-    import { getDatabase, ref, set, get, update, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
     // Configuration Firebase
     const firebaseConfig = {
@@ -391,24 +393,14 @@
 
     // Initialiser Firebase
     const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
-
-    // Références
-    const votesRef = ref(database, 'votes');
+    const auth = getAuth(app);
     const form = document.getElementById('vote-form');
     const voteBtn = document.getElementById('vote-btn');
     const voteMessage = document.getElementById('vote-message');
     const resultsContainer = document.getElementById('results-container');
 
-    // Vérifier si l'utilisateur a déjà voté
-    function hasVoted() {
-      return localStorage.getItem('hasVoted') === 'true';
-    }
-
-    // Marquer comme ayant voté
-    function markAsVoted() {
-      localStorage.setItem('hasVoted', 'true');
-    }
+    let currentUser = null;
+    let refreshTimer = null;
 
     // Afficher un message
     function showMessage(message, type) {
@@ -419,30 +411,28 @@
       }, 5000);
     }
 
-    // Initialiser les votes dans Firebase si nécessaire
-    async function initializeVotes() {
-      try {
-        const snapshot = await get(votesRef);
-        if (!snapshot.exists()) {
-          await set(votesRef, {
-            Alex: 0,
-            Johan: 0,
-            Aucun: 0
-          });
-        }
-      } catch (error) {
-        console.error("Erreur d'initialisation:", error);
+    function setVoteState(hasVoted) {
+      voteBtn.disabled = hasVoted;
+      voteBtn.textContent = hasVoted ? 'Vous avez déjà voté' : 'Valider mon vote';
+      document.querySelectorAll('input[name="candidat"]').forEach((input) => {
+        input.disabled = hasVoted;
+      });
+    }
+
+    async function loadVotes() {
+      const result = await window.EPD_API.request('/api/votes', {
+        token: await currentUser.getIdToken()
+      });
+      displayResults(result.counts);
+      setVoteState(result.hasVoted);
+      if (result.hasVoted) {
+        showMessage('ℹ️ Vous avez déjà participé au vote.', 'info');
       }
     }
 
     // Soumettre un vote
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-
-      if (hasVoted()) {
-        showMessage('❌ Vous avez déjà voté ! Un seul vote par personne.', 'error');
-        return;
-      }
 
       const choix = document.querySelector('input[name="candidat"]:checked');
       
@@ -455,30 +445,20 @@
       voteBtn.textContent = 'Vote en cours...';
 
       try {
-        const snapshot = await get(votesRef);
-        const votes = snapshot.val() || { Alex: 0, Johan: 0, Aucun: 0 };
-        
-        // Incrémenter le vote
-        votes[choix.value] = (votes[choix.value] || 0) + 1;
-        
-        await set(votesRef, votes);
-        
-        markAsVoted();
-        showMessage(`✅ Merci ! Votre vote pour "${choix.value}" a été enregistré.`, 'success');
-        
-        form.reset();
-        voteBtn.textContent = 'Vote enregistré ✓';
-        
-        // Désactiver le formulaire
-        document.querySelectorAll('input[name="candidat"]').forEach(input => {
-          input.disabled = true;
+        const result = await window.EPD_API.request('/api/votes', {
+          method: 'POST',
+          token: await currentUser.getIdToken(),
+          body: { choice: choix.value }
         });
-        
+
+        displayResults(result.counts);
+        showMessage(`✅ Merci ! Votre vote pour "${choix.value}" a été enregistré.`, 'success');
+        form.reset();
+        setVoteState(true);
       } catch (error) {
         console.error("Erreur lors du vote:", error);
-        showMessage('❌ Erreur lors de l\'enregistrement du vote. Réessayez.', 'error');
-        voteBtn.disabled = false;
-        voteBtn.textContent = 'Valider mon vote';
+        showMessage(error.status === 409 ? '❌ Vous avez déjà voté !' : '❌ Erreur lors de l\'enregistrement du vote. Réessayez.', 'error');
+        await loadVotes().catch(() => setVoteState(false));
       }
     });
 
@@ -513,24 +493,25 @@
       resultsContainer.innerHTML = html;
     }
 
-    // Écouter les changements en temps réel
-    onValue(votesRef, (snapshot) => {
-      const votes = snapshot.val() || { Alex: 0, Johan: 0, Aucun: 0 };
-      displayResults(votes);
-    });
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = '../../index.html';
+        return;
+      }
 
-    // Vérifier si l'utilisateur a déjà voté au chargement
-    if (hasVoted()) {
-      voteBtn.textContent = 'Vous avez déjà voté';
-      voteBtn.disabled = true;
-      document.querySelectorAll('input[name="candidat"]').forEach(input => {
-        input.disabled = true;
+      currentUser = user;
+      loadVotes().catch((error) => {
+        console.error('Erreur de chargement des votes:', error);
+        resultsContainer.innerHTML = '<p class="loading">Impossible de charger les résultats. Vérifiez que l’API est démarrée.</p>';
+        showMessage('❌ Impossible de contacter l’API.', 'error');
       });
-      showMessage('ℹ️ Vous avez déjà participé au vote.', 'info');
-    }
 
-    // Initialiser les votes
-    initializeVotes();
+      if (!refreshTimer) {
+        refreshTimer = window.setInterval(() => {
+          loadVotes().catch((error) => console.error('Erreur d’actualisation:', error));
+        }, 5000);
+      }
+    });
 
   </script>
 

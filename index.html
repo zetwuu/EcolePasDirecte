@@ -92,6 +92,7 @@
     </div>
   </div>
 
+  <script src="src/js/api-client.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -102,12 +103,6 @@
       browserLocalPersistence,
       sendPasswordResetEmail
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { 
-      getFirestore,
-      doc,
-      getDoc
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
     // Configuration Firebase - EcolePasDirecte
     const firebaseConfig = {
       apiKey: "AIzaSyAJRxSO6NDTAhAoUX-uqmTJT68cJjog1bw",
@@ -122,8 +117,6 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
-
    // Cookie consent
 if (!localStorage.getItem('cookieConsent')) {
   document.getElementById('cookie-banner').style.display = 'flex';
@@ -193,16 +186,15 @@ document.getElementById('show-cookies').addEventListener('click', () => {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Récupérer le profil utilisateur depuis Firestore
-        const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
-
         let username = "Utilisateur";
-        
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          username = userData.username || userData.displayName || "Utilisateur";
-        } else {
+
+        try {
+          const userProfile = await window.EPD_API.request("/api/profile", {
+            token: await user.getIdToken()
+          });
+          username = userProfile.username || userProfile.displayName || username;
+        } catch (profileError) {
+          if (profileError.status !== 404) throw profileError;
           username = user.displayName || user.email.split('@')[0];
         }
 

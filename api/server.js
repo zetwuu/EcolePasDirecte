@@ -12,7 +12,7 @@ initializeApp({
 const app = express();
 const db = getFirestore();
 const port = Number(process.env.PORT) || 3000;
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
@@ -20,7 +20,7 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
 app.use((req, res, next) => {
   const origin = req.get("origin");
 
-  if (origin && allowedOrigins.length && !allowedOrigins.includes(origin)) {
+  if (origin && !allowedOrigins.includes(origin)) {
     return res.status(403).json({ error: "Origine non autorisée." });
   }
 
@@ -36,6 +36,13 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json({ limit: "16kb" }));
+
+app.get("/", (req, res) => {
+  res.json({
+    name: "API EcolePasDirecte",
+    health: "/api/health"
+  });
+});
 
 function requireUser(req, res, next) {
   const authorization = req.get("authorization") || "";
@@ -62,6 +69,25 @@ function validOtherUserId(userId, otherUserId) {
   return typeof otherUserId === "string" && otherUserId.length > 0 && otherUserId !== userId;
 }
 
+async function getUsername(uid) {
+  const profile = await db.collection("users").doc(uid).get();
+  return profile.data()?.username || null;
+}
+
+async function getChatForUser(uid, chatId) {
+  const username = await getUsername(uid);
+  if (!username) return { error: "Profil introuvable.", status: 404 };
+
+  const chatRef = db.collection("conversations").doc(chatId);
+  const chat = await chatRef.get();
+  if (!chat.exists) return { error: "Conversation introuvable.", status: 404 };
+  if (!chat.data().participants?.includes(username)) {
+    return { error: "Accès refusé à cette conversation.", status: 403 };
+  }
+
+  return { username, chatRef, data: chat.data() };
+}
+
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });
@@ -81,6 +107,137 @@ app.patch("/api/profile", requireUser, async (req, res) => {
   const profileRef = db.collection("users").doc(req.user.uid);
   await profileRef.set({ username, displayName: username }, { merge: true });
   res.json({ id: req.user.uid, username });
+});
+
+app.get("/api/chat/conversations", requireUser, async (req, res) => {
+  const username = await getUsername(req.user.uid);
+  if (!username) return res.status(404).json({ error: "Profil introuvable." });
+
+  const snapshot = await db.collection("conversations")
+    .where("participants", "array-contains", username)
+    .limit(100)
+    .get();
+
+  res.json(snapshot.docs.map((document) => ({ id: document.id, ...document.data() })));
+});
+
+app.get("/api/chat/conversations/:chatId/messages", requireUser, async (req, res) => {
+  const chat = await getChatForUser(req.user.uid, req.params.chatId);
+  if (chat.error) return res.status(chat.status).json({ error: chat.error });
+
+  const snapshot = await chat.chatRef.collection("messages")
+    .orderBy("timestamp", "desc")
+    .limit(100)
+    .get();
+  res.json(snapshot.docs.reverse().map((document) => ({ id: document.id, ...document.data() })));
+});
+
+app.post("/api/chat/conversations", requireUser, async (req, res) => {
+  const username = await getUsername(req.user.uid);
+  const recipientName = typeof req.body.recipientName === "string"
+    ? req.body.recipientName.trim()
+    : "";
+  if (!username) return res.status(404).json({ error: "Profil introuvable." });
+  if (!recipientName || recipientName.length > 30 || recipientName === username) {
+    return res.status(400).json({ error: "Destinataire invalide." });
+  }
+
+  const recipient = await db.collection("users")
+    .where("username", "==", recipientName)
+    .limit(1)
+    .get();
+  if (recipient.empty) return res.status(404).json({ error: "Utilisateur introuvable." });
+
+  const participants = [username, recipientName].sort();
+  const chatId = participants.join("_");
+  await db.collection("conversations").doc(chatId).set({
+    participants,
+    isGroup: false,
+    lastMessage: "",
+    lastSender: username,
+    lastTimestamp: FieldValue.serverTimestamp()
+  }, { merge: true });
+
+  res.status(201).json({ id: chatId, participants, isGroup: false });
+});
+
+app.post("/api/chat/conversations/:chatId/messages", requireUser, async (req, res) => {
+  const chat = await getChatForUser(req.user.uid, req.params.chatId);
+  if (chat.error) return res.status(chat.status).json({ error: chat.error });
+
+  const content = typeof req.body.content === "string" ? req.body.content.trim() : "";
+  if (!content || content.length > 2000) {
+    return res.status(400).json({ error: "Le message doit contenir entre 1 et 2000 caractères." });
+  }
+
+  const message = {
+    sender: chat.username,
+    content,
+    timestamp: FieldValue.serverTimestamp(),
+    reactions: {},
+    readBy: [chat.username]
+  };
+  const messageRef = await chat.chatRef.collection("messages").add(message);
+  await chat.chatRef.set({
+    lastMessage: content,
+    lastSender: chat.username,
+    lastTimestamp: FieldValue.serverTimestamp()
+  }, { merge: true });
+
+  res.status(201).json({ id: messageRef.id, ...message, timestamp: new Date().toISOString() });
+});
+
+app.patch("/api/chat/conversations/:chatId/messages/:messageId/reaction", requireUser, async (req, res) => {
+  const chat = await getChatForUser(req.user.uid, req.params.chatId);
+  if (chat.error) return res.status(chat.status).json({ error: chat.error });
+
+  const emoji = req.body.emoji;
+  const allowedReactions = ["👍", "❤️", "😂", "😮", "😢", "🔥"];
+  if (emoji !== null && !allowedReactions.includes(emoji)) {
+    return res.status(400).json({ error: "Réaction invalide." });
+  }
+
+  const messageRef = chat.chatRef.collection("messages").doc(req.params.messageId);
+  const message = await messageRef.get();
+  if (!message.exists) return res.status(404).json({ error: "Message introuvable." });
+
+  const reactions = message.data().reactions || {};
+  if (emoji === null) delete reactions[chat.username];
+  else reactions[chat.username] = emoji;
+  await messageRef.update({ reactions });
+  res.json({ reactions });
+});
+
+app.delete("/api/chat/conversations/:chatId/messages/:messageId", requireUser, async (req, res) => {
+  const chat = await getChatForUser(req.user.uid, req.params.chatId);
+  if (chat.error) return res.status(chat.status).json({ error: chat.error });
+
+  const messageRef = chat.chatRef.collection("messages").doc(req.params.messageId);
+  const message = await messageRef.get();
+  if (!message.exists) return res.status(404).json({ error: "Message introuvable." });
+  if (message.data().sender !== chat.username) {
+    return res.status(403).json({ error: "Tu peux uniquement supprimer tes messages." });
+  }
+
+  await messageRef.delete();
+  res.sendStatus(204);
+});
+
+app.delete("/api/chat/conversations/:chatId", requireUser, async (req, res) => {
+  const chat = await getChatForUser(req.user.uid, req.params.chatId);
+  if (chat.error) return res.status(chat.status).json({ error: chat.error });
+  if (chat.data.isGeneralGroup) {
+    return res.status(403).json({ error: "Le groupe général ne peut pas être supprimé." });
+  }
+
+  const messages = await chat.chatRef.collection("messages").get();
+  for (let start = 0; start < messages.docs.length; start += 450) {
+    const batch = db.batch();
+    messages.docs.slice(start, start + 450).forEach((document) => batch.delete(document.ref));
+    await batch.commit();
+  }
+  await chat.chatRef.delete();
+  res.sendStatus(204);
 });
 
 app.get("/api/conversations", requireUser, async (req, res) => {
