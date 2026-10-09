@@ -28,6 +28,7 @@ Le projet a commencé par le site web en classe de seconde. Ce dépôt rassemble
 | `index.html` et `home.html` | Entrée du site et espace d'accueil |
 | `src/pages/messages.html` | Messagerie du site |
 | `src/pages/vote.html` | Espace de vote |
+| `api/server.js` et `API.md` | API Node pour les profils, messages et votes, avec guide de démarrage |
 | `src/pages/firebase-*.html` | Guides, vérifications et pages de configuration Firebase |
 | `src/js/` | Configuration Firebase et notifications |
 | `assets/images/` | Logo, visuels et éléments graphiques |
@@ -74,7 +75,7 @@ Les entrées ci-dessous reprennent l'historique fourni avec le projet ; elles so
 
 ## Lancer le projet
 
-Le site est composé de pages HTML, CSS et JavaScript. Pour une première découverte, ouvrez [`index.html`](index.html). Les pages et notes Firebase se trouvent dans [`docs/`](docs/README.md) ; consultez leur configuration avant tout déploiement ou connexion à un vrai projet Firebase.
+Le site est composé de pages HTML, CSS et JavaScript. Pour une première découverte, ouvrez [`index.html`](index.html). L'API Node se lance séparément ; suivez le guide dans [`API.md`](API.md) avant de la connecter ou de la déployer.
 
 ## Esprit du projet
 
