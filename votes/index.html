@@ -443,7 +443,8 @@
     }
 
     async function firestoreRestRequest(path, options = {}) {
-      const response = await fetch(`${firestoreRestBase}/${path}`, {
+      const url = path.startsWith(':') ? `${firestoreRestBase}${path}` : `${firestoreRestBase}/${path}`;
+      const response = await fetch(url, {
         method: options.method || 'GET',
         headers: {
           Authorization: `Bearer ${currentIdToken}`,
