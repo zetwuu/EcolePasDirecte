@@ -386,8 +386,8 @@
       projectId: "ecolepasdirect",
       storageBucket: "ecolepasdirect.firebasestorage.app",
       messagingSenderId: "524734025311",
-      appId: "1:524734025311:web:875aba50c8c71a82b415ea",
-      measurementId: "G-VZK62BH947",
+      appId: "1:524734025311:web:3a1cbbbaedb4622bb415ea",
+      measurementId: "G-6XBK66GCXX",
       databaseURL: "https://ecolepasdirect-default-rtdb.europe-west1.firebasedatabase.app"
     };
 
@@ -495,13 +495,24 @@
 
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-        window.location.href = '../../index.html';
-        return;
+        const savedToken = sessionStorage.getItem('firebaseIdToken');
+        if (sessionStorage.getItem('isLoggedIn') !== 'true' || !savedToken) {
+          window.location.href = '../../index.html';
+          return;
+        }
+        currentUser = { getIdToken: async () => savedToken };
+      } else {
+        currentUser = user;
+        user.getIdToken().then((token) => sessionStorage.setItem('firebaseIdToken', token));
       }
 
-      currentUser = user;
       loadVotes().catch((error) => {
         console.error('Erreur de chargement des votes:', error);
+        if (error.status === 401) {
+          sessionStorage.clear();
+          window.location.href = '../../index.html';
+          return;
+        }
         resultsContainer.innerHTML = '<p class="loading">Impossible de charger les résultats. Vérifiez que l’API est démarrée.</p>';
         showMessage('❌ Impossible de contacter l’API.', 'error');
       });

@@ -3,8 +3,14 @@
 
   async function getToken() {
     const auth = window.firebase?.auth?.();
+    const savedToken = sessionStorage.getItem("firebaseIdToken");
+    if (auth?.currentUser) {
+      const token = await auth.currentUser.getIdToken();
+      sessionStorage.setItem("firebaseIdToken", token);
+      return token;
+    }
+    if (sessionStorage.getItem("isLoggedIn") === "true" && savedToken) return savedToken;
     if (!auth) throw new Error("Firebase Auth n'est pas initialisé.");
-    if (auth.currentUser) return auth.currentUser.getIdToken();
 
     return new Promise((resolve, reject) => {
       let unsubscribe = null;
@@ -16,7 +22,12 @@
       unsubscribe = auth.onAuthStateChanged((user) => {
         clearTimeout(timeout);
         unsubscribe?.();
-        if (user) user.getIdToken().then(resolve, reject);
+        if (user) {
+          user.getIdToken().then((token) => {
+            sessionStorage.setItem("firebaseIdToken", token);
+            resolve(token);
+          }, reject);
+        }
         else reject(new Error("Connexion Firebase introuvable. Reconnecte-toi."));
       }, (error) => {
         clearTimeout(timeout);
