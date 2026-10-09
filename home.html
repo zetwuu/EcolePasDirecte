@@ -1305,6 +1305,19 @@
 <section id="devoirs" class="tab-content">
   <h2>Mes devoirs</h2>
   <p>Voici les devoirs qui t'attendent. N'oublie pas de les faire! 📝</p>
+  <div id="teacher-devoirs" hidden>
+    <h3>Ajouter un devoir à un élève</h3>
+    <form id="devoir-form">
+      <label for="devoir-eleve">Élève</label>
+      <select id="devoir-eleve" required></select>
+      <label for="devoir-matiere">Matière</label>
+      <input id="devoir-matiere" type="text" required maxlength="80" />
+      <label for="devoir-description">Devoir</label>
+      <textarea id="devoir-description" required maxlength="500"></textarea>
+      <button type="submit">Ajouter le devoir</button>
+    </form>
+    <p id="devoir-status" role="status"></p>
+  </div>
   <ul id="devoirs-list"></ul>
 </section>
 
@@ -1317,6 +1330,19 @@
 <section id="carnet" class="tab-content">
   <h2>Carnet de correspondance</h2>
   <p>Retrouve les observations et remarques de tes professeurs. 📖</p>
+  <div id="teacher-carnet" hidden>
+    <h3>Ajouter un mot au carnet</h3>
+    <form id="carnet-form">
+      <label for="carnet-eleve">Élève</label>
+      <select id="carnet-eleve" required></select>
+      <label for="carnet-type">Type</label>
+      <input id="carnet-type" type="text" required maxlength="80" />
+      <label for="carnet-description">Mot</label>
+      <textarea id="carnet-description" required maxlength="1000"></textarea>
+      <button type="submit">Ajouter le mot</button>
+    </form>
+    <p id="carnet-status" role="status"></p>
+  </div>
   <ul id="carnet-list"></ul>
 </section>
 
@@ -1349,7 +1375,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp, collection, query, orderBy, limit, getDocs, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAJRxSO6NDTAhAoUX-uqmTJT68cJjog1bw",
@@ -2171,11 +2197,85 @@
       list.innerHTML = "";
       data.forEach(item => {
         const li = document.createElement("li");
-        li.innerHTML = formatter(item);
+        const [label, detail] = formatter(item);
+        const strong = document.createElement("strong");
+        strong.textContent = label;
+        li.append(strong, document.createTextNode(` : ${detail}`));
         list.appendChild(li);
       });
     }
   }
+
+  function renderSchoolData(userData) {
+    populateList("notes-list", userData.notes || [], item => [item.matiere || "", item.note || ""]);
+    populateList("devoirs-list", userData.devoirs || [], item => [item.matiere || "", item.description || ""]);
+    populateList("carnet-list", userData.carnet || [], item => [`${item.date || ""} - ${item.type || ""}`, item.description || ""]);
+  }
+
+  async function setupTeacherForms() {
+    document.getElementById("teacher-devoirs").hidden = false;
+    document.getElementById("teacher-carnet").hidden = false;
+
+    const usersSnapshot = await getDocs(collection(db, "users"));
+    const users = usersSnapshot.docs.map(userDoc => ({ id: userDoc.id, ...userDoc.data() }));
+    for (const profile of users) {
+      if (!profile.username) continue;
+      const usernameKey = encodeURIComponent(profile.username.toLocaleLowerCase("fr-FR"));
+      const usernameRef = doc(db, "usernames", usernameKey);
+      if (!(await getDoc(usernameRef)).exists()) {
+        await setDoc(usernameRef, { username: profile.username });
+      }
+    }
+
+    const students = users
+      .filter(student => student.role !== "prof")
+      .sort((first, second) => (first.username || "").localeCompare(second.username || ""));
+
+    ["devoir-eleve", "carnet-eleve"].forEach(selectId => {
+      const select = document.getElementById(selectId);
+      students.forEach(student => {
+        const option = document.createElement("option");
+        option.value = student.id;
+        option.textContent = student.username || student.email || student.id;
+        select.appendChild(option);
+      });
+    });
+  }
+
+  document.getElementById("devoir-form").addEventListener("submit", async event => {
+    event.preventDefault();
+    const studentId = document.getElementById("devoir-eleve").value;
+    const devoir = {
+      matiere: document.getElementById("devoir-matiere").value.trim(),
+      description: document.getElementById("devoir-description").value.trim()
+    };
+    try {
+      await updateDoc(doc(db, "users", studentId), { devoirs: arrayUnion(devoir) });
+      document.getElementById("devoir-status").textContent = "Devoir ajouté.";
+      event.target.reset();
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du devoir:", error);
+      document.getElementById("devoir-status").textContent = "Impossible d'ajouter le devoir.";
+    }
+  });
+
+  document.getElementById("carnet-form").addEventListener("submit", async event => {
+    event.preventDefault();
+    const studentId = document.getElementById("carnet-eleve").value;
+    const entry = {
+      date: new Date().toLocaleDateString("fr-FR"),
+      type: document.getElementById("carnet-type").value.trim(),
+      description: document.getElementById("carnet-description").value.trim()
+    };
+    try {
+      await updateDoc(doc(db, "users", studentId), { carnet: arrayUnion(entry) });
+      document.getElementById("carnet-status").textContent = "Mot ajouté au carnet.";
+      event.target.reset();
+    } catch (error) {
+      console.error("Erreur lors de l'ajout au carnet:", error);
+      document.getElementById("carnet-status").textContent = "Impossible d'ajouter le mot.";
+    }
+  });
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
@@ -2195,6 +2295,7 @@
         sessionStorage.setItem("currentUser", userData.username);
         sessionStorage.setItem("userEmail", user.email);
         sessionStorage.setItem("userId", user.uid);
+        sessionStorage.setItem("userRole", userData.role || "eleve");
 
         document.getElementById("username-display").textContent = "Bienvenue, " + userData.username + " !";
         window.profilesData[userData.username] = userData;
@@ -2202,32 +2303,10 @@
         await initializeUserStats(user.uid, userData.username);
         await loadSettings();
 
-        const defaultNotes = [
-          { matiere: "Mathématiques", note: "4/20 - Travail insuffisant" },
-          { matiere: "Français", note: "5/20 - Nombreuses fautes" },
-          { matiere: "Histoire-Géo", note: "3/20 - Leçons non apprises" },
-          { matiere: "Anglais", note: "6/20 - Participation inexistante" },
-          { matiere: "Sciences", note: "4/20 - Manque de sérieux" },
-          { matiere: "EPS", note: "7/20 - Efforts insuffisants" }
-        ];
-
-        const defaultCarnet = [
-          { date: "15/01/2026", type: "⚠️ AVERTISSEMENT", description: "Comportement inacceptable en classe." },
-          { date: "20/01/2026", type: "❌ RETENUE", description: "Devoirs non faits pour la 5ème fois." },
-          { date: "23/01/2026", type: "🚫 EXCLUSION", description: "Violence verbale envers un camarade." },
-          { date: "27/01/2026", type: "⛔ CONVOCATION", description: "Parents convoqués d'urgence." },
-          { date: "29/01/2026", type: "📵 CONFISCATION", description: "Téléphone confisqué en classe." }
-        ];
-
-        const defaultDevoirs = [
-          { matiere: "Mathématiques", description: "Pour demain : Exercices p.145-167" },
-          { matiere: "Français", description: "Pour vendredi : Lire 3 œuvres" },
-          { matiere: "Histoire-Géo", description: "Pour lundi : Chapitres 1-15" }
-        ];
-
-        populateList("notes-list", defaultNotes, i => `<strong>${i.matiere}</strong> : ${i.note}`);
-        populateList("devoirs-list", defaultDevoirs, i => `<strong>${i.matiere}</strong> : ${i.description}`);
-        populateList("carnet-list", defaultCarnet, i => `<strong>${i.date} - ${i.type}</strong> : ${i.description}`);
+        renderSchoolData(userData);
+        if (userData.role === "prof") {
+          await setupTeacherForms();
+        }
       }
     } catch (error) {
       console.error("Erreur:", error);
@@ -2285,7 +2364,8 @@
   function showAccountInfo() {
     const currentUser = sessionStorage.getItem("currentUser") || "Utilisateur";
     const userEmail = sessionStorage.getItem("userEmail") || "exemple@email.com";
-    alert("Nom d'utilisateur : " + currentUser + "\nAdresse e-mail : " + userEmail + "\nStatut : Élève");
+    const userRole = sessionStorage.getItem("userRole") === "prof" ? "Professeur" : "Élève";
+    alert("Nom d'utilisateur : " + currentUser + "\nAdresse e-mail : " + userEmail + "\nStatut : " + userRole);
   }
 
   function logout() {

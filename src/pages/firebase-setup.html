@@ -298,22 +298,11 @@ const firebaseConfig = {<br>
       </h2>
       <ol>
         <li>Dans Firestore, allez à l'onglet <span class="highlight">"Règles"</span></li>
-        <li>Remplacez le contenu par:
-          <div class="code-block">
-rules_version = '2';<br>
-service cloud.firestore {<br>
-  match /databases/{database}/documents {<br>
-    match /conversations/{document=**} {<br>
-      allow read, write: if true;<br>
-    }<br>
-  }<br>
-}
-          </div>
-        </li>
-        <li>Cliquez <span class="highlight">"Publier"</span></li>
+        <li>Remplacez les règles par le contenu du fichier <a href="../../firestore.rules" download>firestore.rules</a>, puis cliquez sur <span class="highlight">"Publier"</span>.</li>
+        <li>Pour autoriser un professeur, ouvrez son document dans <span class="highlight">users</span> et définissez <code>role</code> à <code>prof</code>. Les nouveaux comptes reçoivent le rôle <code>eleve</code>. À sa première connexion, un professeur initialise aussi l'index des noms des anciens comptes.</li>
       </ol>
       <div class="success">
-        ✅ Firebase est maintenant configuré!
+        ✅ Les élèves consultent leurs données; seuls les comptes prof peuvent ajouter des devoirs et des mots au carnet.
       </div>
     </div>
 

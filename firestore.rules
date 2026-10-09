@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isTeacher() {
+      return signedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'prof';
+    }
+
+    match /users/{userId} {
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.role == 'eleve';
+      allow get: if signedIn() && (request.auth.uid == userId || isTeacher());
+      allow list: if isTeacher();
+      allow update: if isTeacher()
+        && request.resource.data.get('role', 'eleve') == resource.data.get('role', 'eleve')
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['devoirs', 'carnet']);
+      allow delete: if false;
+    }
+
+    match /usernames/{usernameKey} {
+      allow get: if true;
+      allow create: if signedIn()
+        && request.resource.data.keys().hasAll(['username'])
+        && request.resource.data.keys().hasOnly(['username'])
+        && (isTeacher()
+          || getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.username
+            == request.resource.data.username);
+      allow update, delete, list: if false;
+    }
+
+    match /settings/{userId} {
+      allow read, write: if signedIn() && request.auth.uid == userId;
+    }
+
+    match /stats/{userId} {
+      allow read, write: if signedIn() && request.auth.uid == userId;
+    }
+
+    match /conversations/{document=**} {
+      allow read, write: if signedIn();
+    }
+  }
+}
