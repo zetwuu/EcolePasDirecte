@@ -1374,7 +1374,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
   import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp, collection, query, orderBy, limit, getDocs, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -2289,8 +2289,7 @@
     try {
       if (!authPersistenceConfigured) {
         authPersistenceConfigured = true;
-        const rememberMe = sessionStorage.getItem("rememberMe") !== "false";
-        await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+        await setPersistence(auth, browserLocalPersistence);
       }
 
       const userDocRef = doc(db, "users", user.uid);

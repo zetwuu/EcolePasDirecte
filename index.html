@@ -73,10 +73,7 @@
         <input type="password" id="password" name="password" required />
 
         <div class="form-footer">
-          <label>
-            <input type="checkbox" name="remember" id="remember" checked />
-            Se souvenir de moi(personne ne ce souvien de toi)
-          </label>
+          <label>Connexion conservée sur cet appareil</label>
           <a href="#" id="forgot-password">Mot de passe oublié ?</a>
         </div>
 
@@ -104,7 +101,6 @@
       getAuth, 
       signInWithEmailAndPassword,
       setPersistence,
-      browserSessionPersistence,
       browserLocalPersistence,
       sendPasswordResetEmail
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -160,7 +156,6 @@ document.getElementById('show-cookies').addEventListener('click', () => {
     const loginForm = document.getElementById("login-form");
     const errorMessage = document.getElementById("error-message");
     const loadingMessage = document.getElementById("loading-message");
-    const rememberCheckbox = document.getElementById("remember");
 
     // Auto-complétion @gmail.com
     const emailInput = document.getElementById("email");
@@ -181,14 +176,11 @@ document.getElementById('show-cookies').addEventListener('click', () => {
         document.getElementById("email").value = email;
       }
       const password = document.getElementById("password").value.trim();
-      const rememberMe = rememberCheckbox.checked;
-
       errorMessage.style.display = "none";
       loadingMessage.style.display = "block";
 
       try {
-        const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
-        await setPersistence(auth, persistence);
+        await setPersistence(auth, browserLocalPersistence);
 
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
@@ -209,7 +201,6 @@ document.getElementById('show-cookies').addEventListener('click', () => {
         sessionStorage.setItem("currentUser", username);
         sessionStorage.setItem("userEmail", user.email);
         sessionStorage.setItem("userId", user.uid);
-        sessionStorage.setItem("rememberMe", rememberMe ? "true" : "false");
 
         console.log("✅ Connexion réussie:", username);
 
