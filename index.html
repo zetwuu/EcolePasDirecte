@@ -186,7 +186,7 @@ document.getElementById('show-cookies').addEventListener('click', () => {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        let username = "Utilisateur";
+        let username = user.displayName || user.email.split('@')[0] || "Utilisateur";
 
         try {
           const userProfile = await window.EPD_API.request("/api/profile", {
@@ -194,8 +194,7 @@ document.getElementById('show-cookies').addEventListener('click', () => {
           });
           username = userProfile.username || userProfile.displayName || username;
         } catch (profileError) {
-          if (profileError.status !== 404) throw profileError;
-          username = user.displayName || user.email.split('@')[0];
+          console.warn("Profil API indisponible, utilisation du profil Firebase :", profileError.message);
         }
 
         // Stocker dans sessionStorage
