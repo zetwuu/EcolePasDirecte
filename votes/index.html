@@ -396,7 +396,6 @@
     const db = getFirestore(app);
     const electionRef = doc(db, 'elections', 'class-representative');
     const candidates = ['Alex', 'Johan', 'Aucun'];
-    const firestoreRestBase = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents`;
     const form = document.getElementById('vote-form');
     const voteBtn = document.getElementById('vote-btn');
     const voteMessage = document.getElementById('vote-message');
@@ -404,8 +403,6 @@
 
     let currentUser = null;
     let stopWatchingResults = null;
-    let currentIdToken = null;
-    let useRestFallback = false;
 
     // Afficher un message
     function showMessage(message, type) {
@@ -425,102 +422,12 @@
     }
 
     async function loadVotes() {
-      if (useRestFallback) {
-        const election = await getRestDocument('elections/class-representative');
-        const ballot = await getRestDocument(`elections/class-representative/ballots/${currentUser.uid}`);
-        displayResults(readRestCounts(election));
-        setVoteState(Boolean(ballot));
-        if (ballot) showMessage('ℹ️ Vous avez déjà participé au vote.', 'info');
-        return;
-      }
-
       const ballotRef = doc(db, 'elections', 'class-representative', 'ballots', currentUser.uid);
       const ballot = await getDoc(ballotRef);
       setVoteState(ballot.exists());
       if (ballot.exists()) {
         showMessage('ℹ️ Vous avez déjà participé au vote.', 'info');
       }
-    }
-
-    async function firestoreRestRequest(path, options = {}) {
-      const url = path.startsWith(':') ? `${firestoreRestBase}${path}` : `${firestoreRestBase}/${path}`;
-      const response = await fetch(url, {
-        method: options.method || 'GET',
-        headers: {
-          Authorization: `Bearer ${currentIdToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: options.body ? JSON.stringify(options.body) : undefined
-      });
-      const data = response.status === 204 ? null : await response.json().catch(() => null);
-      if (response.status === 404 && options.allowMissing) return null;
-      if (!response.ok) {
-        const error = new Error(data?.error?.message || 'Firebase a refusé la requête.');
-        error.status = response.status;
-        error.code = data?.error?.status;
-        throw error;
-      }
-      return data;
-    }
-
-    async function getRestDocument(path, transaction) {
-      const query = transaction ? `?transaction=${encodeURIComponent(transaction)}` : '';
-      return firestoreRestRequest(path + query, { allowMissing: true });
-    }
-
-    function readRestCounts(election) {
-      const fields = election?.fields?.counts?.mapValue?.fields || {};
-      return Object.fromEntries(candidates.map((name) => [name, Number(fields[name]?.integerValue || 0)]));
-    }
-
-    async function castRestVote(choice) {
-      const transaction = await firestoreRestRequest(':beginTransaction', {
-        method: 'POST',
-        body: { options: { readWrite: {} } }
-      });
-      const electionPath = 'elections/class-representative';
-      const ballotPath = `${electionPath}/ballots/${currentUser.uid}`;
-      const [election, ballot] = await Promise.all([
-        getRestDocument(electionPath, transaction.transaction),
-        getRestDocument(ballotPath, transaction.transaction)
-      ]);
-
-      if (ballot) {
-        const error = new Error('Vous avez déjà voté.');
-        error.code = 'already-voted';
-        throw error;
-      }
-
-      const counts = readRestCounts(election);
-      counts[choice] += 1;
-      const documentName = (path) => `projects/${firebaseConfig.projectId}/databases/(default)/documents/${path}`;
-      const countFields = Object.fromEntries(candidates.map((name) => [name, { integerValue: String(counts[name]) }]));
-
-      await firestoreRestRequest(':commit', {
-        method: 'POST',
-        body: {
-          transaction: transaction.transaction,
-          writes: [
-            {
-              update: {
-                name: documentName(electionPath),
-                fields: { counts: { mapValue: { fields: countFields } } }
-              },
-              updateMask: { fieldPaths: ['counts'] },
-              currentDocument: { exists: Boolean(election) }
-            },
-            {
-              update: {
-                name: documentName(ballotPath),
-                fields: { choice: { stringValue: choice } }
-              },
-              updateMask: { fieldPaths: ['choice'] },
-              updateTransforms: [{ fieldPath: 'createdAt', setToServerValue: 'REQUEST_TIME' }],
-              currentDocument: { exists: false }
-            }
-          ]
-        }
-      });
     }
 
     // Soumettre un vote
@@ -538,26 +445,21 @@
       voteBtn.textContent = 'Vote en cours...';
 
       try {
-        if (useRestFallback) {
-          await castRestVote(choix.value);
-          await loadVotes();
-        } else {
-          await runTransaction(db, async (transaction) => {
-            const ballotRef = doc(db, 'elections', 'class-representative', 'ballots', currentUser.uid);
-            const ballot = await transaction.get(ballotRef);
-            if (ballot.exists()) {
-              const error = new Error('Vous avez déjà voté.');
-              error.code = 'already-voted';
-              throw error;
-            }
+        await runTransaction(db, async (transaction) => {
+          const ballotRef = doc(db, 'elections', 'class-representative', 'ballots', currentUser.uid);
+          const ballot = await transaction.get(ballotRef);
+          if (ballot.exists()) {
+            const error = new Error('Vous avez déjà voté.');
+            error.code = 'already-voted';
+            throw error;
+          }
 
-            const election = await transaction.get(electionRef);
-            const counts = election.data()?.counts || Object.fromEntries(candidates.map((name) => [name, 0]));
-            counts[choix.value] = (counts[choix.value] || 0) + 1;
-            transaction.set(electionRef, { counts }, { merge: true });
-            transaction.set(ballotRef, { choice: choix.value, createdAt: serverTimestamp() });
-          });
-        }
+          const election = await transaction.get(electionRef);
+          const counts = election.data()?.counts || Object.fromEntries(candidates.map((name) => [name, 0]));
+          counts[choix.value] = (counts[choix.value] || 0) + 1;
+          transaction.set(electionRef, { counts }, { merge: true });
+          transaction.set(ballotRef, { choice: choix.value, createdAt: serverTimestamp() });
+        });
 
         showMessage(`✅ Merci ! Votre vote pour "${choix.value}" a été enregistré.`, 'success');
         form.reset();
@@ -603,22 +505,13 @@
     }
 
     auth.authStateReady().then(async () => {
-      let user = auth.currentUser;
+      const user = auth.currentUser;
       if (!user) {
-        const savedToken = sessionStorage.getItem('firebaseIdToken');
-        const savedUid = sessionStorage.getItem('userId');
-        if (!savedToken || !savedUid) {
-          window.location.href = '../';
-          return;
-        }
-        currentUser = { uid: savedUid };
-        currentIdToken = savedToken;
-        useRestFallback = true;
-      } else {
-        currentUser = user;
-        currentIdToken = await user.getIdToken();
-        sessionStorage.setItem('firebaseIdToken', currentIdToken);
+        sessionStorage.clear();
+        window.location.href = '../';
+        return;
       }
+      currentUser = user;
 
       loadVotes().catch((error) => {
         console.error('Erreur de chargement des votes:', error);
@@ -626,7 +519,7 @@
         showMessage('❌ Impossible de lire les votes dans Firebase.', 'error');
       });
 
-      if (!useRestFallback && !stopWatchingResults) {
+      if (!stopWatchingResults) {
         stopWatchingResults = onSnapshot(electionRef, (snapshot) => {
           const counts = snapshot.data()?.counts || Object.fromEntries(candidates.map((name) => [name, 0]));
           displayResults(counts);
@@ -634,10 +527,6 @@
           console.error('Erreur d’actualisation des votes:', error);
           resultsContainer.innerHTML = '<p class="loading">Impossible de charger les résultats. Vérifiez les règles Firestore.</p>';
         });
-      } else if (useRestFallback) {
-        window.setInterval(() => {
-          loadVotes().catch((error) => console.error('Erreur d’actualisation des votes:', error));
-        }, 5000);
       }
     }).catch((error) => {
       console.error('Erreur de restauration Firebase Auth:', error);
