@@ -1033,6 +1033,7 @@
     <button data-target="devoirs"><i class="fa-solid fa-list-check"></i><span> Devoirs</span></button>
     <button data-target="messages"><i class="fa-solid fa-envelope"></i><span> Messages</span></button>
     <button data-target="carnet"><i class="fa-solid fa-clipboard"></i><span> Carnet</span></button>
+    <button id="teacher-students-tab" data-target="suivi-eleves" hidden><i class="fa-solid fa-users"></i><span> Suivi élèves</span></button>
     <button data-target="emploi"><i class="fa-solid fa-calendar-days"></i><span> Emplois du temps</span></button>
     <button data-target="vie-scolaire"><i class="fa-solid fa-user-graduate"></i><span> Liens utiles</span></button>
     <button data-target="bulletin"><i class="fa-solid fa-file-lines"></i><span> Bulletin</span></button>
@@ -1344,6 +1345,21 @@
     <p id="carnet-status" role="status"></p>
   </div>
   <ul id="carnet-list"></ul>
+</section>
+
+<section id="suivi-eleves" class="tab-content">
+  <h2>Suivi des élèves</h2>
+  <label for="teacher-eleve">Élève</label>
+  <select id="teacher-eleve"></select>
+  <p id="teacher-student-empty" hidden>Aucun élève trouvé.</p>
+  <div id="teacher-student-record" hidden>
+    <h3>Notes</h3>
+    <ul id="teacher-student-notes"></ul>
+    <h3>Carnet de correspondance</h3>
+    <ul id="teacher-student-carnet"></ul>
+    <h3>Devoirs</h3>
+    <ul id="teacher-student-devoirs"></ul>
+  </div>
 </section>
 
 <section id="emploi" class="tab-content">
@@ -2212,7 +2228,15 @@
     populateList("carnet-list", userData.carnet || [], item => [`${item.date || ""} - ${item.type || ""}`, item.description || ""]);
   }
 
+  function renderTeacherStudentRecord(student) {
+    document.getElementById("teacher-student-record").hidden = false;
+    populateList("teacher-student-notes", student.notes || [], item => [item.matiere || "Matière", item.note || ""]);
+    populateList("teacher-student-carnet", student.carnet || [], item => [`${item.date || ""} - ${item.type || ""}`, item.description || ""]);
+    populateList("teacher-student-devoirs", student.devoirs || [], item => [item.matiere || "Matière", item.description || ""]);
+  }
+
   async function setupTeacherForms() {
+    document.getElementById("teacher-students-tab").hidden = false;
     document.getElementById("teacher-devoirs").hidden = false;
     document.getElementById("teacher-carnet").hidden = false;
 
@@ -2231,7 +2255,7 @@
       .filter(student => student.role !== "prof")
       .sort((first, second) => (first.username || "").localeCompare(second.username || ""));
 
-    ["devoir-eleve", "carnet-eleve"].forEach(selectId => {
+    ["devoir-eleve", "carnet-eleve", "teacher-eleve"].forEach(selectId => {
       const select = document.getElementById(selectId);
       students.forEach(student => {
         const option = document.createElement("option");
@@ -2240,6 +2264,18 @@
         select.appendChild(option);
       });
     });
+
+    const teacherStudentSelect = document.getElementById("teacher-eleve");
+    teacherStudentSelect.addEventListener("change", () => {
+      const student = students.find(profile => profile.id === teacherStudentSelect.value);
+      if (student) renderTeacherStudentRecord(student);
+    });
+
+    if (students.length) {
+      renderTeacherStudentRecord(students[0]);
+    } else {
+      document.getElementById("teacher-student-empty").hidden = false;
+    }
   }
 
   document.getElementById("devoir-form").addEventListener("submit", async event => {
