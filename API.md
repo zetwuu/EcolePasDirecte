@@ -1,6 +1,20 @@
-# Données Firebase EcolePasDirecte
+# API et données Firebase EcolePasDirecte
 
-GitHub Pages héberge uniquement les fichiers statiques. Le site utilise donc directement le SDK Firebase dans le navigateur : aucun serveur Express ni forfait Blaze n'est nécessaire pour les opérations Firestore de base.
+## Où se trouve l'API ?
+
+Le dépôt ne possède pas de serveur API HTTP personnalisé ni de Cloud Functions. GitHub Pages sert les fichiers statiques, et le JavaScript du navigateur appelle directement Firebase avec son SDK. Le dossier `api/` ne contient pas le code d'un serveur utilisé par le site.
+
+| Fonction | Emplacement |
+| --- | --- |
+| Connexion et lecture du compte | `index.html` |
+| Création de compte | `inscription/index.html` |
+| Données de l'accueil | `accueil/index.html` |
+| Votes et résultats | `votes/index.html` |
+| Messagerie Firebase | `src/pages/messages-firebase.html` |
+| Autorisations côté base | `firestore.rules` |
+| Configuration du déploiement des règles | `firebase.json` |
+
+Les échanges réseau vont donc du navigateur vers Firebase Authentication et Cloud Firestore ; il n'y a pas d'URL `/api/...` à appeler.
 
 ## Configuration
 
