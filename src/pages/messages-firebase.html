@@ -988,6 +988,7 @@
     // Initialiser Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth();
 
     // Activer le cache
     db.enablePersistence()
@@ -997,42 +998,17 @@
 
     // Vérification d'authentification
     if (sessionStorage.getItem("isLoggedIn") !== "true") {
-      window.location.href = "index.html";
+      window.location.href = "../../accueil/";
     }
 
-    const currentUser = sessionStorage.getItem("currentUser");
+    let currentUser = sessionStorage.getItem("currentUser");
     if (!currentUser) {
       sessionStorage.clear();
-      window.location.href = "index.html";
+      window.location.href = "../../accueil/";
     }
 
     console.log("✅ Firebase initialisé!");
     console.log("📌 Connecté en tant que:", currentUser);
-
-    // ✅ SYNCHRONISER LE USERID DEPUIS home.html
-    const userId = sessionStorage.getItem("userId");
-    if (userId) {
-      console.log("✅ UserID trouvé:", userId);
-      
-      // Initialiser les stats si elles n'existent pas (1 LECTURE MAX)
-      db.collection("stats").doc(userId).get()
-        .then((doc) => {
-          if (!doc.exists) {
-            return db.collection("stats").doc(userId).set({
-              username: currentUser,
-              totalTime: 0,
-              messagesCount: 0,
-              streak: 1,
-              lastVisit: firebase.firestore.FieldValue.serverTimestamp(),
-              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-              achievements: []
-            });
-          }
-        })
-        .catch(err => console.log("Info stats:", err));
-    } else {
-      console.warn("⚠️ Pas de UserID - Stats désactivées");
-    }
 
     let currentConversation = null;
     let currentConversationData = null;
@@ -1323,6 +1299,9 @@
           });
 
           chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, (error) => {
+          console.error("❌ Chargement des messages:", error);
+          chatMessages.textContent = `Impossible de charger les messages (${error.code || "erreur"}).`;
         });
     }
 
@@ -1701,16 +1680,29 @@
 
     async function ensureGeneralGroup() {
       const groupRef = db.collection("conversations").doc("general_school");
-      const groupDoc = await groupRef.get();
+      try {
+        const groupDoc = await groupRef.get();
 
-      if (groupDoc.exists) {
-        const participants = groupDoc.data().participants || [];
-        if (!participants.includes(currentUser)) {
+        if (groupDoc.exists) {
+          const participants = groupDoc.data().participants || [];
+          if (!participants.includes(currentUser)) {
+            await groupRef.update({
+              participants: firebase.firestore.FieldValue.arrayUnion(currentUser)
+            });
+          }
+          return;
+        }
+      } catch (error) {
+        if (error.code !== "permission-denied") throw error;
+
+        try {
           await groupRef.update({
             participants: firebase.firestore.FieldValue.arrayUnion(currentUser)
           });
+          return;
+        } catch (updateError) {
+          if (updateError.code !== "not-found") throw updateError;
         }
-        return;
       }
 
       await groupRef.set({
@@ -1759,16 +1751,53 @@
             div.addEventListener("click", () => selectConversation(doc.id, data, div));
             convList.appendChild(div);
           });
+        }, (error) => {
+          console.error("❌ Chargement des conversations:", error);
+          convList.textContent = `Accès aux conversations refusé (${error.code || "erreur"}).`;
         });
     }
 
-    // Synchroniser les membres avant de charger les conversations.
-    ensureGeneralGroup()
-      .catch(error => console.error("❌ Synchronisation du groupe général:", error))
-      .finally(() => {
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        sessionStorage.clear();
+        window.location.href = "../../accueil/";
+        return;
+      }
+
+      try {
+        const userDoc = await db.collection("users").doc(user.uid).get();
+        if (!userDoc.exists || !userDoc.data().username) {
+          throw new Error("Profil utilisateur introuvable.");
+        }
+
+        currentUser = userDoc.data().username;
+        sessionStorage.setItem("currentUser", currentUser);
+        sessionStorage.setItem("userId", user.uid);
+
         listenToConversations();
         loadEmojiPicker();
-      });
+
+        const statsRef = db.collection("stats").doc(user.uid);
+        statsRef.get().then((statsDoc) => {
+          if (statsDoc.exists) return;
+          return statsRef.set({
+            username: currentUser,
+            totalTime: 0,
+            messagesCount: 0,
+            streak: 1,
+            lastVisit: firebase.firestore.FieldValue.serverTimestamp(),
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            achievements: []
+          });
+        }).catch(error => console.warn("Stats indisponibles:", error));
+
+        ensureGeneralGroup().catch(error => console.warn("Groupe général indisponible:", error));
+      } catch (error) {
+        console.error("❌ Initialisation de la messagerie:", error);
+        document.getElementById("conversations-list").textContent =
+          `Impossible d'initialiser la messagerie (${error.code || error.message}).`;
+      }
+    });
 
     // Bouton nouvelle conversation privée
     document.getElementById("new-conv-btn").addEventListener("click", () => {
